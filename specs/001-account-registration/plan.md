@@ -40,7 +40,7 @@ enforced by a `beforeSmsSent` blocking function after the Blaze and Identity Pla
 Functions and tests)
 
 **Primary Dependencies**: flutter_localizations, intl, flutter_riverpod, go_router, firebase_core,
-firebase_auth, cloud_firestore, cloud_functions; firebase-functions (2nd gen), firebase-admin.
+firebase_auth, cloud_firestore, cloud_functions, url_launcher; firebase-functions (2nd gen), firebase-admin.
 Reasons in [research R5](research.md#r5-flutter-stack-and-dependencies).
 
 **Storage**: Cloud Firestore with offline persistence; model in [data-model.md](data-model.md)

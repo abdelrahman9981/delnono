@@ -24,7 +24,7 @@ replace them.
 | `/children` | protected | Children list |
 | `/children/add` | protected | Add child |
 | `/children/:id` | protected | Child profile (edit name and allergies) |
-| `/account` | protected | Account: phone change, sign out, delete |
+| `/account` | protected | Account (design screen 11): guardian, children, policy version, phone change, Notifications placeholder (007), WhatsApp support link (external, from `settings/clinic.whatsappNumber`), sign out, delete |
 | `/account/phone` | protected | Change number (new number + code) |
 | `/account/delete` | protected | Deletion explanation and confirmation |
 
@@ -35,7 +35,7 @@ Evaluated in this order for protected routes:
 1. Not signed in → `/sign-in?from=<requested location>`.
 2. Signed in, no guardian doc → `/register/guardian?from=…`.
 3. Guardian consent outdated → `/register/consent?from=…`.
-4. Clinic children pending link and not yet skipped this session → `/register/link?from=…`.
+4. `guardians/{uid}.clinicChildrenPending` is true and not skipped this session ("these aren't my children", spec US4 scenario 4) → `/register/link?from=…`.
 5. No children and route is not `/children/add` → `/register/child?from=…` (first run only).
 6. Otherwise allow. After each step completes, navigate to `from` (FR-003), defaulting to `/`.
 

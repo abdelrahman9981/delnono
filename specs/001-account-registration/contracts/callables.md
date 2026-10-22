@@ -40,7 +40,7 @@ Birth-date check before linking clinic-registered children (FR-021, FR-021a).
 
 ```text
 in:  { birthDate: "YYYY-MM-DD" }
-out: { linked: [{ childId, name }], guardianPrefill?: { fullName, relation, email? } }
+out: { linked: [{ childId, name }] }
 ```
 
 | Error | When |

@@ -90,6 +90,7 @@ lower to the consent screen, and rules deny child reads in that case.
 | `go_router` | Declarative routes and a redirect guard that keeps the requested location (FR-003). |
 | `firebase_core`, `firebase_auth`, `cloud_firestore` | Platform backend (constitution Stack). |
 | `cloud_functions` | Calling the callables in R2; not in the input list but required by it. |
+| `url_launcher` | Opening the clinic's WhatsApp chat from the account screen (FR-034); falls back to the web chat when WhatsApp is not installed. |
 | `mocktail` (dev) | Fakes for repositories in widget tests. |
 | `integration_test` (dev, SDK) | End-to-end flows against the emulator. |
 

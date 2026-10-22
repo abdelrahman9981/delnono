@@ -74,8 +74,9 @@ The secretary registered a guardian and child at the clinic desk (for example, a
 
 1. **Given** children registered by the clinic on a mobile number, **When** a guardian verifies that number in the app and enters the correct birth date of one of those children, **Then** those children appear in the account.
 2. **Given** children registered by the clinic on a mobile number, **When** the guardian enters a wrong birth date 3 times, **Then** no children are linked and an Arabic message asks them to contact the clinic.
-3. **Given** a clinic-registered guardian signing in for the first time, **When** first-run registration starts, **Then** guardian details already on file are pre-filled, consent is still required before the birth-date check, and the "first child" step is skipped once children are linked.
-4. **Given** a number with no clinic-registered children, **When** a guardian verifies it, **Then** the account starts with no children.
+3. **Given** a clinic-registered guardian signing in for the first time, **When** first-run registration starts, **Then** the guardian enters their own details (nothing from the clinic's record is shown before the birth-date check), consent is still required before the birth-date check, and the "first child" step is skipped once children are linked.
+4. **Given** the birth-date check is shown, **When** the guardian chooses "these aren't my children, add a child", **Then** nothing is linked, no attempt is counted, and they go to adding a child; the check is offered again at their next sign-in until the children are linked or the check is locked.
+5. **Given** a number with no clinic-registered children, **When** a guardian verifies it, **Then** the account starts with no children.
 
 ---
 
@@ -140,6 +141,7 @@ A guardian deletes their account from inside the app. Their app account and acce
 - A guardian whose account was deleted signs in again with the same number: they start first-run registration as a new guardian, and the clinic-registered children on that number are linked again under FR-021.
 - A guardian tries to edit birth date or sex through any route: refused.
 - A guardian with clinic-registered children fails the birth-date check: the account still works and they can add children themselves; the clinic's children stay unlinked until staff link them.
+- WhatsApp is not installed: the link opens the WhatsApp web chat for the clinic's number instead.
 - A guardian adds a child themselves that the clinic already registered on the same number (same name and birth date): the duplicate warning (FR-022) applies.
 
 ## Requirements *(mandatory)*
@@ -195,6 +197,12 @@ A guardian deletes their account from inside the app. Their app account and acce
 - **FR-028**: Deletion MUST remove the app account, the guardian's sign-in and personal app settings, and end all sessions.
 - **FR-029**: Deletion MUST NOT remove children's medical records held by the clinic; they are kept for the period set by legal review.
 - **FR-030**: Deletion MUST be recorded in the audit log.
+
+**Account screen**
+
+- **FR-033**: The account screen MUST show the guardian's name, number and relation, their children, the accepted policy version, and entries for changing number, signing out and deleting the account.
+- **FR-034**: The account screen MUST offer a "talk to the clinic on WhatsApp" link that opens a chat with the clinic's WhatsApp number, labelled for questions and support only, not booking (D-21, D-27). The number is a clinic setting.
+- **FR-035**: The account screen MUST show a Notifications entry as a placeholder until feature 007 provides the notifications page and settings.
 
 **General**
 

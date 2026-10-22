@@ -14,9 +14,12 @@ Doc ID is the Firebase Auth uid.
 | relation | string | `mother` \| `father` \| `other` |
 | email | string? | optional, valid email if present |
 | consentVersion | number | latest accepted policy version |
+| clinicChildrenPending | boolean | server-set: true while unlinked clinic children exist on `phone` and linking is not locked; drives the router's link step (routes guard step 4) |
 | createdAt, updatedAt | timestamp | |
 
 Created only by `completeRegistration`. Guardian may update `fullName`, `relation`, `email`.
+`clinicChildrenPending` is set by `completeRegistration`, cleared by `linkClinicChildren` on success
+or lock, and set again by staff registration in 004.
 Deleted by `deleteAccount`.
 
 ### guardians/{uid}/consents/{consentId}
@@ -60,8 +63,8 @@ Written by the `onChildUpdated` trigger. Fields: `changedFields` (map of field â
 ## clinicGuardians/{phone}
 
 Created by staff in 004 (walk-in registration). Server only in 001. Fields: `fullName`, `relation`,
-`email?`, `createdAt`. Returned to the guardian by `linkClinicChildren` only after a successful
-birth-date check, to pre-fill guardian details (User Story 4, scenario 3).
+`email?`, `createdAt`. Never returned to the guardian app; the guardian enters their own details
+(User Story 4, scenario 3). The clinic's record stays for staff in 004.
 
 ## linkAttempts/{phone}
 
@@ -94,6 +97,11 @@ Readable by anyone (needed before sign-in); written by the doctor (004).
 
 Readable by anyone. `currentVersion` (number), `privacyPolicyText`, `termsText` (Arabic; marked
 placeholder until supplied, D-36), `updatedAt`.
+
+## settings/clinic
+
+Readable by anyone. `whatsappNumber` (E.164; placeholder until the clinic supplies it, D-36), used
+by the account screen's support link (FR-034). Written by the doctor (004).
 
 ## State transitions
 
