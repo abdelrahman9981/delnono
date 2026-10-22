@@ -36,3 +36,10 @@ String? normalizeEgyptMobile(String input) {
 }
 
 bool isValidEgyptMobile(String e164) => _e164.hasMatch(e164);
+
+/// `+201012345678` → `+20 10 1234 5678`, as shown in the design. Show it left to right.
+String formatEgyptMobile(String e164) {
+  if (!isValidEgyptMobile(e164)) return e164;
+  final n = e164.substring(3);
+  return '+20 ${n.substring(0, 2)} ${n.substring(2, 6)} ${n.substring(6)}';
+}

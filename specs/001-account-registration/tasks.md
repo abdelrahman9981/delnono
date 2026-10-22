@@ -81,17 +81,17 @@ story, write the tests first and confirm they fail.
 
 ### Tests for User Story 1
 
-- [ ] T026 [P] [US1] Create `test/features/auth/otp_controller_test.dart` with a fake clock and fake phone auth service: code treated as expired `codeValiditySeconds` after sending (FR-006); `verificationId` discarded after `maxCodeAttempts` wrong entries (FR-007); resend unavailable until `resendWaitSeconds` and remaining seconds exposed (FR-008); values read from settings, not constants.
-- [ ] T027 [P] [US1] Create `test/features/auth/phone_screen_test.dart` and `test/features/auth/otp_screen_test.dart`: invalid number blocked before sending; expired, wrong-code and attempts-left messages in Arabic; resend button disabled with countdown.
-- [ ] T028 [P] [US1] Create `integration_test/sign_in_test.dart`: sign in with `+201000000099` reading the code from the Auth emulator REST endpoint (quickstart.md), restart the widget tree, assert still signed in (FR-010).
+- [X] T026 [P] [US1] Create `test/features/auth/otp_controller_test.dart` with a fake clock and fake phone auth service: code treated as expired `codeValiditySeconds` after sending (FR-006); `verificationId` discarded after `maxCodeAttempts` wrong entries (FR-007); resend unavailable until `resendWaitSeconds` and remaining seconds exposed (FR-008); values read from settings, not constants.
+- [X] T027 [P] [US1] Create `test/features/auth/phone_screen_test.dart` and `test/features/auth/otp_screen_test.dart`: invalid number blocked before sending; expired, wrong-code and attempts-left messages in Arabic; resend button disabled with countdown.
+- [X] T028 [P] [US1] Create `integration_test/sign_in_test.dart`: sign in with `+201000000099` reading the code from the Auth emulator REST endpoint (quickstart.md), restart the widget tree, assert still signed in (FR-010).
 
 ### Implementation for User Story 1
 
-- [ ] T029 [US1] Create `lib/features/auth/data/phone_auth_service.dart` wrapping `FirebaseAuth.verifyPhoneNumber` (pass `forceResendingToken` on Android; handle `verificationCompleted` auto-retrieval on Android) and `signInWithCredential`.
-- [ ] T030 [US1] Create `lib/features/auth/application/otp_controller.dart` (Riverpod `Notifier`): state `phone`, `verificationId`, `sentAt`, `wrongAttempts`, `resendAvailableAt`; enforce FR-006 to FR-008 as in research R1 using `settings/auth`.
-- [ ] T031 [P] [US1] Create `lib/features/auth/presentation/phone_screen.dart` matching `docs/design/screens/Phone.dc.html`: number field with Egyptian validation (T011), send button, Arabic errors (T012).
-- [ ] T032 [US1] Create `lib/features/auth/presentation/otp_screen.dart` matching `docs/design/screens/Otp.dc.html`: 6-digit input, "valid for 5 minutes" note from settings, resend countdown, attempts left, "change number" link back to `/sign-in`.
-- [ ] T033 [US1] Wire `/sign-in` and `/sign-in/code` in `lib/app/router.dart`; after sign-in continue the guard chain with `from` (FR-003); add a sign-out action in `lib/features/auth/data/auth_repository.dart` that also clears the Firestore cache.
+- [X] T029 [US1] Create `lib/features/auth/data/phone_auth_service.dart` wrapping `FirebaseAuth.verifyPhoneNumber` (pass `forceResendingToken` on Android; handle `verificationCompleted` auto-retrieval on Android) and `signInWithCredential`.
+- [X] T030 [US1] Create `lib/features/auth/application/otp_controller.dart` (Riverpod `Notifier`): state `phone`, `verificationId`, `sentAt`, `wrongAttempts`, `resendAvailableAt`; enforce FR-006 to FR-008 as in research R1 using `settings/auth`.
+- [X] T031 [P] [US1] Create `lib/features/auth/presentation/phone_screen.dart` matching `docs/design/screens/Phone.dc.html`: number field with Egyptian validation (T011), send button, Arabic errors (T012).
+- [X] T032 [US1] Create `lib/features/auth/presentation/otp_screen.dart` matching `docs/design/screens/Otp.dc.html`: 6-digit input, "valid for 5 minutes" note from settings, resend countdown, attempts left, "change number" link back to `/sign-in`.
+- [X] T033 [US1] Wire `/sign-in` and `/sign-in/code` in `lib/app/router.dart`; after sign-in continue the guard chain with `from` (FR-003); add a sign-out action in `lib/features/auth/data/auth_repository.dart` that also clears the Firestore cache.
 
 **Checkpoint**: US1 tests pass; a guardian can sign in and stay signed in.
 
@@ -253,7 +253,7 @@ needs linked children (US2, US4) and the account lock pattern from US4.
 ## Phase 11: Polish & Cross-Cutting Concerns
 
 - [ ] T083 [P] Create `functions/src/triggers/beforeSmsSent.ts` (FR-009, research R1): increment `smsCounters/{phone}_{YYYYMMDD}` with `expiresAt` = +2 days and return `{ recaptchaActionOverride: "BLOCK" }` above `dailySmsCapPerNumber`; keep the counting in a pure function tested in `functions/test/lib/smsCap.test.ts`. Export it, but note it deploys only after the Identity Platform upgrade.
-- [ ] T084 [P] Create `functions/README.md` with the steps for the Blaze upgrade (D-38): Identity Platform upgrade (owner approval), SMS region allowlist Egypt only, Firebase test phone numbers, TTL policies on `smsCounters.expiresAt` and `auditLog.expiresAt`, region from research R8, and `flutterfire configure` for the real project.
+- [ ] T084 [P] Create `functions/README.md` with the steps for the Blaze upgrade (D-38): Identity Platform upgrade (owner approval), SMS region allowlist Egypt only, Firebase test phone numbers, TTL policies on `smsCounters.expiresAt` and `auditLog.expiresAt`, region from research R8, and `flutterfire configure` for the real project, then replace the iOS `CFBundleURLTypes` scheme in `ios/Runner/Info.plist` with `app-` + the real GOOGLE_APP_ID (":" → "-"), which iOS phone auth requires.
 - [ ] T085 [P] Check every screen in light and dark mode at 375 pt width and at the largest system text size; no clipped Arabic text; colours match `docs/design/tokens.css`.
 - [ ] T086 [P] Check that no user-facing string is hard-coded outside `l10n/app_ar.arb` (search `lib/` for Arabic literals and `Text('`).
 - [ ] T087 Profile on a mid-range Android device on throttled 4G: core screens open within 3 s (D-22); sign-in to first child under 3 minutes (SC-001).

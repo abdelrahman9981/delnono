@@ -38,7 +38,7 @@ The Auth emulator never sends SMS; read codes from the Emulator UI (Auth tab) or
 ```sh
 cd functions && npm test          # Security Rules (contracts/firestore-access.md) + callables
 flutter test                      # unit and widget tests
-flutter test integration_test     # end-to-end flows against the emulators
+flutter test integration_test --dart-define=USE_EMULATOR=true -d <simulator>  # end-to-end, emulators running
 ```
 
 All three must pass before 001 is done (constitution: rules tests gate completion).

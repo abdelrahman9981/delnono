@@ -238,6 +238,138 @@ abstract class AppLocalizations {
   /// **'حذف الحساب'**
   String get screenDeleteAccount;
 
+  /// No description provided for @stepOf.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخطوة {current} من {total}'**
+  String stepOf(String current, String total);
+
+  /// No description provided for @back.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجوع'**
+  String get back;
+
+  /// No description provided for @signInTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الدخول'**
+  String get signInTitle;
+
+  /// No description provided for @phoneHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم موبايلك إيه؟'**
+  String get phoneHeading;
+
+  /// No description provided for @phoneIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'هنبعتلك كود في رسالة عشان نتأكد إن الرقم بتاعك. الرقم ده هو حسابك في التطبيق.'**
+  String get phoneIntro;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الموبايل'**
+  String get phoneLabel;
+
+  /// No description provided for @phoneClinicHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'لو العيادة سجلت أطفالك قبل كده، استخدمي نفس الرقم.'**
+  String get phoneClinicHint;
+
+  /// No description provided for @phoneStaySignedIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'هتفضلي مسجلة دخول على الموبايل ده، ومش هنطلب كود تاني غير لو خرجتي من الحساب.'**
+  String get phoneStaySignedIn;
+
+  /// No description provided for @phoneSendCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابعتيلي الكود'**
+  String get phoneSendCode;
+
+  /// No description provided for @phonePrivacyNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'بالمتابعة هتشوفي سياسة الخصوصية قبل ما نحفظ أي بيانات.'**
+  String get phonePrivacyNote;
+
+  /// No description provided for @phoneInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتبي رقم موبايل مصري صحيح، زي 010 1234 5678.'**
+  String get phoneInvalid;
+
+  /// No description provided for @otpHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتبي الكود'**
+  String get otpHeading;
+
+  /// No description provided for @otpSentTo.
+  ///
+  /// In ar, this message translates to:
+  /// **'بعتنا كود من ٦ أرقام على {phone}'**
+  String otpSentTo(String phone);
+
+  /// No description provided for @otpChangeNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'غيّري الرقم'**
+  String get otpChangeNumber;
+
+  /// No description provided for @otpCodeField.
+  ///
+  /// In ar, this message translates to:
+  /// **'كود التحقق من ٦ أرقام'**
+  String get otpCodeField;
+
+  /// No description provided for @otpValidFor.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count, plural, =1{الكود صالح دقيقة واحدة} =2{الكود صالح دقيقتين} few{الكود صالح {countText} دقايق} other{الكود صالح {countText} دقيقة}}'**
+  String otpValidFor(int count, String countText);
+
+  /// No description provided for @otpResendIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعادة الإرسال بعد {time}'**
+  String otpResendIn(String time);
+
+  /// No description provided for @otpResend.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابعتي الكود تاني'**
+  String get otpResend;
+
+  /// No description provided for @otpConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد'**
+  String get otpConfirm;
+
+  /// No description provided for @otpAttempts.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count, plural, =1{محاولة واحدة} =2{محاولتين} few{{countText} محاولات} other{{countText} محاولة}}'**
+  String otpAttempts(int count, String countText);
+
+  /// No description provided for @otpWrongCode.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكود مش صح. فاضلك {attempts}، وبعدها اطلبي كود جديد.'**
+  String otpWrongCode(String attempts);
+
+  /// No description provided for @otpNoAttemptsLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكود مش صح، والمحاولات خلصت. اطلبي كود جديد.'**
+  String get otpNoAttemptsLeft;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

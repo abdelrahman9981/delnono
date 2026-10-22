@@ -21,6 +21,9 @@ Future<void> initFirebase() async {
         ? '10.0.2.2'
         : 'localhost';
     await FirebaseAuth.instance.useAuthEmulator(host, 9099);
+    // The emulator issues codes itself; skip APNs/reCAPTCHA app checks, which a demo project cannot
+    // pass. Never set outside the emulator.
+    await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
     FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
   }

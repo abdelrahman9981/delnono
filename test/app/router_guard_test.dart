@@ -1,6 +1,12 @@
 import 'package:delnono/app/app.dart';
 import 'package:delnono/app/route_guard.dart';
 import 'package:delnono/app/router.dart';
+import 'package:delnono/core/settings/settings_repository.dart';
+import 'package:delnono/features/auth/data/auth_repository.dart';
+import 'package:delnono/features/children/data/children_repository.dart';
+import 'package:delnono/features/registration/data/guardian_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:delnono/features/shell/shell_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -194,4 +200,43 @@ void main() {
       expect(Directionality.of(tester.element(slot)), TextDirection.rtl);
     });
   });
+
+  group('guardStateProvider', () {
+    ProviderContainer containerWith(Stream<Guardian?> guardian) {
+      final container = ProviderContainer(overrides: [
+        authStateProvider.overrideWith((ref) => Stream.value(_MockUser())),
+        guardianProvider.overrideWith((ref) => guardian),
+        policySettingsProvider.overrideWith((ref) => Stream.value(const PolicySettings())),
+        childrenProvider.overrideWith((ref) => Stream.value(const [])),
+      ]);
+      addTearDown(container.dispose);
+      container.listen(guardStateProvider, (_, _) {});
+      return container;
+    }
+
+    Future<GuardState> settled(ProviderContainer c) async {
+      for (var i = 0; i < 20 && c.read(guardStateProvider).loading; i++) {
+        await Future<void>.delayed(Duration.zero);
+      }
+      return c.read(guardStateProvider);
+    }
+
+    test('a guardian read that fails (e.g. permission denied) is not treated as loading', () async {
+      final c = containerWith(Stream.error(FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied')));
+      final s = await settled(c);
+      expect(s.loading, isFalse, reason: 'Riverpod retries keep isLoading true; the guard must still decide');
+      expect(s.signedIn, isTrue);
+      expect(s.hasGuardian, isFalse);
+      expect(go('/booking', s), '/register/guardian?from=%2Fbooking');
+    });
+
+    test('a signed-in user without a guardian doc goes to registration', () async {
+      final s = await settled(containerWith(Stream.value(null)));
+      expect(s.loading, isFalse);
+      expect(s.hasGuardian, isFalse);
+    });
+  });
 }
+
+class _MockUser extends Mock implements User {}
+

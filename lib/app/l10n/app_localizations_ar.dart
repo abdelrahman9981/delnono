@@ -82,6 +82,105 @@ class AppLocalizationsAr extends AppLocalizations {
   String get screenDeleteAccount => 'حذف الحساب';
 
   @override
+  String stepOf(String current, String total) {
+    return 'الخطوة $current من $total';
+  }
+
+  @override
+  String get back => 'رجوع';
+
+  @override
+  String get signInTitle => 'تسجيل الدخول';
+
+  @override
+  String get phoneHeading => 'رقم موبايلك إيه؟';
+
+  @override
+  String get phoneIntro =>
+      'هنبعتلك كود في رسالة عشان نتأكد إن الرقم بتاعك. الرقم ده هو حسابك في التطبيق.';
+
+  @override
+  String get phoneLabel => 'رقم الموبايل';
+
+  @override
+  String get phoneClinicHint =>
+      'لو العيادة سجلت أطفالك قبل كده، استخدمي نفس الرقم.';
+
+  @override
+  String get phoneStaySignedIn =>
+      'هتفضلي مسجلة دخول على الموبايل ده، ومش هنطلب كود تاني غير لو خرجتي من الحساب.';
+
+  @override
+  String get phoneSendCode => 'ابعتيلي الكود';
+
+  @override
+  String get phonePrivacyNote =>
+      'بالمتابعة هتشوفي سياسة الخصوصية قبل ما نحفظ أي بيانات.';
+
+  @override
+  String get phoneInvalid => 'اكتبي رقم موبايل مصري صحيح، زي 010 1234 5678.';
+
+  @override
+  String get otpHeading => 'اكتبي الكود';
+
+  @override
+  String otpSentTo(String phone) {
+    return 'بعتنا كود من ٦ أرقام على $phone';
+  }
+
+  @override
+  String get otpChangeNumber => 'غيّري الرقم';
+
+  @override
+  String get otpCodeField => 'كود التحقق من ٦ أرقام';
+
+  @override
+  String otpValidFor(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'الكود صالح $countText دقيقة',
+      few: 'الكود صالح $countText دقايق',
+      two: 'الكود صالح دقيقتين',
+      one: 'الكود صالح دقيقة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String otpResendIn(String time) {
+    return 'إعادة الإرسال بعد $time';
+  }
+
+  @override
+  String get otpResend => 'ابعتي الكود تاني';
+
+  @override
+  String get otpConfirm => 'تأكيد';
+
+  @override
+  String otpAttempts(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countText محاولة',
+      few: '$countText محاولات',
+      two: 'محاولتين',
+      one: 'محاولة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String otpWrongCode(String attempts) {
+    return 'الكود مش صح. فاضلك $attempts، وبعدها اطلبي كود جديد.';
+  }
+
+  @override
+  String get otpNoAttemptsLeft =>
+      'الكود مش صح، والمحاولات خلصت. اطلبي كود جديد.';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

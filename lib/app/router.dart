@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../core/settings/settings_repository.dart';
 import '../features/auth/data/auth_repository.dart';
+import '../features/auth/presentation/otp_screen.dart';
+import '../features/auth/presentation/phone_screen.dart';
 import '../features/children/data/children_repository.dart';
 import '../features/registration/data/guardian_repository.dart';
 import '../features/shell/placeholders.dart';
@@ -12,15 +14,19 @@ import 'l10n/app_localizations.dart';
 import 'route_guard.dart';
 import 'session_flags.dart';
 
+/// Still waiting for a first result. Riverpod 3 retries failed providers and reports them as
+/// loading-with-error meanwhile; an error counts as a result, or a denied read would block the guard.
+bool _waiting(AsyncValue<Object?> v) => !v.hasValue && !v.hasError;
+
 /// Combines auth, guardian, policy, children and session flags into the guard's input.
 final guardStateProvider = Provider<GuardState>((ref) {
   final auth = ref.watch(authStateProvider);
-  if (auth.isLoading) return GuardState.loadingState;
+  if (_waiting(auth)) return GuardState.loadingState;
   if (auth.value == null) return const GuardState();
 
   final guardian = ref.watch(guardianProvider);
   final policy = ref.watch(policySettingsProvider);
-  if (guardian.isLoading || policy.isLoading) return GuardState.loadingState;
+  if (_waiting(guardian) || _waiting(policy)) return GuardState.loadingState;
 
   final g = guardian.value;
   final currentVersion = policy.value?.currentVersion ?? const PolicySettings().currentVersion;
@@ -63,8 +69,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       _screen(Routes.welcome, (l) => l.screenWelcome),
-      _screen(Routes.signIn, (l) => l.screenSignIn),
-      _screen(Routes.signInCode, (l) => l.screenOtp),
+      GoRoute(
+        path: Routes.signIn,
+        builder: (_, state) => PhoneScreen(from: state.uri.queryParameters['from']),
+      ),
+      GoRoute(
+        path: Routes.signInCode,
+        builder: (_, state) => OtpScreen(from: state.uri.queryParameters['from']),
+      ),
       _screen(Routes.registerGuardian, (l) => l.screenGuardian),
       _screen(Routes.registerConsent, (l) => l.screenConsent),
       _screen(Routes.registerLink, (l) => l.screenLinkChildren),
