@@ -62,25 +62,25 @@ class AppColors extends ThemeExtension<AppColors> {
     dangerText: Color(0xFF8A2F20),
   );
 
-  /// tokens.css has no dark variables yet. These pairs are derived from the light palette (same
-  /// hues, dark navy canvas) and need design sign-off before the closed test.
+  /// `.dark` in tokens.css (Figma Make prototype). Accent colours are not overridden there, so they
+  /// keep their `:root` values; `blueDeep` (text on `blueSoft`) is `.dark .blue-pill`.
   static const dark = AppColors(
-    blue: Color(0xFF5AB0E6),
-    blueDeep: Color(0xFF8CCBF2),
-    blueSoft: Color(0xFF1A3346),
-    pink: Color(0xFFF29DB2),
-    pinkSoft: Color(0xFF3A2129),
+    blue: Color(0xFF3A9AD9),
+    blueDeep: Color(0xFF8FCBF0),
+    blueSoft: Color(0xFF173B52),
+    pink: Color(0xFFF08AA3),
+    pinkSoft: Color(0xFF462B38),
     yellow: Color(0xFFF5C04A),
-    yellowSoft: Color(0xFF3A3016),
-    green: Color(0xFF63CBAD),
-    greenSoft: Color(0xFF15352C),
-    canvas: Color(0xFF0F1B26),
-    surface: Color(0xFF172634),
-    text: Color(0xFFEAF0F5),
-    muted: Color(0xFF9AAAB8),
-    border: Color(0xFF2A3A49),
-    dangerBg: Color(0xFF3D1F1A),
-    dangerText: Color(0xFFF5B8AC),
+    yellowSoft: Color(0xFF44391F),
+    green: Color(0xFF4FBF9F),
+    greenSoft: Color(0xFF183F39),
+    canvas: Color(0xFF0F1D28),
+    surface: Color(0xFF172938),
+    text: Color(0xFFEFF7FB),
+    muted: Color(0xFF9DAFBB),
+    border: Color(0xFF294050),
+    dangerBg: Color(0xFF432723),
+    dangerText: Color(0xFFFFC3B9),
   );
 
   @override
@@ -92,7 +92,8 @@ class AppColors extends ThemeExtension<AppColors> {
 
 ThemeData buildTheme(Brightness brightness) {
   final c = brightness == Brightness.light ? AppColors.light : AppColors.dark;
-  final onBlue = brightness == Brightness.light ? Colors.white : const Color(0xFF0F1B26);
+  // `.btn-primary` text is white in both modes.
+  const onBlue = Colors.white;
 
   final scheme = ColorScheme(
     brightness: brightness,
