@@ -25,6 +25,7 @@ A guardian opens the app, enters their mobile number, receives a one-time code b
 3. **Given** a code was sent, **When** the guardian enters a wrong code 5 times, **Then** that code stops working and they must request a new one.
 4. **Given** a code was just sent, **When** fewer than 60 seconds have passed, **Then** the resend option is unavailable and shows the remaining wait.
 5. **Given** a signed-in guardian, **When** they close and reopen the app days later, **Then** they are still signed in without a new code.
+6. **Given** a guardian with linked children who has not used the app for 90 days, **When** they sign in, **Then** they must enter the birth date of one of their children before any child data is shown; 3 wrong answers lock child data and ask them to contact the clinic.
 
 ---
 
@@ -138,7 +139,7 @@ A guardian deletes their account from inside the app. Their app account and acce
 - The guardian signs in on a second device: both stay signed in.
 - The privacy policy changes materially after consent: the guardian must accept the new version before reaching child data again.
 - The guardian deletes their account while they have upcoming bookings: those bookings are cancelled and their places freed (details in feature 002).
-- A guardian whose account was deleted signs in again with the same number: they start first-run registration as a new guardian, and the clinic-registered children on that number are linked again under FR-021.
+- A guardian whose account was deleted signs in again with the same number: they start first-run registration as a new guardian, and the unlinked children on that number, including any they registered before deleting, are linked again under FR-021.
 - A guardian tries to edit birth date or sex through any route: refused.
 - A guardian with clinic-registered children fails the birth-date check: the account still works and they can add children themselves; the clinic's children stay unlinked until staff link them.
 - WhatsApp is not installed: the link opens the WhatsApp web chat for the clinic's number instead.
@@ -163,6 +164,8 @@ A guardian deletes their account from inside the app. Their app account and acce
 - **FR-008**: A new code MUST NOT be sendable until 60 seconds after the previous one; the app MUST show the remaining wait.
 - **FR-009**: The number of codes sent to one number per day MUST be capped.
 - **FR-010**: A guardian MUST stay signed in across app restarts until they sign out or delete the account.
+- **FR-010a**: If a guardian has not used the app for 90 days (a clinic setting), the app MUST ask for the birth date of one of their linked children before showing any child data, because mobile numbers in Egypt get reassigned. This MUST be enforced on the server, not only in the app.
+- **FR-010b**: After 3 wrong birth dates, the account MUST stay locked from child data and the guardian is asked to contact the clinic; each failure and the lock are recorded in the audit log. Guardians with no linked children are not asked.
 - **FR-011**: Each account MUST have exactly one guardian in Phase 1.
 
 **First-run registration**
@@ -170,7 +173,8 @@ A guardian deletes their account from inside the app. Their app account and acce
 - **FR-012**: First-run registration MUST follow this order: guardian details, then consent, then first child.
 - **FR-013**: Guardian details MUST include full name and relation to the child (mother, father, other); email is optional and validated only if given.
 - **FR-014**: The app MUST show the privacy policy and terms of use, and MUST require explicit consent both to the policy and terms and to the collection of child data, before registration can continue.
-- **FR-015**: The app MUST NOT store any guardian details or child data entered in the app before consent is given (records the clinic created at the desk are the clinic's own). If registration is abandoned before consent, it restarts at guardian details.
+- **FR-015**: The app MUST NOT store any guardian details or child data entered in the app before consent is given. Two exceptions: the verified mobile number, which sign-in (FR-005) records as the account identity, and records the clinic created at the desk, which are the clinic's own. If registration is abandoned before consent, it restarts at guardian details.
+- **FR-015a**: A sign-in that never completes consent MUST be removed, with its verified number, 30 days after sign-in.
 - **FR-016**: The consent record MUST include the date, time and policy version accepted.
 - **FR-017**: When the policy version changes materially, the guardian MUST accept the new version before reaching child data again.
 
@@ -179,10 +183,11 @@ A guardian deletes their account from inside the app. Their app account and acce
 - **FR-018**: A child profile MUST require name, birth date and sex; birth weight (kg) and allergies are optional.
 - **FR-019**: An account MUST support more than one child.
 - **FR-020**: Children of any age MUST be registrable; age-based follow-up and content stop at 4 years (handled by later features).
-- **FR-021**: When a guardian verifies a number on which the clinic has registered children, the app MUST ask the guardian for the birth date of one of those children, and MUST link the children to the account only if it matches. Mobile numbers in Egypt get reassigned, and this stops a new owner of a number from seeing another family's children.
+- **FR-021**: When a guardian verifies a number that has unlinked children (any child registered on that number with no linked app account, whether the clinic or an earlier, deleted account registered it), the app MUST ask the guardian for the birth date of one of those children, and MUST link the children to the account only if it matches. Mobile numbers in Egypt get reassigned, and this stops a new owner of a number from seeing another family's children.
 - **FR-021a**: After 3 wrong birth dates, the app MUST stop offering the link and ask the guardian to contact the clinic, where staff can link the children from the dashboard. Failed attempts are recorded in the audit log.
 - **FR-022**: If a child with the same name and birth date already exists on the same number, the app MUST warn the guardian and MUST NOT create a duplicate. Merging duplicates is for the doctor only.
 - **FR-023**: Guardians MUST be able to edit a child's name and allergies only; each edit is recorded with date and editor.
+- **FR-023a**: A change to a child's allergies MUST also be written to the audit log, because allergies are health data (constitution Principle I).
 - **FR-024**: Guardians MUST NOT be able to change a child's birth date or sex; only doctor and secretary can, because they drive the vaccine schedule and growth tracking.
 
 **Phone change**

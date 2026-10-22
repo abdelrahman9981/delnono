@@ -14,7 +14,8 @@ Doc ID is the Firebase Auth uid.
 | relation | string | `mother` \| `father` \| `other` |
 | email | string? | optional, valid email if present |
 | consentVersion | number | latest accepted policy version |
-| clinicChildrenPending | boolean | server-set: true while unlinked clinic children exist on `phone` and linking is not locked; drives the router's link step (routes guard step 4) |
+| lastActiveAt | timestamp | server-set by `completeRegistration`, `touchSession` (at most daily) and `reverifyGuardian`; rules deny child reads when older than `settings/auth.reverifyAfterDays` (FR-010a) |
+| clinicChildrenPending | boolean | server-set: true while unlinked children (`guardianPhone == phone` and `guardianUid == null`, any `registeredBy`) exist on `phone` and linking is not locked; drives the router's link step (routes guard step 4) |
 | createdAt, updatedAt | timestamp | |
 
 Created only by `completeRegistration`. Guardian may update `fullName`, `relation`, `email`.
@@ -58,7 +59,8 @@ Uniqueness: no two children with the same `guardianPhone` + `nameKey` + `birthDa
 ### children/{childId}/history/{entryId}
 
 Written by the `onChildUpdated` trigger. Fields: `changedFields` (map of field → {from, to}),
-`changedBy` (uid), `changedAt`. Readable by the linked guardian.
+`changedBy` (uid), `changedAt`. Readable by the linked guardian. When `allergies` changes, the
+trigger also writes audit `child.allergies_changed` (FR-023a).
 
 ## clinicGuardians/{phone}
 
@@ -70,6 +72,11 @@ Created by staff in 004 (walk-in registration). Server only in 001. Fields: `ful
 
 Server only. `failedCount` (number), `lockedAt` (timestamp?). Reset on success; while `lockedAt` is
 set, `linkClinicChildren` refuses until staff link the children (004).
+
+## reverifyAttempts/{uid}
+
+Server only. `failedCount`, `lockedAt?`. Reset on success; while locked, `reverifyGuardian` refuses
+until staff unlock (004).
 
 ## smsCounters/{phone}_{YYYYMMDD}
 
@@ -92,6 +99,7 @@ Readable by anyone (needed before sign-in); written by the doctor (004).
 | resendWaitSeconds | 60 |
 | dailySmsCapPerNumber | 5 |
 | maxLinkAttempts | 3 |
+| reverifyAfterDays | 90 |
 
 ## settings/policy
 

@@ -111,11 +111,14 @@ and Functions emulators using emulator-issued codes.
 ## R7. Audit log scope
 
 **Decision**: in 001, functions log `account.created`, `consent.accepted`, `children.linked`,
-`children.link_failed`, `children.link_locked`, `phone.changed`, `account.deleted`. Guardians reading
+`children.link_failed`, `children.link_locked`, `phone.changed`, `account.deleted`,
+`child.allergies_changed`. Guardians reading
 their own children are not logged.
 
-**Rationale**: D-13 defines "opening a child file" as a staff action in the dashboard (feature 004).
-Logging a guardian's own reads would route every read through a function and break offline reading.
+**Rationale**: constitution 1.1.2 (Principle I) scopes access logging to staff, matching D-13, where
+"opening a child file" is a dashboard action (feature 004). Logging a guardian's own reads would
+route every read through a function and break offline reading. Allergy changes are logged
+(FR-023a).
 
 ## R8. Data location
 
@@ -126,3 +129,21 @@ cannot be changed later. Candidates: `europe-west1` (Belgium) or a Middle East r
 
 **Rationale**: Law 151/2020 restricts transfers of personal data outside Egypt; whether a licence or
 specific safeguards are needed is a legal question, not a technical one.
+
+## R9. Reassigned numbers and existing accounts (FR-010a, FR-010b)
+
+Phone sign-in proves control of a number today, not that the person is the same guardian. A new
+owner of a reassigned number would sign straight into the previous family's account.
+
+**Decision**: the server records `guardians/{uid}.lastActiveAt`, refreshed at most daily by the
+`touchSession` callable on app start. Security Rules deny reading children when `lastActiveAt` is
+older than `settings/auth.reverifyAfterDays` (default 90). The app then asks for the birth date of
+one linked child (`reverifyGuardian`); success refreshes `lastActiveAt`, and
+`settings/auth.maxLinkAttempts` failures lock the account until staff unlock it (004). Guardians
+with no linked children skip the check (no child data to protect).
+
+**Rationale**: owner decision on analyze finding S1. Enforced by rules, so a modified app cannot
+skip it; a regular user never sees it.
+
+**Alternatives considered**: accept the risk (rejected by owner); re-check on every new device
+(stronger, but every guardian sees it on each phone change).

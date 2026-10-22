@@ -45,12 +45,30 @@ out: { linked: [{ childId, name }] }
 
 | Error | When |
 |-------|------|
-| `not-found` | no unlinked clinic children on the caller's phone |
+| `not-found` | no unlinked children (`guardianUid == null`, any `registeredBy`) on the caller's phone |
 | `permission-denied` | birth date does not match any of them; `details.remaining` = attempts left |
 | `resource-exhausted` | locked after `settings/auth.maxLinkAttempts` failures |
 | `failed-precondition` | no guardian doc or consent not current |
 
 Audit: `children.linked`, `children.link_failed`, `children.link_locked`.
+
+## touchSession
+
+Called on app start when online (FR-010a). If `lastActiveAt` is within `reverifyAfterDays`, or the
+guardian has no linked children, refreshes `lastActiveAt` (at most once a day) and returns
+`{ reverifyRequired: false }`. Otherwise changes nothing and returns `{ reverifyRequired: true }`.
+
+## reverifyGuardian
+
+```text
+in:  { birthDate: "YYYY-MM-DD" }
+out: {}
+```
+
+Matches against the guardian's linked children. Success sets `lastActiveAt` and resets
+`reverifyAttempts/{uid}`. Errors: `permission-denied` with `details.remaining`;
+`resource-exhausted` when locked after `maxLinkAttempts`. Audit: `account.reverified`,
+`account.reverify_failed`, `account.reverify_locked`.
 
 ## createChild
 
@@ -102,4 +120,9 @@ count exceeds `settings/auth.dailySmsCapPerNumber` (FR-009). Must answer within 
 ## onChildUpdated (Firestore trigger)
 
 On `children/{childId}` update, writes `history/{entryId}` with changed fields, `updatedBy` and time
-(FR-023).
+(FR-023); when `allergies` changed, also writes audit `child.allergies_changed` (FR-023a).
+
+## cleanupAbandonedSignIns (scheduled, daily)
+
+Deletes Auth users with no `guardians/{uid}` doc whose creation time is more than 30 days ago
+(FR-015a). Needs Blaze (Cloud Scheduler).

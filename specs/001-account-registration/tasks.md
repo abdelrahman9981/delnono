@@ -52,16 +52,16 @@ story, write the tests first and confirm they fail.
 - [ ] T007 Create `lib/core/firebase/firebase_init.dart`: initialise Firebase; when `--dart-define=USE_EMULATOR=true`, connect Auth (9099), Firestore (8080) and Functions (5001) emulators using host `10.0.2.2` on Android and `localhost` elsewhere; enable Firestore offline persistence. Add `lib/core/firebase/firebase_options.dart` with options for project `demo-delnono` (real options come from `flutterfire configure` once the project exists).
 - [ ] T008 [P] Create `lib/app/theme.dart`: light and dark `ThemeData` (Material 3) built from the colour pairs, radii (14–20) and component shapes in `docs/design/tokens.css`; font family `ReadexPro`; text sizes body 13–15, small 11, titles 20–30 (design README).
 - [ ] T009 [P] Create `lib/app/app.dart`: `MaterialApp.router` with locale `ar`, `AppLocalizations` and the global Material/Widgets/Cupertino delegates, `theme`/`darkTheme` from T008, `themeMode: system`, router from T013.
-- [ ] T010 [P] Create `lib/core/settings/settings_repository.dart` and providers that stream `settings/auth` (defaults `codeValiditySeconds` 300, `maxCodeAttempts` 5, `resendWaitSeconds` 60, `dailySmsCapPerNumber` 5, `maxLinkAttempts` 3), `settings/policy` (`currentVersion`, `privacyPolicyText`, `termsText`) and `settings/clinic` (`whatsappNumber`), falling back to the defaults when a document is missing.
+- [ ] T010 [P] Create `lib/core/settings/settings_repository.dart` and providers that stream `settings/auth` (defaults `codeValiditySeconds` 300, `maxCodeAttempts` 5, `resendWaitSeconds` 60, `dailySmsCapPerNumber` 5, `maxLinkAttempts` 3, `reverifyAfterDays` 90), `settings/policy` (`currentVersion`, `privacyPolicyText`, `termsText`) and `settings/clinic` (`whatsappNumber`), falling back to the defaults when a document is missing.
 - [ ] T011 [P] Create `lib/core/phone/egypt_phone.dart`: normalise input (`01…`, `1…`, `+20…`, `0020…`, Arabic-Indic digits) to E.164 and validate against `^\+201[0125]\d{8}$`; with tests in `test/core/phone/egypt_phone_test.dart`.
 - [ ] T012 [P] Create `lib/core/errors/arabic_errors.dart`: map `FirebaseAuthException` codes (`invalid-verification-code`, `session-expired`, `too-many-requests`, `network-request-failed`, `credential-already-in-use`, `quota-exceeded`) and `FirebaseFunctionsException` codes from contracts/callables.md to Arabic messages in `l10n/app_ar.arb`; unknown codes get a generic Arabic message.
-- [ ] T013 Create `lib/app/router.dart`: `GoRouter` with every route in contracts/routes.md (placeholders for screens not built yet) and a `redirect` that applies guard steps 1–6 in order, carries `from` through each step, and accepts `from` only if it starts with `/` and not `//`. Guard inputs come from providers for auth state (T015), the guardian doc (T016), settings/policy (T010), a session-only "link skipped" flag and the children list (T016).
+- [ ] T013 Create `lib/app/router.dart`: `GoRouter` with every route in contracts/routes.md (placeholders for screens not built yet) and a `redirect` that applies guard steps 1–6 in order, carries `from` through each step, and accepts `from` only if it starts with `/` and not `//`. Guard inputs come from providers for auth state (T015), the guardian doc (T016), settings/policy (T010), a session-only "link skipped" flag and the registration-in-progress flag. Step 5 applies only while that flag is set (contracts/routes.md); a guardian with no children outside registration is never redirected.
 - [ ] T014 [P] Create `lib/features/shell/shell_scaffold.dart` (bottom navigation right to left: Home `/`, Booking `/booking`, My Child `/children`, Content `/content`, then an empty reserved slot of the same width with no route and no tap target, Principle V) and `lib/features/shell/placeholders.dart` (Home, Booking, Content and Notifications screens, each visibly marked as placeholder).
 - [ ] T015 [P] Create `lib/features/auth/data/auth_repository.dart` with `authStateChanges`, `currentUser` and `signOut`, exposed through a Riverpod provider.
 - [ ] T016 [P] Create `lib/features/registration/data/guardian_repository.dart` (stream `guardians/{uid}`, update `fullName`, `relation`, `email`) and `lib/features/children/data/children_repository.dart` (stream `children` where `guardianUid == uid`), with providers.
-- [ ] T017 Create `test/app/router_guard_test.dart`: with overridden providers, assert each guard step 1–6 redirects as in contracts/routes.md, that `from` survives the whole chain, and that `from=//evil.com` and `from=https://…` fall back to `/`.
+- [ ] T017 Create `test/app/router_guard_test.dart`: with overridden providers, assert each guard step 1–6 redirects as in contracts/routes.md, that `from` survives the whole chain, that a guardian with no children and no registration in progress (e.g. after a locked link check) is not redirected, and that `from=//evil.com` and `from=https://…` fall back to `/`.
 - [ ] T018 [P] Create `functions/src/lib/settings.ts`: read `settings/auth` and `settings/policy` with the same defaults as T010.
-- [ ] T019 [P] Create `functions/src/lib/audit.ts`: `writeAudit({action, actorUid, subjectPhone, childIds?, details?})` writing to `auditLog` with `at` = server time and `expiresAt` = now + 1 year (D-13). Allowed actions: `account.created`, `consent.accepted`, `children.linked`, `children.link_failed`, `children.link_locked`, `phone.changed`, `account.deleted`.
+- [ ] T019 [P] Create `functions/src/lib/audit.ts`: `writeAudit({action, actorUid, subjectPhone, childIds?, details?})` writing to `auditLog` with `at` = server time and `expiresAt` = now + 1 year (D-13). Allowed actions: `account.created`, `consent.accepted`, `children.linked`, `children.link_failed`, `children.link_locked`, `phone.changed`, `account.deleted`, `child.allergies_changed`, `account.reverified`, `account.reverify_failed`, `account.reverify_locked`.
 - [ ] T020 [P] Create `functions/src/lib/validation.ts` with validators quoting data-model.md: guardian `fullName` "required, 2–80 chars", `relation` "`mother` | `father` | `other`", `email` "optional, valid email if present"; child `name` "required, 2–60 chars", `birthDate` "required, not in future, within 18 years" (format `YYYY-MM-DD`), `sex` "`male` | `female`", `birthWeightKg` "0.3–7.0", `allergies` "≤ 500 chars". Throw `HttpsError('invalid-argument')` naming the field.
 - [ ] T021 [P] Create `functions/src/lib/nameKey.ts`: trim, collapse whitespace, remove Arabic diacritics and tatweel, unify أ/إ/آ → ا, ى → ي, ة → ه, lowercase Latin; with tests in `functions/test/lib/nameKey.test.ts`.
 - [ ] T022 Create `functions/src/lib/guards.ts`: `requirePhoneUser(request)` (authenticated, token has `phone_number`; else `unauthenticated`) and `requireGuardianWithCurrentConsent(uid)` (guardian doc exists and `consentVersion == settings/policy.currentVersion`; else `failed-precondition`).
@@ -105,7 +105,7 @@ story, write the tests first and confirm they fail.
 
 ### Tests for User Story 2
 
-- [ ] T034 [P] [US2] Create `functions/test/functions/completeRegistration.test.ts`: success writes `guardians/{uid}` (with `consentVersion`, `clinicChildrenPending`), one `consents` doc and audit `account.created` + `consent.accepted` in one transaction; `already-exists`; `failed-precondition` for wrong `policyVersion` or a missing scope; `invalid-argument` per field; `hasClinicChildren` true when unlinked clinic children exist on the caller's phone.
+- [ ] T034 [P] [US2] Create `functions/test/functions/completeRegistration.test.ts`: success writes `guardians/{uid}` (with `consentVersion`, `clinicChildrenPending`), one `consents` doc and audit `account.created` + `consent.accepted` in one transaction; `already-exists`; `failed-precondition` for wrong `policyVersion` or a missing scope; `invalid-argument` per field; `hasClinicChildren` true when unlinked children exist on the caller's phone, including a child with `registeredBy: guardian` left unlinked by a deleted account.
 - [ ] T035 [P] [US2] Create `functions/test/functions/acceptPolicy.test.ts`: records a new consent and updates `consentVersion`; `failed-precondition` for a non-current version; `not-found` without a guardian.
 - [ ] T036 [P] [US2] Create `functions/test/functions/createChild.test.ts`: creates a child with `registeredBy: guardian`, `guardianUid`, `guardianPhone`, `nameKey`; `already-exists` when `nameKey` + `birthDate` match a child on the same phone, with `details.existingLinked` true for a linked child and false for an unlinked clinic child; `invalid-argument` for each constraint in T020; `failed-precondition` without current consent.
 - [ ] T037 [P] [US2] Create `functions/test/rules/guardians.test.ts` covering every `guardians/{uid}` and `consents` row in contracts/firestore-access.md, including denial of client changes to `phone`, `consentVersion` and `clinicChildrenPending`.
@@ -114,12 +114,12 @@ story, write the tests first and confirm they fail.
 
 ### Implementation for User Story 2
 
-- [ ] T040 [P] [US2] Create `functions/src/callables/completeRegistration.ts` per contracts/callables.md, using T018–T022; set `clinicChildrenPending` from a query for unlinked clinic children on the caller's phone.
+- [ ] T040 [P] [US2] Create `functions/src/callables/completeRegistration.ts` per contracts/callables.md, using T018–T022; set `clinicChildrenPending` from a query for unlinked children on the caller's phone (`guardianPhone == phone` and `guardianUid == null`, any `registeredBy`).
 - [ ] T041 [P] [US2] Create `functions/src/callables/acceptPolicy.ts` per contracts/callables.md.
 - [ ] T042 [P] [US2] Create `functions/src/callables/createChild.ts` per contracts/callables.md: validate (T020), compute `nameKey` (T021), check duplicates on `guardianPhone` + `nameKey` + `birthDate` inside a transaction, then create.
 - [ ] T043 [US2] Export the three callables from `functions/src/index.ts`, set the region from one constant in `functions/src/lib/region.ts` (value decided by research R8; emulator default until then).
 - [ ] T044 [US2] Extend `firestore.rules` for `guardians/{uid}` (read and limited update for the owner), `guardians/{uid}/consents` (owner read only) and `children/{id}` read (linked guardian with `consentCurrent()`), per contracts/firestore-access.md.
-- [ ] T045 [US2] Create `lib/features/registration/application/registration_controller.dart`: keeps guardian details in memory only until consent (FR-015), calls `completeRegistration`, then `acceptPolicy` for re-consent (FR-017).
+- [ ] T045 [US2] Create `lib/features/registration/application/registration_controller.dart`: keeps guardian details in memory only until consent (FR-015), calls `completeRegistration`, then `acceptPolicy` for re-consent (FR-017); exposes the registration-in-progress flag used by guard step 5, set after `completeRegistration` and cleared when the first child is added, children are linked, or the guardian leaves the flow.
 - [ ] T046 [P] [US2] Create `lib/features/registration/presentation/guardian_details_screen.dart` matching `docs/design/screens/Guardian.dc.html`: full name "required, 2–80 chars", relation "`mother` | `father` | `other`", email "optional, valid email if present".
 - [ ] T047 [P] [US2] Create `lib/features/registration/presentation/consent_screen.dart` matching `docs/design/screens/Consent.dc.html`: policy and terms text from `settings/policy`, two separate unticked checkboxes (policy and terms; child data collection), version shown, continue disabled until both are ticked; reused for re-consent.
 - [ ] T048 [US2] Create `lib/features/children/presentation/add_child_screen.dart` matching `docs/design/screens/AddChild.dc.html`: name "required, 2–60 chars", birth date "required, not in future, within 18 years", sex "`male` | `female`", birth weight kg "0.3–7.0", allergies "≤ 500 chars"; on `already-exists` show the duplicate warning, and when `existingLinked` is false tell the guardian to contact the clinic. Used by `/register/child` and `/children/add`.
@@ -152,7 +152,7 @@ story, write the tests first and confirm they fail.
 
 ### Tests for User Story 4
 
-- [ ] T054 [P] [US4] Create `functions/test/functions/linkClinicChildren.test.ts`: correct birth date links every unlinked clinic child on the caller's phone (sets `guardianUid`), clears `clinicChildrenPending`, resets `linkAttempts`, writes `children.linked`; wrong date returns `permission-denied` with `details.remaining` and writes `children.link_failed`; the `maxLinkAttempts`-th failure locks, clears `clinicChildrenPending` and writes `children.link_locked`; locked returns `resource-exhausted`; no clinic children returns `not-found`; no current consent returns `failed-precondition`.
+- [ ] T054 [P] [US4] Create `functions/test/functions/linkClinicChildren.test.ts`: correct birth date links every unlinked child on the caller's phone (any `registeredBy`, including one left by a deleted account) (sets `guardianUid`), clears `clinicChildrenPending`, resets `linkAttempts`, writes `children.linked`; wrong date returns `permission-denied` with `details.remaining` and writes `children.link_failed`; the `maxLinkAttempts`-th failure locks, clears `clinicChildrenPending` and writes `children.link_locked`; locked returns `resource-exhausted`; no clinic children returns `not-found`; no current consent returns `failed-precondition`.
 - [ ] T055 [P] [US4] Create `test/features/registration/link_children_screen_test.dart`: remaining-attempts message, locked message with "contact the clinic", and "these aren't my children, add a child" sets the session skip flag and opens add child without calling the function.
 
 ### Implementation for User Story 4
@@ -174,13 +174,13 @@ story, write the tests first and confirm they fail.
 ### Tests for User Story 5
 
 - [ ] T059 [P] [US5] Create `functions/test/rules/children-update.test.ts` covering the `children/{id}` update and `history` rows in contracts/firestore-access.md: allowed when only `name`, `allergies`, `updatedAt`, `updatedBy` change with `updatedBy == request.auth.uid` and `updatedAt == request.time`; denied for `birthDate`, `sex`, `guardianUid`, `guardianPhone`, another guardian, or invalid values; history readable by the linked guardian only and never writable.
-- [ ] T060 [P] [US5] Create `functions/test/functions/onChildUpdated.test.ts`: an update writes one `history` entry with `changedFields` {from, to}, `changedBy` and `changedAt`; an update with no field changes writes nothing.
+- [ ] T060 [P] [US5] Create `functions/test/functions/onChildUpdated.test.ts`: an update writes one `history` entry with `changedFields` {from, to}, `changedBy` and `changedAt`; an `allergies` change also writes audit `child.allergies_changed` (FR-023a); a name-only change writes no audit entry; an update with no field changes writes nothing.
 
 ### Implementation for User Story 5
 
 - [ ] T061 [US5] Extend `firestore.rules` with the `children/{id}` update rule and `children/{id}/history/{h}` read rule per contracts/firestore-access.md, validating name "2–60 chars" and allergies "≤ 500 chars".
-- [ ] T062 [P] [US5] Create `functions/src/triggers/onChildUpdated.ts` and export it from `functions/src/index.ts`.
-- [ ] T063 [P] [US5] Create `lib/features/children/presentation/children_list_screen.dart` (`/children`): linked children and an "add child" action to `/children/add`.
+- [ ] T062 [P] [US5] Create `functions/src/triggers/onChildUpdated.ts` (history entry, plus audit `child.allergies_changed` when `allergies` changed, FR-023a) and export it from `functions/src/index.ts`.
+- [ ] T063 [P] [US5] Create `lib/features/children/presentation/children_list_screen.dart` (`/children`): linked children, an empty state when there are none, and an "add child" action to `/children/add`.
 - [ ] T064 [US5] Create `lib/features/children/presentation/child_profile_screen.dart` (`/children/:id`): edit name and allergies (saving `updatedBy` = uid and `updatedAt` = server time through `children_repository.dart`); birth date and sex read-only with a "contact the clinic to correct" note (FR-024).
 - [ ] T065 [P] [US5] Create `test/features/children/child_profile_screen_test.dart`: only name and allergies are editable; a child over 4 years can be added (FR-020).
 
@@ -231,14 +231,34 @@ story, write the tests first and confirm they fail.
 
 ---
 
-## Phase 10: Polish & Cross-Cutting Concerns
+## Phase 10: Re-check after inactivity (FR-010a, FR-010b; part of User Story 1)
 
-- [ ] T077 [P] Create `functions/src/triggers/beforeSmsSent.ts` (FR-009, research R1): increment `smsCounters/{phone}_{YYYYMMDD}` with `expiresAt` = +2 days and return `{ recaptchaActionOverride: "BLOCK" }` above `dailySmsCapPerNumber`; keep the counting in a pure function tested in `functions/test/lib/smsCap.test.ts`. Export it, but note it deploys only after the Identity Platform upgrade.
-- [ ] T078 [P] Create `functions/README.md` with the steps for the Blaze upgrade (D-38): Identity Platform upgrade (owner approval), SMS region allowlist Egypt only, Firebase test phone numbers, TTL policies on `smsCounters.expiresAt` and `auditLog.expiresAt`, region from research R8, and `flutterfire configure` for the real project.
-- [ ] T079 [P] Check every screen in light and dark mode at 375 pt width and at the largest system text size; no clipped Arabic text; colours match `docs/design/tokens.css`.
-- [ ] T080 [P] Check that no user-facing string is hard-coded outside `l10n/app_ar.arb` (search `lib/` for Arabic literals and `Text('`).
-- [ ] T081 Profile on a mid-range Android device on throttled 4G: core screens open within 3 s (D-22); sign-in to first child under 3 minutes (SC-001).
-- [ ] T082 Run every scenario in quickstart.md (1–18) and `npm test`, `flutter test`, `flutter test integration_test`; all must pass before 001 is done.
+**Goal**: A guardian with linked children who has not used the app for `reverifyAfterDays` must
+confirm a child's birth date before child data is shown (research R9). Placed after US7 because it
+needs linked children (US2, US4) and the account lock pattern from US4.
+
+**Independent Test**: Quickstart scenario 19.
+
+- [ ] T077 [P] [US1] Create `functions/test/functions/reverify.test.ts`: `touchSession` returns `reverifyRequired: false` and refreshes `lastActiveAt` (at most once a day) when within `reverifyAfterDays` or when there are no linked children, and `reverifyRequired: true` without changes when stale; `reverifyGuardian` with a linked child's birth date sets `lastActiveAt` and resets `reverifyAttempts/{uid}`, a wrong date returns `permission-denied` with `details.remaining`, the `maxLinkAttempts`-th failure locks and later calls return `resource-exhausted`; audit `account.reverified`, `account.reverify_failed`, `account.reverify_locked`.
+- [ ] T078 [P] [US1] Create `functions/test/rules/children-activity.test.ts`: child read, child update and history read are denied when the guardian's `lastActiveAt` is older than `settings/auth.reverifyAfterDays` and allowed when newer; a guardian cannot write `lastActiveAt`.
+- [ ] T079 [US1] Create `functions/src/callables/touchSession.ts` and `functions/src/callables/reverifyGuardian.ts` per contracts/callables.md and export them; set `lastActiveAt` in `completeRegistration.ts` (T040) and `linkClinicChildren.ts` (T056).
+- [ ] T080 [US1] Extend `firestore.rules`: add an `active()` helper (guardian `lastActiveAt` > `request.time - duration.value(reverifyAfterDays, 'd')`) to the `children/{id}` read and update rules and the `history` read rule; exclude `lastActiveAt` from the guardian's updatable keys.
+- [ ] T081 [US1] Create `lib/features/auth/application/session_controller.dart` (calls `touchSession` on app start when online, exposes `reverifyRequired`), `lib/features/auth/presentation/reverify_screen.dart` (`/reverify`, birth-date input reusing the layout of `docs/design/screens/LinkChildren.dc.html`, attempts-left and locked states with "contact the clinic"), and guard step 3a in `lib/app/router.dart`.
+- [ ] T082 [P] [US1] Create `test/features/auth/reverify_screen_test.dart` and add guard step 3a cases to `test/app/router_guard_test.dart`.
+
+**Checkpoint**: a reassigned number cannot read the previous family's children.
+
+---
+
+## Phase 11: Polish & Cross-Cutting Concerns
+
+- [ ] T083 [P] Create `functions/src/triggers/beforeSmsSent.ts` (FR-009, research R1): increment `smsCounters/{phone}_{YYYYMMDD}` with `expiresAt` = +2 days and return `{ recaptchaActionOverride: "BLOCK" }` above `dailySmsCapPerNumber`; keep the counting in a pure function tested in `functions/test/lib/smsCap.test.ts`. Export it, but note it deploys only after the Identity Platform upgrade.
+- [ ] T084 [P] Create `functions/README.md` with the steps for the Blaze upgrade (D-38): Identity Platform upgrade (owner approval), SMS region allowlist Egypt only, Firebase test phone numbers, TTL policies on `smsCounters.expiresAt` and `auditLog.expiresAt`, region from research R8, and `flutterfire configure` for the real project.
+- [ ] T085 [P] Check every screen in light and dark mode at 375 pt width and at the largest system text size; no clipped Arabic text; colours match `docs/design/tokens.css`.
+- [ ] T086 [P] Check that no user-facing string is hard-coded outside `l10n/app_ar.arb` (search `lib/` for Arabic literals and `Text('`).
+- [ ] T087 Profile on a mid-range Android device on throttled 4G: core screens open within 3 s (D-22); sign-in to first child under 3 minutes (SC-001).
+- [ ] T088 Run every scenario in quickstart.md (1–19) and `npm test`, `flutter test`, `flutter test integration_test`; all must pass before 001 is done.
+- [ ] T089 [P] Create `functions/src/triggers/cleanupAbandonedSignIns.ts` (daily schedule, FR-015a): delete Auth users with no `guardians/{uid}` doc created more than 30 days ago; test the selection logic in `functions/test/functions/cleanupAbandonedSignIns.test.ts` against the Auth emulator. Deploys with Blaze.
 
 ---
 
@@ -251,12 +271,13 @@ story, write the tests first and confirm they fail.
   rules and function tests can run without it.
 - US2 provides `createChild` and the add-child screen, which US4 (skip option) and US5 reuse.
 - US7 depends on the account screen built in US6 (T070).
+- Phase 10 (re-check after inactivity) needs linked children from US2 and US4.
 - US3 and US4 can proceed in parallel after US2.
 
 ### Story completion order
 
 ```text
-Setup → Foundational → US1 → US2 → { US3, US4, US5 } → US6 → US7 → Polish
+Setup → Foundational → US1 → US2 → { US3, US4, US5 } → US6 → US7 → Re-check (FR-010a) → Polish
 ```
 
 ### Parallel opportunities
@@ -292,4 +313,4 @@ Then screens:    T046 guardian_details_screen.dart, T047 consent_screen.dart
 - Add US3 (browse) and US4 (clinic children) next: both matter for the closed test on 1 November
   (D-35), since walk-in families will already exist.
 - US5 completes child management; US6 and US7 complete the account screen.
-- Polish before the closed test; T077 and T078 complete only after the Blaze upgrade.
+- Polish before the closed test; T083, T084 and T089 complete only after the Blaze upgrade.

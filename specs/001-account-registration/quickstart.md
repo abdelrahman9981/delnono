@@ -62,6 +62,7 @@ All three must pass before 001 is done (constitution: rules tests gate completio
 | 16 | Switch device to dark mode | All screens readable in Arabic RTL with Readex Pro (FR-031) |
 | 17 | Account screen: tap "talk to the clinic on WhatsApp" | Opens a chat with `settings/clinic.whatsappNumber`; Notifications entry shows a placeholder (FR-034, FR-035) |
 | 18 | Sign in with `+201000000001`, consent, tap "these aren't my children, add a child" | Nothing linked, no attempt counted, add-child screen; birth-date check offered again at next sign-in (US4 scenario 4) |
+| 19 | In the emulator, set your `guardians/{uid}.lastActiveAt` to 91 days ago; reopen the app | Birth-date re-check before any child data; correct date restores access; 3 wrong dates lock (FR-010a, FR-010b) |
 
 ## Not testable locally
 

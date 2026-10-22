@@ -23,6 +23,12 @@ Sync Impact Report
     001 account and registration, 002 booking (including visit and vaccine prices),
     003 child profile and vaccines, 004 clinic dashboard, 005 content library, 006 packages,
     007 notifications. Was: 004 content library, 005 packages and pricing, 006 clinic dashboard.
+
+- Version change: 1.1.1 → 1.1.2 (PATCH: clarification, matches BRD D-13)
+- Modified principles:
+  - I. Child Data Protection: audit of access to child records scoped to staff access; guardian
+    reads of their own children are not logged. Change audit unchanged. Raised by /speckit-analyze
+    on 001 (finding C1), approved by the owner.
 -->
 
 # Dr. El Nono Constitution
@@ -30,7 +36,7 @@ Sync Impact Report
 ## Core Principles
 
 ### I. Child Data Protection (NON-NEGOTIABLE)
-Child health data is sensitive. Access MUST follow least privilege per role (doctor, secretary, guardian). Firestore Security Rules MUST be written and tested with the Firebase emulator before any feature that reads or writes data ships. Access to child records and changes to prices, roles and medical data MUST be written to an audit log. A guardian's consent MUST be recorded before any child data is stored. Compliance with Egypt Law 151/2020 MUST be reviewed by a lawyer before launch.
+Child health data is sensitive. Access MUST follow least privilege per role (doctor, secretary, guardian). Firestore Security Rules MUST be written and tested with the Firebase emulator before any feature that reads or writes data ships. Staff (doctor, secretary) access to child records and any change to prices, roles or medical data MUST be written to an audit log; a guardian reading their own children's records is not logged. A guardian's consent MUST be recorded before any child data is stored. Compliance with Egypt Law 151/2020 MUST be reviewed by a lawyer before launch.
 
 ### II. Doctor-Owned Medical Content
 Medical content is never invented by the app or the developers. Danger signs, vaccine schedules, growth guidance and all clinical text MUST come from data the doctor approves and can edit from the dashboard. Any sample medical text in code or mockups MUST be clearly marked as placeholder. The app MUST NOT show automatic medical judgments (e.g. "normal", "on track"); show values and charts only.
@@ -70,4 +76,4 @@ The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Storage, Cloud 
 
 This constitution overrides other practices for this project. Amendments are agreed by the clinic owner (the doctor) and the lead developer, documented with a version bump (semantic versioning), and any dependent specs and plans are updated.
 
-**Version**: 1.1.1 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-22
+**Version**: 1.1.2 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-22
