@@ -1,0 +1,46 @@
+{
+  "@@locale": "ar",
+
+  "appTitle": "دكتور النونو",
+
+  "navHome": "الرئيسية",
+  "navBooking": "حجز",
+  "navMyChild": "طفلي",
+  "navContent": "محتوى",
+
+  "placeholderTag": "مؤقت",
+  "placeholderBody": "الشاشة دي لسه بتتعمل.",
+  "placeholderHome": "الرئيسية",
+  "placeholderBooking": "الحجز",
+  "placeholderContent": "المحتوى",
+  "placeholderNotifications": "الإشعارات",
+
+  "screenWelcome": "أهلًا بيكي",
+  "screenSignIn": "رقم الموبايل",
+  "screenOtp": "كود التحقق",
+  "screenGuardian": "بياناتك",
+  "screenConsent": "الموافقة على الخصوصية",
+  "screenLinkChildren": "أطفالك في العيادة",
+  "screenAddChild": "إضافة طفل",
+  "screenChildren": "أطفالي",
+  "screenChildProfile": "ملف الطفل",
+  "screenReverify": "تأكيد الحساب",
+  "screenAccount": "حسابي",
+  "screenChangePhone": "تغيير رقم الموبايل",
+  "screenDeleteAccount": "حذف الحساب",
+
+  "errInvalidCode": "الكود مش صح.",
+  "errCodeExpired": "الكود خلص وقته. اطلبي كود جديد.",
+  "errTooManyRequests": "محاولات كتير. استني شوية وجربي تاني.",
+  "errNoConnection": "محتاجة إنترنت عشان تكملي. اتأكدي من الاتصال وجربي تاني.",
+  "errNumberInUse": "الرقم ده عليه حساب تاني. كلمي العيادة عشان نساعدك.",
+  "errSmsQuota": "مش قادرين نبعت كود دلوقتي. جربي بعد شوية.",
+  "errUnauthenticated": "سجلي دخول الأول.",
+  "errAlreadyExists": "البيانات دي موجودة قبل كده.",
+  "errPolicyOutdated": "سياسة الخصوصية اتحدثت. راجعيها ووافقي عليها الأول.",
+  "errInvalidInput": "في بيانات مش صح. راجعيها وجربي تاني.",
+  "errNoClinicChildren": "مفيش أطفال على رقمك في العيادة.",
+  "errBirthDateMismatch": "التاريخ مش مطابق.",
+  "errLocked": "وقفنا المحاولات. كلمي العيادة عشان نكمل.",
+  "errGeneric": "حصلت مشكلة. جربي تاني."
+}

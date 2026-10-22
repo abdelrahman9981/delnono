@@ -49,3 +49,15 @@ app.*.map.json
 
 # Claude Code machine-local settings may contain private configuration.
 .claude/settings.local.json
+
+# Cloud Functions (Node.js / TypeScript)
+functions/node_modules/
+functions/lib/
+*.log
+.env*
+
+# Firebase emulators and CLI
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+.firebase/

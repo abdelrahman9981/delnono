@@ -100,13 +100,15 @@ runtime font download happens. Egyptian mobile validation uses a regex
 
 ## R6. Testing approach
 
-**Decision**: Security Rules tests with `@firebase/rules-unit-testing` and functions tests with
-`firebase-functions-test`, both under `functions/` with one `package.json`, run against the emulator
-with Mocha. Flutter unit and widget tests with fakes; integration tests against the Auth, Firestore
+**Decision**: Security Rules tests with `@firebase/rules-unit-testing`, and callable and trigger
+tests that call the Functions emulator directly, all under `functions/` with one `package.json`, run
+with Mocha. `firebase-tools` is a dev dependency so `npm test` runs the emulators on the machine's
+Node 22 (the standalone CLI bundles Node 20, which cannot load Mocha 12). Flutter unit and widget tests with fakes; integration tests against the Auth, Firestore
 and Functions emulators using emulator-issued codes.
 
 **Rationale**: one Node project, one emulator config (Principle VI). Rules tests gate "done"
-(constitution workflow).
+(constitution workflow). `firebase-functions-test` was dropped during setup: its latest release
+requires Jest (a second test framework) and does not support `firebase-admin` 14.
 
 ## R7. Audit log scope
 

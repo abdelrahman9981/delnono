@@ -1,0 +1,58 @@
+rules_version = '2';
+
+// Access contract: specs/001-account-registration/contracts/firestore-access.md.
+// Anything not matched below is denied.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function guardianPath() {
+      return /databases/$(database)/documents/guardians/$(request.auth.uid);
+    }
+
+    function policyPath() {
+      return /databases/$(database)/documents/settings/policy;
+    }
+
+    // The caller is a registered guardian who has accepted the current policy version (FR-017).
+    function consentCurrent() {
+      return signedIn()
+        && exists(guardianPath())
+        && exists(policyPath())
+        && get(guardianPath()).data.consentVersion == get(policyPath()).data.currentVersion;
+    }
+
+    // Needed before sign-in (code rules, policy text, clinic WhatsApp). Edited by the doctor in 004.
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Server only: written and read by Cloud Functions with the Admin SDK.
+    match /clinicGuardians/{phone} {
+      allow read, write: if false;
+    }
+    match /linkAttempts/{phone} {
+      allow read, write: if false;
+    }
+    match /reverifyAttempts/{uid} {
+      allow read, write: if false;
+    }
+    match /smsCounters/{id} {
+      allow read, write: if false;
+    }
+    match /auditLog/{id} {
+      allow read, write: if false;
+    }
+    match /deletedGuardians/{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

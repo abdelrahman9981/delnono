@@ -46,7 +46,7 @@ Reasons in [research R5](research.md#r5-flutter-stack-and-dependencies).
 **Storage**: Cloud Firestore with offline persistence; model in [data-model.md](data-model.md)
 
 **Testing**: flutter_test + mocktail (unit, widget), integration_test against the emulators;
-Mocha with @firebase/rules-unit-testing and firebase-functions-test in the emulator
+Mocha with @firebase/rules-unit-testing and direct calls to the Functions emulator ([research R6](research.md#r6-testing-approach))
 
 **Target Platform**: Android 8+ and iOS 15+ (D-22)
 

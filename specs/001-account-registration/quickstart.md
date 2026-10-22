@@ -14,8 +14,11 @@ Everything runs locally against the Firebase Emulator Suite. No real SMS, no Bla
 
 ```sh
 cd functions && npm ci && npm run build && cd ..
-firebase emulators:start --only auth,firestore,functions --import=./emulator-seed
+functions/node_modules/.bin/firebase emulators:start --only auth,firestore,functions --import=./emulator-seed
 ```
+
+Use the project's own Firebase CLI (`functions/node_modules/.bin/firebase`): it runs on Node 22,
+like the deployed functions. The standalone CLI bundles Node 20.
 
 `emulator-seed` contains `settings/auth`, `settings/policy` (version 1, placeholder text) and one
 clinic-registered guardian with two children on `+201000000001` (birth date of the first:
