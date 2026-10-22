@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>المتابعة حسب العمر</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="nono.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#237db8}a:hover{color:#16324b}
+</style>
+</helmet>
+<div class="phone">
+<div class="screen">
+  <div class="topbar">
+    <div><span class="eyebrow">دكتور النونو</span><h1>متابعة طفلي</h1></div>
+    <div class="top-actions">
+      <a class="btn btn-ghost icon-btn" href="Notifications.dc.html" aria-label="الإشعارات">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4l2-2ZM10 20h4"></path></svg>
+      </a>
+    </div>
+  </div>
+
+  <div class="child-switch">
+    <button type="button" class="active"><span class="avatar blue">ي</span><span><b>يوسف</b><small>٩ شهور</small></span></button>
+    <button type="button"><span class="avatar pink">م</span><span><b>مريم</b><small>٣ سنين</small></span></button>
+  </div>
+
+  <div class="section-title">
+    <h2>متابعة الشهر التاسع</h2>
+    <span class="placeholder-tag" style="color: #7d5800">أمثلة مؤقتة · يعتمدها الدكتور</span>
+  </div>
+  <div class="card" style="padding: 4px 0">
+    <div class="check-item done"><i><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"></path></svg></i><span>[بند متابعة ١ من قائمة الدكتور]</span></div>
+    <div class="check-item done"><i><svg aria-hidden="true" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4 10-10"></path></svg></i><span>[بند متابعة ٢ من قائمة الدكتور]</span></div>
+    <div class="check-item"><i></i><span>[بند متابعة ٣ من قائمة الدكتور]</span></div>
+    <div class="check-item"><i></i><span>[بند متابعة ٤ من قائمة الدكتور]</span></div>
+  </div>
+
+  <div class="section-title"><h2>متى تتصلين بالدكتور</h2></div>
+  <div class="danger-alert" style="display: grid; gap: 10px">
+    <div style="display: flex; gap: 10px">
+      <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex: none"><path d="M12 3 2 20h20L12 3Z"></path><path d="M12 10v4M12 17h.01"></path></svg>
+      <div>
+        <b>لو لاحظتي أي علامة من دول، كلمي العيادة فورًا</b>
+        <p>[علامة خطر ١ · من قائمة الدكتور]<br>[علامة خطر ٢ · من قائمة الدكتور]<br>[علامة خطر ٣ · من قائمة الدكتور]</p>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+      <a class="btn" href="tel:" style="background: var(--surface); color: var(--danger-text); font-size: 14px">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"></path></svg>
+        اتصلي بالعيادة
+      </a>
+      <a class="btn" href="tel:123" style="background: var(--danger-text); color: #fff; font-size: 14px">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15V8h11v7M14 10h4l3 3v2h-7M3 15h18M10 9v4M8 11h4"></path><circle cx="7" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg>
+        الإسعاف ١٢٣
+      </a>
+    </div>
+  </div>
+  <p class="muted" style="font-size: 11px; text-align: center; margin-top: 10px">القوايم دي للمتابعة بس، ومش بتشخّص حالة طفلك.</p>
+</div>
+
+<nav class="bottom-nav" aria-label="التنقل الرئيسي">
+  <a href="Main.dc.html"><span><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"></path></svg></span>الرئيسية</a>
+  <a href="Main.dc.html"><span><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg></span>حجز</a>
+  <a class="active" href="FollowUp.dc.html" aria-current="page"><span><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M6 21c0-3.3 2.7-6 6-6s6 2.7 6 6"></path></svg></span>طفلي</a>
+  <a href="Content.dc.html"><span><svg aria-hidden="true" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2ZM13 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5Z"></path></svg></span>محتوى</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
