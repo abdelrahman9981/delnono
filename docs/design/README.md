@@ -8,7 +8,7 @@ Match colors, radii, spacing and component shapes; build the layout in Flutter (
 | Source | What it covers | Link / path |
 |---|---|---|
 | Figma Make prototype | Home, booking, booking success, my bookings, child profile | https://www.figma.com/make/mintJglNIs1vTGfqOAKt56/%D8%AA%D8%B7%D8%A8%D9%8A%D9%82-%D8%AF%D9%83%D8%AA%D9%88%D8%B1-%D8%A7%D9%84%D9%86%D9%88%D9%86%D9%88 |
-| Figma screenshots (375 pt wide, 2x) | Home, booking, child profile | `figma/home.jpg`, `figma/booking.jpg`, `figma/child-profile.jpg` |
+| Figma screenshots (375 pt wide, 2x) | Home, booking, booking success, my bookings, child profile | `figma/home.jpg`, `figma/booking.jpg`, `figma/booking-success.jpg`, `figma/my-bookings.jpg`, `figma/child-profile.jpg` |
 | Design canvas (same style, made after Figma) | The remaining 11 screens | `screens/*.dc.html` (HTML mockups; open in a browser with `tokens.css` beside them) |
 | Tokens and components | Colors (light and dark), radii, buttons, cards, pills, forms, bottom nav | `tokens.css` |
 
@@ -27,7 +27,11 @@ Match colors, radii, spacing and component shapes; build the layout in Flutter (
 | 9 | Content library | `screens/Content.dc.html` | 005 |
 | 10 | Notifications page + settings | `screens/Notifications.dc.html` | 007 |
 | 11 | Account (change number, delete account) | `screens/Account.dc.html` | 001 |
-| — | Home, booking, success, my bookings, child profile | Figma link above | 002 / 003 |
+| — | Home | `figma/home.jpg` | 002 |
+| — | Booking | `figma/booking.jpg` | 002 |
+| — | Booking success | `figma/booking-success.jpg` | 002 |
+| — | My bookings (upcoming and past, cancel/change window) | `figma/my-bookings.jpg` | 002 |
+| — | Child profile | `figma/child-profile.jpg` | 003 |
 
 ## Rules from the constitution that show in the design
 
@@ -38,6 +42,8 @@ Match colors, radii, spacing and component shapes; build the layout in Flutter (
 - Bottom nav: Home, Booking, My child, Content; leave room for the Phase 2 "Ask" tab, but build nothing behind it.
 - Doctor photo is a placeholder until the real photo arrives.
 
-## Known issue in Figma
+## Known issues in Figma
+
+- List chevrons point right (›) in the Figma screens. In RTL they must point left (‹), as fixed in the app.
 
 On the home hero card, the photo placeholder's caption overlaps the "موجودين عشان نطمنك" pill. Fix in Flutter: place the caption above the pill or drop it once the real photo is in.
