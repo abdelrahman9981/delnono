@@ -55,6 +55,9 @@ class _ChangePhoneScreenState extends ConsumerState<ChangePhoneScreen> {
     super.dispose();
   }
 
+  /// Back to the account screen it was pushed from (or to it, after a deep link).
+  void _close() => context.canPop() ? context.pop() : context.go(Routes.account);
+
   Future<void> _send(AppLocalizations l10n) async {
     final phone = normalizeEgyptMobile(_number.text);
     final current = ref.read(guardianProvider).value?.phone;
@@ -78,7 +81,7 @@ class _ChangePhoneScreenState extends ConsumerState<ChangePhoneScreen> {
       await ref.read(accountApiProvider).syncPhoneNumber();
       showAppMessage(l10n.changePhoneDone(formatEgyptMobile(state.phone!)));
       otp.reset();
-      if (mounted) context.go(Routes.account);
+      if (mounted) _close();
     } catch (e) {
       if (mounted) setState(() => _syncError = e);
     } finally {
@@ -120,7 +123,7 @@ class _ChangePhoneScreenState extends ConsumerState<ChangePhoneScreen> {
         title: Text(l10n.screenChangePhone),
         leading: BackButton(onPressed: () {
           otp.reset();
-          context.go(Routes.account);
+          _close();
         }),
       ),
       body: SafeArea(

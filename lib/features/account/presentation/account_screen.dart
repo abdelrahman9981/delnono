@@ -65,7 +65,8 @@ class AccountScreen extends ConsumerWidget {
           ),
           title: Text(title, style: text.titleSmall),
           subtitle: subtitle == null ? null : Text(subtitle, style: text.bodySmall),
-          trailing: Icon(Icons.chevron_left, color: c.muted),
+          // chevron_right mirrors with the text direction: it points left (‹, forward) in RTL.
+          trailing: Icon(Icons.chevron_right, color: c.muted),
         );
 
     return Scaffold(
@@ -131,7 +132,7 @@ class AccountScreen extends ConsumerWidget {
                     fg: pink,
                     title: l10n.accountChangePhone,
                     subtitle: l10n.accountChangePhoneSub,
-                    onTap: () => context.go(Routes.accountPhone),
+                    onTap: () => context.push(Routes.accountPhone),
                   ),
                   const Divider(indent: 12, endIndent: 12),
                   row(
@@ -141,7 +142,7 @@ class AccountScreen extends ConsumerWidget {
                     fg: yellow,
                     title: l10n.accountNotifications,
                     subtitle: l10n.placeholderTag,
-                    onTap: () => context.go(Routes.notifications),
+                    onTap: () => context.push(Routes.notifications),
                   ),
                   const Divider(indent: 12, endIndent: 12),
                   row(
@@ -203,7 +204,7 @@ class AccountScreen extends ConsumerWidget {
                     FilledButton(
                       key: const Key('account-delete'),
                       style: FilledButton.styleFrom(backgroundColor: c.dangerBg, foregroundColor: c.dangerText),
-                      onPressed: () => context.go(Routes.accountDelete),
+                      onPressed: () => context.push(Routes.accountDelete),
                       child: Text(l10n.accountDeleteButton),
                     ),
                   ],

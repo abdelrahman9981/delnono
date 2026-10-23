@@ -56,7 +56,8 @@ class ChildrenListScreen extends ConsumerWidget {
                     ),
                     title: Text(child.name, style: text.titleSmall),
                     subtitle: Text(arabicAge(child.birthDate, l10n), style: text.bodySmall),
-                    trailing: Icon(Icons.chevron_left, color: c.muted),
+                    // chevron_right mirrors with the text direction: it points left (‹, forward) in RTL.
+                    trailing: Icon(Icons.chevron_right, color: c.muted),
                     onTap: () => context.go('${Routes.children}/${child.id}'),
                   ),
                 ),

@@ -24,7 +24,11 @@ class ScreenHarness {
     ],
   );
 
-  String get location => router.routerDelegate.currentConfiguration.uri.toString();
+  /// The current location. A pushed screen keeps the base URI, so report its own location instead.
+  String get location {
+    final config = router.routerDelegate.currentConfiguration;
+    return config.last is ImperativeRouteMatch ? config.last.matchedLocation : config.uri.toString();
+  }
 
   Future<void> pump(WidgetTester tester) async {
     addTearDown(container.dispose);

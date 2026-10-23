@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 final emulatorHost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
 
@@ -35,12 +36,15 @@ Future<String> latestCodeFor(String phone) async {
 Future<void> deleteAllEmulatorUsers() =>
     _request('DELETE', 'http://$emulatorHost:9099/emulator/v1/projects/demo-delnono/accounts');
 
-String location(WidgetTester tester) => ProviderScope.containerOf(tester.element(find.byType(App)))
-    .read(routerProvider)
-    .routerDelegate
-    .currentConfiguration
-    .uri
-    .toString();
+/// The current location. A pushed screen (e.g. Account) keeps the base URI, so report its own
+/// location instead.
+String location(WidgetTester tester) {
+  final config = ProviderScope.containerOf(tester.element(find.byType(App)))
+      .read(routerProvider)
+      .routerDelegate
+      .currentConfiguration;
+  return config.last is ImperativeRouteMatch ? config.last.matchedLocation : config.uri.toString();
+}
 
 /// Pumps frames until [done] holds (real time, so network calls can finish).
 Future<void> settle(WidgetTester tester, bool Function() done) async {

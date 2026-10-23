@@ -36,6 +36,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../features/auth/fakes.dart';
+import '../helpers/rtl_icons.dart';
 import '../features/registration/fakes.dart';
 
 class _User extends Mock implements User {
@@ -127,6 +128,7 @@ void main() {
           ));
           await tester.pump(const Duration(milliseconds: 500));
           expect(tester.takeException(), isNull);
+          expect(wrongWayIcons(tester), isEmpty, reason: 'chevrons and back icons must follow RTL');
 
           // Scroll to the end too, so content below the fold is laid out and checked.
           final lists = find.byType(Scrollable);

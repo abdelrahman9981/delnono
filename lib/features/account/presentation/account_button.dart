@@ -13,6 +13,7 @@ class AccountButton extends StatelessWidget {
         key: const Key('account-button'),
         tooltip: AppLocalizations.of(context).screenAccount,
         icon: const Icon(Icons.person_outline),
-        onPressed: () => context.go(Routes.account),
+        // Pushed, so the account screen gets a back button to where the guardian was.
+        onPressed: () => context.push(Routes.account),
       );
 }
