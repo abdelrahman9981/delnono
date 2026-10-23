@@ -7,6 +7,9 @@ String arabicDigits(Object value) {
   return out.toString();
 }
 
+/// A decimal in Arabic-Indic digits with the Arabic decimal mark, e.g. ٣٫٢.
+String arabicDecimal(num value) => arabicDigits(value.toString().replaceAll('.', '\u066B'));
+
 /// `m:ss` in Arabic-Indic digits, e.g. ٠:٤٢.
 String arabicCountdown(Duration d) {
   final seconds = d.inSeconds < 0 ? 0 : d.inSeconds;

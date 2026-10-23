@@ -199,6 +199,8 @@
   "@reverifyWrongDate": { "placeholders": { "attempts": { "type": "String" } } },
   "reverifyLocked": "قفلنا بيانات الأطفال بعد المحاولات دي. كلمي العيادة عشان نفتحها تاني.",
 
+  "nameListSeparator": " و",
+
   "errInvalidCode": "الكود مش صح.",
   "errCodeExpired": "الكود خلص وقته. اطلبي كود جديد.",
   "errTooManyRequests": "محاولات كتير. استني شوية وجربي تاني.",

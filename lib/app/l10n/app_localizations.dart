@@ -1072,6 +1072,12 @@ abstract class AppLocalizations {
   /// **'قفلنا بيانات الأطفال بعد المحاولات دي. كلمي العيادة عشان نفتحها تاني.'**
   String get reverifyLocked;
 
+  /// No description provided for @nameListSeparator.
+  ///
+  /// In ar, this message translates to:
+  /// **' و'**
+  String get nameListSeparator;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

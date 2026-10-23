@@ -49,7 +49,7 @@ class _LinkChildrenScreenState extends ConsumerState<LinkChildrenScreen> {
       final linked = await ref.read(registrationApiProvider).linkClinicChildren(isoDate(_date!));
       // Children now exist, so first-run registration is complete.
       ref.read(registrationControllerProvider.notifier).finish();
-      showAppMessage(l10n.linkSuccess(linked.map((c) => c.name).join(' و')));
+      showAppMessage(l10n.linkSuccess(linked.map((c) => c.name).join(l10n.nameListSeparator)));
     } on LinkWrongBirthDate catch (e) {
       setState(() => _remaining = e.remaining);
     } on LinkLocked {

@@ -93,9 +93,18 @@ class _ChildProfileScreenState extends ConsumerState<ChildProfileScreen> {
     Widget readOnly(String label, String value) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(child: Text(label, style: text.bodyMedium?.copyWith(color: c.muted))),
-              Text(value, style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+              const SizedBox(width: 8),
+              // Shares the width and wraps, so large system text never overflows.
+              Flexible(
+                child: Text(
+                  value,
+                  textAlign: TextAlign.end,
+                  style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
             ],
           ),
         );
@@ -138,7 +147,7 @@ class _ChildProfileScreenState extends ConsumerState<ChildProfileScreen> {
                     readOnly('', arabicAge(child.birthDate, l10n)),
                     readOnly(l10n.childSex, child.sex == Sex.female ? l10n.sexFemale : l10n.sexMale),
                     if (child.birthWeightKg != null)
-                      readOnly(l10n.childBirthWeight, '${arabicDigits(child.birthWeightKg!.toString().replaceAll('.', '٫'))} ${l10n.kg}'),
+                      readOnly(l10n.childBirthWeight, '${arabicDecimal(child.birthWeightKg!)} ${l10n.kg}'),
                   ],
                 ),
               ),

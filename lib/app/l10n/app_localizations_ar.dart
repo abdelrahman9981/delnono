@@ -591,6 +591,9 @@ class AppLocalizationsAr extends AppLocalizations {
       'قفلنا بيانات الأطفال بعد المحاولات دي. كلمي العيادة عشان نفتحها تاني.';
 
   @override
+  String get nameListSeparator => ' و';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

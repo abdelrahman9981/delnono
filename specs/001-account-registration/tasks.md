@@ -252,13 +252,13 @@ needs linked children (US2, US4) and the account lock pattern from US4.
 
 ## Phase 11: Polish & Cross-Cutting Concerns
 
-- [ ] T083 [P] Create `functions/src/triggers/beforeSmsSent.ts` (FR-009, research R1): increment `smsCounters/{phone}_{YYYYMMDD}` with `expiresAt` = +2 days and return `{ recaptchaActionOverride: "BLOCK" }` above `dailySmsCapPerNumber`; keep the counting in a pure function tested in `functions/test/lib/smsCap.test.ts`. Export it, but note it deploys only after the Identity Platform upgrade.
-- [ ] T084 [P] Create `functions/README.md` with the steps for the Blaze upgrade (D-38): Identity Platform upgrade (owner approval), SMS region allowlist Egypt only, Firebase test phone numbers, TTL policies on `smsCounters.expiresAt` and `auditLog.expiresAt`, region from research R8, and `flutterfire configure` for the real project, then replace the iOS `CFBundleURLTypes` scheme in `ios/Runner/Info.plist` with `app-` + the real GOOGLE_APP_ID (":" → "-"), which iOS phone auth requires.
-- [ ] T085 [P] Check every screen in light and dark mode at 375 pt width and at the largest system text size; no clipped Arabic text; colours match `docs/design/tokens.css`.
-- [ ] T086 [P] Check that no user-facing string is hard-coded outside `l10n/app_ar.arb` (search `lib/` for Arabic literals and `Text('`).
-- [ ] T087 Profile on a mid-range Android device on throttled 4G: core screens open within 3 s (D-22); sign-in to first child under 3 minutes (SC-001).
-- [ ] T088 Run every scenario in quickstart.md (1–19) and `npm test`, `flutter test`, `flutter test integration_test`; all must pass before 001 is done.
-- [ ] T089 [P] Create `functions/src/triggers/cleanupAbandonedSignIns.ts` (daily schedule, FR-015a): delete Auth users with no `guardians/{uid}` doc created more than 30 days ago; test the selection logic in `functions/test/functions/cleanupAbandonedSignIns.test.ts` against the Auth emulator. Deploys with Blaze.
+- [ ] T083 [P] **blocked: Blaze** Create `functions/src/triggers/beforeSmsSent.ts` (FR-009, research R1): increment `smsCounters/{phone}_{YYYYMMDD}` with `expiresAt` = +2 days and return `{ recaptchaActionOverride: "BLOCK" }` above `dailySmsCapPerNumber`; keep the counting in a pure function tested in `functions/test/lib/smsCap.test.ts`. Export it, but note it deploys only after the Identity Platform upgrade.
+- [ ] T084 [P] **blocked: Blaze** Create `functions/README.md` with the steps for the Blaze upgrade (D-38): Identity Platform upgrade (owner approval), SMS region allowlist Egypt only, Firebase test phone numbers, TTL policies on `smsCounters.expiresAt` and `auditLog.expiresAt`, region from research R8, and `flutterfire configure` for the real project, then replace the iOS `CFBundleURLTypes` scheme in `ios/Runner/Info.plist` with `app-` + the real GOOGLE_APP_ID (":" → "-"), which iOS phone auth requires.
+- [X] T085 [P] Check every screen in light and dark mode at 375 pt width and at the largest system text size; no clipped Arabic text; colours match `docs/design/tokens.css`.
+- [X] T086 [P] Check that no user-facing string is hard-coded outside `l10n/app_ar.arb` (search `lib/` for Arabic literals and `Text('`).
+- [ ] T087 **blocked: no Android device** (this Mac has no Android SDK; needs a mid-range Android phone on throttled 4G) Profile on a mid-range Android device on throttled 4G: core screens open within 3 s (D-22); sign-in to first child under 3 minutes (SC-001).
+- [X] T088 Run every scenario in quickstart.md (1–19) and `npm test`, `flutter test`, `flutter test integration_test`; all must pass before 001 is done.
+- [ ] T089 [P] **blocked: Blaze** Create `functions/src/triggers/cleanupAbandonedSignIns.ts` (daily schedule, FR-015a): delete Auth users with no `guardians/{uid}` doc created more than 30 days ago; test the selection logic in `functions/test/functions/cleanupAbandonedSignIns.test.ts` against the Auth emulator. Deploys with Blaze.
 
 ---
 

@@ -37,6 +37,7 @@ The Auth emulator never sends SMS; read codes from the Emulator UI (Auth tab) or
 
 ```sh
 cd functions && npm test          # Security Rules (contracts/firestore-access.md) + callables
+cd functions && npm run test:rules  # Security Rules only
 flutter test                      # unit and widget tests
 flutter test integration_test --dart-define=USE_EMULATOR=true -d <simulator>  # end-to-end, emulators running
 ```
@@ -66,6 +67,28 @@ All three must pass before 001 is done (constitution: rules tests gate completio
 | 17 | Account screen: tap "talk to the clinic on WhatsApp" | Opens a chat with `settings/clinic.whatsappNumber`; Notifications entry shows a placeholder (FR-034, FR-035) |
 | 18 | Sign in with `+201000000001`, consent, tap "these aren't my children, add a child" | Nothing linked, no attempt counted, add-child screen; birth-date check offered again at next sign-in (US4 scenario 4) |
 | 19 | In the emulator, set your `guardians/{uid}.lastActiveAt` to 91 days ago; reopen the app | Birth-date re-check before any child data; correct date restores access; 3 wrong dates lock (FR-010a, FR-010b) |
+
+## Scenario coverage (T088)
+
+Each scenario above is automated; run the integration tests one file at a time with the project's
+CLI (`functions/node_modules/.bin/firebase emulators:exec … "flutter test integration_test/<file>"`).
+
+| # | Automated by |
+|---|--------------|
+| 1, 2 | `integration_test/browse_test.dart` |
+| 3, 4, 5 | `test/features/auth/otp_controller_test.dart`, `otp_screen_test.dart` (fake clock) |
+| 6, 7 | `integration_test/registration_test.dart`, `sign_in_test.dart` |
+| 8 | `integration_test/link_children_test.dart` |
+| 9 | `functions/test/functions/linkClinicChildren.test.ts`, `test/features/registration/link_children_screen_test.dart` |
+| 10 | `functions/test/functions/createChild.test.ts`, `test/features/children/add_child_screen_test.dart` |
+| 11 | `integration_test/children_test.dart` (rules + history trigger) |
+| 12, 13 | `integration_test/change_phone_test.dart` |
+| 14 | `integration_test/delete_account_test.dart` (also re-links the child after signing up again) |
+| 15 | `integration_test/policy_update_test.dart` |
+| 16 | `test/app/layout_test.dart` (13 screens × light/dark × text ×1/×2 at 375 pt) |
+| 17 | `test/features/account/account_screen_test.dart` |
+| 18 | `test/features/registration/link_children_screen_test.dart` |
+| 19 | `integration_test/reverify_test.dart` |
 
 ## Not testable locally
 
