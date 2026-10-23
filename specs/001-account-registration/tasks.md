@@ -173,16 +173,16 @@ story, write the tests first and confirm they fail.
 
 ### Tests for User Story 5
 
-- [ ] T059 [P] [US5] Create `functions/test/rules/children-update.test.ts` covering the `children/{id}` update and `history` rows in contracts/firestore-access.md: allowed when only `name`, `allergies`, `updatedAt`, `updatedBy` change with `updatedBy == request.auth.uid` and `updatedAt == request.time`; denied for `birthDate`, `sex`, `guardianUid`, `guardianPhone`, another guardian, or invalid values; history readable by the linked guardian only and never writable.
-- [ ] T060 [P] [US5] Create `functions/test/functions/onChildUpdated.test.ts`: an update writes one `history` entry with `changedFields` {from, to}, `changedBy` and `changedAt`; an `allergies` change also writes audit `child.allergies_changed` (FR-023a); a name-only change writes no audit entry; an update with no field changes writes nothing.
+- [X] T059 [P] [US5] Create `functions/test/rules/children-update.test.ts` covering the `children/{id}` update and `history` rows in contracts/firestore-access.md: allowed when only `name`, `allergies`, `updatedAt`, `updatedBy` change with `updatedBy == request.auth.uid` and `updatedAt == request.time`; denied for `birthDate`, `sex`, `guardianUid`, `guardianPhone`, another guardian, or invalid values; history readable by the linked guardian only and never writable.
+- [X] T060 [P] [US5] Create `functions/test/functions/onChildUpdated.test.ts`: an update writes one `history` entry with `changedFields` {from, to}, `changedBy` and `changedAt`; an `allergies` change also writes audit `child.allergies_changed` (FR-023a); a name-only change writes no audit entry; an update with no field changes writes nothing.
 
 ### Implementation for User Story 5
 
-- [ ] T061 [US5] Extend `firestore.rules` with the `children/{id}` update rule and `children/{id}/history/{h}` read rule per contracts/firestore-access.md, validating name "2–60 chars" and allergies "≤ 500 chars".
-- [ ] T062 [P] [US5] Create `functions/src/triggers/onChildUpdated.ts` (history entry, plus audit `child.allergies_changed` when `allergies` changed, FR-023a) and export it from `functions/src/index.ts`.
-- [ ] T063 [P] [US5] Create `lib/features/children/presentation/children_list_screen.dart` (`/children`): linked children, an empty state when there are none, and an "add child" action to `/children/add`.
-- [ ] T064 [US5] Create `lib/features/children/presentation/child_profile_screen.dart` (`/children/:id`): edit name and allergies (saving `updatedBy` = uid and `updatedAt` = server time through `children_repository.dart`); birth date and sex read-only with a "contact the clinic to correct" note (FR-024).
-- [ ] T065 [P] [US5] Create `test/features/children/child_profile_screen_test.dart`: only name and allergies are editable; a child over 4 years can be added (FR-020).
+- [X] T061 [US5] Extend `firestore.rules` with the `children/{id}` update rule and `children/{id}/history/{h}` read rule per contracts/firestore-access.md, validating name "2–60 chars" and allergies "≤ 500 chars".
+- [X] T062 [P] [US5] Create `functions/src/triggers/onChildUpdated.ts` (history entry, plus audit `child.allergies_changed` when `allergies` changed, FR-023a) and export it from `functions/src/index.ts`.
+- [X] T063 [P] [US5] Create `lib/features/children/presentation/children_list_screen.dart` (`/children`): linked children, an empty state when there are none, and an "add child" action to `/children/add`.
+- [X] T064 [US5] Create `lib/features/children/presentation/child_profile_screen.dart` (`/children/:id`): edit name and allergies (saving `updatedBy` = uid and `updatedAt` = server time through `children_repository.dart`); birth date and sex read-only with a "contact the clinic to correct" note (FR-024).
+- [X] T065 [P] [US5] Create `test/features/children/child_profile_screen_test.dart`: only name and allergies are editable; a child over 4 years can be added (FR-020).
 
 **Checkpoint**: guardians manage several children within the edit limits.
 

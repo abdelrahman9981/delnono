@@ -89,6 +89,7 @@ Future<void> signInFromBooking(WidgetTester tester, String phone) async {
 
 /// Guardian details and both consents, ending wherever the guard sends a new guardian next.
 Future<void> registerGuardian(WidgetTester tester, String name) async {
+  await settle(tester, () => shows(find.byKey(const Key('guardian-name'))));
   await tester.enterText(find.byKey(const Key('guardian-name')), name);
   await tapInList(tester, find.text('أم'));
   await tapInList(tester, find.text('التالي'));

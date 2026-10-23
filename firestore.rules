@@ -59,10 +59,33 @@ service cloud.firestore {
       }
     }
 
-    // Created only by functions (createChild, clinic registration in 004).
+    function validChildEdit(d) {
+      return d.name is string && d.name.size() >= 2 && d.name.size() <= 60
+        && (!('allergies' in d) || d.allergies == null
+            || (d.allergies is string && d.allergies.size() <= 500));
+    }
+
+    function linkedGuardian(child) {
+      return consentCurrent() && child.guardianUid == request.auth.uid;
+    }
+
+    // Created only by functions (createChild, clinic registration in 004). The linked guardian may
+    // edit name and allergies only; birth date and sex are staff-only (FR-023, FR-024).
     match /children/{childId} {
-      allow read: if consentCurrent() && resource.data.guardianUid == request.auth.uid;
+      allow read: if linkedGuardian(resource.data);
+      allow update: if linkedGuardian(resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['name', 'allergies', 'updatedAt', 'updatedBy'])
+        && request.resource.data.updatedBy == request.auth.uid
+        && request.resource.data.updatedAt == request.time
+        && validChildEdit(request.resource.data);
       allow create, delete: if false;
+
+      // Written only by the onChildUpdated trigger.
+      match /history/{entryId} {
+        allow read: if linkedGuardian(get(/databases/$(database)/documents/children/$(childId)).data);
+        allow write: if false;
+      }
     }
 
     // Server only: written and read by Cloud Functions with the Admin SDK.

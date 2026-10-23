@@ -826,6 +826,60 @@ abstract class AppLocalizations {
   /// **'دول مش أطفالي · ضيفي طفل جديد'**
   String get linkNotMine;
 
+  /// No description provided for @childrenEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لسه مفيش أطفال في حسابك.'**
+  String get childrenEmpty;
+
+  /// No description provided for @childrenAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة طفل'**
+  String get childrenAdd;
+
+  /// No description provided for @ageYears.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count, plural, =1{سنة} =2{سنتين} few{{countText} سنين} other{{countText} سنة}}'**
+  String ageYears(int count, String countText);
+
+  /// No description provided for @ageMonths.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count, plural, =1{شهر} =2{شهرين} few{{countText} شهور} other{{countText} شهر}}'**
+  String ageMonths(int count, String countText);
+
+  /// No description provided for @ageNewborn.
+  ///
+  /// In ar, this message translates to:
+  /// **'أقل من شهر'**
+  String get ageNewborn;
+
+  /// No description provided for @ageAnd.
+  ///
+  /// In ar, this message translates to:
+  /// **'{years} و{months}'**
+  String ageAnd(String years, String months);
+
+  /// No description provided for @childFixedFieldsLocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الميلاد والنوع بيصححهم الدكتور أو السكرتارية بس، لأنهم بيحددوا جدول التطعيمات. لو فيهم غلط كلمي العيادة.'**
+  String get childFixedFieldsLocked;
+
+  /// No description provided for @childSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتحفظت التعديلات.'**
+  String get childSaved;
+
+  /// No description provided for @childNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطفل ده مش موجود في حسابك.'**
+  String get childNotFound;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

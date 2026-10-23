@@ -8,6 +8,8 @@ import '../features/auth/presentation/otp_screen.dart';
 import '../features/auth/presentation/phone_screen.dart';
 import '../features/children/data/children_repository.dart';
 import '../features/children/presentation/add_child_screen.dart';
+import '../features/children/presentation/child_profile_screen.dart';
+import '../features/children/presentation/children_list_screen.dart';
 import '../features/registration/data/guardian_repository.dart';
 import '../features/registration/presentation/consent_screen.dart';
 import '../features/registration/presentation/guardian_details_screen.dart';
@@ -65,10 +67,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: Routes.booking, builder: (_, _) => const BookingPlaceholder()),
           GoRoute(
             path: Routes.children,
-            builder: (context, _) => _placeholder(context, (l) => l.screenChildren),
+            builder: (_, _) => const ChildrenListScreen(),
             routes: [
               GoRoute(path: 'add', builder: (_, _) => const AddChildScreen()),
-              GoRoute(path: ':id', builder: (context, _) => _placeholder(context, (l) => l.screenChildProfile)),
+              GoRoute(path: ':id', builder: (_, state) => ChildProfileScreen(childId: state.pathParameters['id']!)),
             ],
           ),
           GoRoute(path: Routes.content, builder: (_, _) => const ContentPlaceholder()),

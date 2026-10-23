@@ -81,6 +81,16 @@ class ChildrenRepository {
       .snapshots()
       .map((q) => q.docs.map(Child.fromSnapshot).toList());
 
+  /// Saves the only fields a guardian may change (FR-023). Rules require [uid] as `updatedBy`
+  /// and the server time as `updatedAt`; the onChildUpdated trigger records the history.
+  Future<void> updateDetails(String childId, {required String uid, required String name, String? allergies}) =>
+      _db.doc('children/$childId').update({
+        'name': name,
+        'allergies': allergies,
+        'updatedBy': uid,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
   /// Creates a child through the `createChild` function, which checks for duplicates.
   /// Throws [DuplicateChildException] for FR-022, or the function's error otherwise.
   Future<String> createChild(NewChild child) async {
@@ -114,4 +124,13 @@ final childrenProvider = StreamProvider<List<Child>>((ref) {
   final uid = ref.watch(authStateProvider).value?.uid;
   if (uid == null) return Stream.value(const []);
   return ref.watch(childrenRepositoryProvider).watchLinked(uid);
+});
+
+/// One linked child by id, from [childrenProvider]; null while loading or if not linked.
+final childProvider = Provider.family<Child?, String>((ref, id) {
+  final children = ref.watch(childrenProvider).value ?? const [];
+  for (final c in children) {
+    if (c.id == id) return c;
+  }
+  return null;
 });

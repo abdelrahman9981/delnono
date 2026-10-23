@@ -37,7 +37,14 @@ class FakeRegistrationApi implements RegistrationApi {
 
 class FakeChildrenRepository extends Mock implements ChildrenRepository {
   final created = <NewChild>[];
+  final updates = <({String childId, String uid, String name, String? allergies})>[];
   Object? error;
+
+  @override
+  Future<void> updateDetails(String childId, {required String uid, required String name, String? allergies}) async {
+    if (error != null) throw error!;
+    updates.add((childId: childId, uid: uid, name: name, allergies: allergies));
+  }
 
   @override
   Future<String> createChild(NewChild child) async {

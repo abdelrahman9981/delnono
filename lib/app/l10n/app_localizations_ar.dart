@@ -432,6 +432,56 @@ class AppLocalizationsAr extends AppLocalizations {
   String get linkNotMine => 'دول مش أطفالي · ضيفي طفل جديد';
 
   @override
+  String get childrenEmpty => 'لسه مفيش أطفال في حسابك.';
+
+  @override
+  String get childrenAdd => 'إضافة طفل';
+
+  @override
+  String ageYears(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countText سنة',
+      few: '$countText سنين',
+      two: 'سنتين',
+      one: 'سنة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ageMonths(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countText شهر',
+      few: '$countText شهور',
+      two: 'شهرين',
+      one: 'شهر',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ageNewborn => 'أقل من شهر';
+
+  @override
+  String ageAnd(String years, String months) {
+    return '$years و$months';
+  }
+
+  @override
+  String get childFixedFieldsLocked =>
+      'تاريخ الميلاد والنوع بيصححهم الدكتور أو السكرتارية بس، لأنهم بيحددوا جدول التطعيمات. لو فيهم غلط كلمي العيادة.';
+
+  @override
+  String get childSaved => 'اتحفظت التعديلات.';
+
+  @override
+  String get childNotFound => 'الطفل ده مش موجود في حسابك.';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override
