@@ -880,6 +880,114 @@ abstract class AppLocalizations {
   /// **'الطفل ده مش موجود في حسابك.'**
   String get childNotFound;
 
+  /// No description provided for @accountChildren.
+  ///
+  /// In ar, this message translates to:
+  /// **'أطفالي'**
+  String get accountChildren;
+
+  /// No description provided for @accountChangePhone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير رقم الموبايل'**
+  String get accountChangePhone;
+
+  /// No description provided for @accountChangePhoneSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'بكود على الرقم الجديد'**
+  String get accountChangePhoneSub;
+
+  /// No description provided for @accountNotifications.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإشعارات'**
+  String get accountNotifications;
+
+  /// No description provided for @accountPrivacy.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخصوصية والشروط'**
+  String get accountPrivacy;
+
+  /// No description provided for @accountPrivacySub.
+  ///
+  /// In ar, this message translates to:
+  /// **'وافقتي على الإصدار {version}'**
+  String accountPrivacySub(String version);
+
+  /// No description provided for @accountWhatsApp.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمي العيادة على واتساب'**
+  String get accountWhatsApp;
+
+  /// No description provided for @accountWhatsAppSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'للاستفسار والدعم، مش للحجز'**
+  String get accountWhatsAppSub;
+
+  /// No description provided for @accountWhatsAppUnavailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم واتساب العيادة لسه مش متاح.'**
+  String get accountWhatsAppUnavailable;
+
+  /// No description provided for @accountSignOut.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الخروج'**
+  String get accountSignOut;
+
+  /// No description provided for @accountDeleteTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف الحساب'**
+  String get accountDeleteTitle;
+
+  /// No description provided for @accountDeleteBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'هنمسح حسابك وبياناتك من التطبيق. ملفات أطفالك الطبية بتفضل عند العيادة للمدة اللي يحددها القانون.'**
+  String get accountDeleteBody;
+
+  /// No description provided for @accountDeleteButton.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف حسابي'**
+  String get accountDeleteButton;
+
+  /// No description provided for @changePhoneHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقمك الجديد'**
+  String get changePhoneHeading;
+
+  /// No description provided for @changePhoneIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'هنبعت كود على الرقم الجديد. أطفالك وبياناتك بيفضلوا زي ما هما.'**
+  String get changePhoneIntro;
+
+  /// No description provided for @changePhoneSend.
+  ///
+  /// In ar, this message translates to:
+  /// **'ابعتي الكود'**
+  String get changePhoneSend;
+
+  /// No description provided for @changePhoneSame.
+  ///
+  /// In ar, this message translates to:
+  /// **'ده نفس رقمك الحالي.'**
+  String get changePhoneSame;
+
+  /// No description provided for @changePhoneDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتغير رقمك لـ {phone}.'**
+  String changePhoneDone(String phone);
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

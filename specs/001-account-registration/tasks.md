@@ -196,16 +196,16 @@ story, write the tests first and confirm they fail.
 
 ### Tests for User Story 6
 
-- [ ] T066 [P] [US6] Create `functions/test/functions/syncPhoneNumber.test.ts`: updates `guardians/{uid}.phone` and `guardianPhone` on linked children to the Auth record's number, writes `phone.changed` with old and new numbers, and sets `clinicChildrenPending` if unlinked clinic children exist on the new number.
-- [ ] T067 [P] [US6] Create `test/features/account/account_screen_test.dart`: shows guardian name, number, relation, children and accepted policy version; Notifications entry opens the placeholder; WhatsApp link calls the launcher with the `settings/clinic` number and is labelled support-only (FR-033 to FR-035).
-- [ ] T068 [P] [US6] Create `integration_test/change_phone_test.dart`: change to an unused number succeeds; change to a number with an existing account shows the "contact the clinic" message (FR-025a).
+- [X] T066 [P] [US6] Create `functions/test/functions/syncPhoneNumber.test.ts`: updates `guardians/{uid}.phone` and `guardianPhone` on linked children to the Auth record's number, writes `phone.changed` with old and new numbers, and sets `clinicChildrenPending` if unlinked clinic children exist on the new number.
+- [X] T067 [P] [US6] Create `test/features/account/account_screen_test.dart`: shows guardian name, number, relation, children and accepted policy version; Notifications entry opens the placeholder; WhatsApp link calls the launcher with the `settings/clinic` number and is labelled support-only (FR-033 to FR-035).
+- [X] T068 [P] [US6] Create `integration_test/change_phone_test.dart`: change to an unused number succeeds; change to a number with an existing account shows the "contact the clinic" message (FR-025a).
 
 ### Implementation for User Story 6
 
-- [ ] T069 [US6] Create `functions/src/callables/syncPhoneNumber.ts` per contracts/callables.md and export it.
-- [ ] T070 [US6] Create `lib/features/account/presentation/account_screen.dart` matching `docs/design/screens/Account.dc.html`: guardian details, children, accepted policy version, change number, Notifications placeholder (feature 007), "talk to the clinic on WhatsApp" via `url_launcher` (`whatsapp://send?phone=` with `https://wa.me/` fallback; text says support only, not booking), sign out, delete account.
-- [ ] T071 [US6] Create `lib/features/account/presentation/change_phone_screen.dart` (`/account/phone`): reuse the OTP controller (T030) for the new number, call `updatePhoneNumber`, map `credential-already-in-use` to the "contact the clinic" message, then call `syncPhoneNumber`.
-- [ ] T072 [US6] Wire `/account` and `/account/phone` in `lib/app/router.dart`, with an account entry point from the shell.
+- [X] T069 [US6] Create `functions/src/callables/syncPhoneNumber.ts` per contracts/callables.md and export it.
+- [X] T070 [US6] Create `lib/features/account/presentation/account_screen.dart` matching `docs/design/screens/Account.dc.html`: guardian details, children, accepted policy version, change number, Notifications placeholder (feature 007), "talk to the clinic on WhatsApp" via `url_launcher` (`whatsapp://send?phone=` with `https://wa.me/` fallback; text says support only, not booking), sign out, delete account.
+- [X] T071 [US6] Create `lib/features/account/presentation/change_phone_screen.dart` (`/account/phone`): reuse the OTP controller (T030) for the new number, call `updatePhoneNumber`, map `credential-already-in-use` to the "contact the clinic" message, then call `syncPhoneNumber`.
+- [X] T072 [US6] Wire `/account` and `/account/phone` in `lib/app/router.dart`, with an account entry point from the shell.
 
 **Checkpoint**: number change works and conflicts go to the clinic.
 

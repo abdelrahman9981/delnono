@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../../app/l10n/app_localizations.dart';
 import '../../app/theme.dart';
+import '../account/presentation/account_button.dart';
 
 /// A screen that a later task or feature replaces. Always shows the "placeholder" tag so it is
 /// never mistaken for finished content (constitution Principle II, D-36).
 class PlaceholderScreen extends StatelessWidget {
-  const PlaceholderScreen({super.key, required this.title, this.showAppBar = true});
+  const PlaceholderScreen({super.key, required this.title, this.showAppBar = true, this.actions});
 
   final String title;
   final bool showAppBar;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class PlaceholderScreen extends StatelessWidget {
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
-      appBar: showAppBar ? AppBar(title: Text(title)) : null,
+      appBar: showAppBar ? AppBar(title: Text(title), actions: actions) : null,
       body: SafeArea(
         child: Center(
           child: Padding(
@@ -51,8 +53,10 @@ class HomePlaceholder extends StatelessWidget {
   const HomePlaceholder({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PlaceholderScreen(title: AppLocalizations.of(context).placeholderHome, showAppBar: false);
+  Widget build(BuildContext context) => PlaceholderScreen(
+        title: AppLocalizations.of(context).placeholderHome,
+        actions: const [AccountButton()],
+      );
 }
 
 class BookingPlaceholder extends StatelessWidget {

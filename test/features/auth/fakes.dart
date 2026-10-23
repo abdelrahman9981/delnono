@@ -14,6 +14,17 @@ class FakeClock {
 
 /// Accepts [validCode]; any other code fails like Firebase does.
 class FakePhoneAuthService implements PhoneAuthService {
+  final updates = <String>[];
+  Object? updateError;
+
+  @override
+  Future<void> updatePhoneNumber(String verificationId, String smsCode) async {
+    tried.add(smsCode);
+    if (smsCode != validCode) throw FirebaseAuthException(code: 'invalid-verification-code');
+    if (updateError != null) throw updateError!;
+    updates.add(smsCode);
+  }
+
   FakePhoneAuthService({this.validCode = '123456', this.sendError});
 
   final String validCode;

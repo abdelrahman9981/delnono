@@ -32,6 +32,11 @@ abstract interface class PhoneAuthService {
 
   /// Throws [FirebaseAuthException] (`invalid-verification-code`, `session-expired`, …).
   Future<void> signInWithCode(String verificationId, String smsCode);
+
+  /// Moves the signed-in account to the number the code was sent to (FR-025), then refreshes the
+  /// ID token so callables see the new number. Throws `credential-already-in-use` when the number
+  /// belongs to another account (FR-025a).
+  Future<void> updatePhoneNumber(String verificationId, String smsCode);
 }
 
 class FirebasePhoneAuthService implements PhoneAuthService {
@@ -76,6 +81,14 @@ class FirebasePhoneAuthService implements PhoneAuthService {
   Future<void> signInWithCode(String verificationId, String smsCode) => _auth.signInWithCredential(
         PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode),
       );
+
+  @override
+  Future<void> updatePhoneNumber(String verificationId, String smsCode) async {
+    final user = _auth.currentUser;
+    if (user == null) throw FirebaseAuthException(code: 'user-not-found');
+    await user.updatePhoneNumber(PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode));
+    await user.getIdToken(true);
+  }
 }
 
 final phoneAuthServiceProvider =

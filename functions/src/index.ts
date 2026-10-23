@@ -4,3 +4,4 @@ export { acceptPolicy } from "./callables/acceptPolicy";
 export { createChild } from "./callables/createChild";
 export { linkClinicChildren } from "./callables/linkClinicChildren";
 export { onChildUpdated } from "./triggers/onChildUpdated";
+export { syncPhoneNumber } from "./callables/syncPhoneNumber";

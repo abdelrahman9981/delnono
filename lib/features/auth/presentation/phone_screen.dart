@@ -6,9 +6,9 @@ import '../../../app/l10n/app_localizations.dart';
 import '../../../app/route_guard.dart';
 import '../../../app/theme.dart';
 import '../../../core/errors/arabic_errors.dart';
-import '../../../core/format/digit_input.dart';
 import '../../../core/phone/egypt_phone.dart';
 import '../../../core/widgets/notice.dart';
+import '../../../core/widgets/phone_number_field.dart';
 import '../../../core/widgets/step_indicator.dart';
 import '../application/otp_controller.dart';
 
@@ -81,45 +81,13 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
             const SizedBox(height: 22),
             Text(l10n.phoneLabel, style: text.labelMedium),
             const SizedBox(height: 7),
-            Directionality(
-              textDirection: TextDirection.ltr,
-              child: Row(
-                children: [
-                  Container(
-                    width: 84,
-                    height: 52,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: colors.surface,
-                      border: Border.all(color: colors.border),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Text('+20', style: text.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      key: const Key('phone-field'),
-                      controller: _number,
-                      keyboardType: TextInputType.phone,
-                      textDirection: TextDirection.ltr,
-                      textInputAction: TextInputAction.send,
-                      autofillHints: const [AutofillHints.telephoneNumberNational],
-                      inputFormatters: const [WesternDigitsFormatter(allowSpaces: true)],
-                      style: text.bodyLarge?.copyWith(letterSpacing: 1),
-                      decoration: InputDecoration(
-                        hintText: '10 1234 5678',
-                        errorText: error == null ? null : '',
-                        errorStyle: const TextStyle(height: 0, fontSize: 0),
-                      ),
-                      onChanged: (_) {
-                        if (_invalid) setState(() => _invalid = false);
-                      },
-                      onSubmitted: (_) => _send(),
-                    ),
-                  ),
-                ],
-              ),
+            PhoneNumberField(
+              controller: _number,
+              hasError: error != null,
+              onChanged: (_) {
+                if (_invalid) setState(() => _invalid = false);
+              },
+              onSubmitted: (_) => _send(),
             ),
             const SizedBox(height: 7),
             if (error != null) ...[

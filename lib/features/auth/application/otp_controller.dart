@@ -83,6 +83,11 @@ class OtpState {
 /// - FR-008: a new code cannot be sent until `resendWaitSeconds` after the last one.
 /// All three values come from `settings/auth`.
 class OtpController extends Notifier<OtpState> {
+  OtpController({this.changePhone = false});
+
+  /// True for changing the number of a signed-in account (FR-025) instead of signing in.
+  final bool changePhone;
+
   @override
   OtpState build() => const OtpState();
 
@@ -171,7 +176,11 @@ class OtpController extends Notifier<OtpState> {
 
     state = state.copyWith(phase: OtpPhase.verifying, clearError: true);
     try {
-      await _service.signInWithCode(verificationId, smsCode);
+      if (changePhone) {
+        await _service.updatePhoneNumber(verificationId, smsCode);
+      } else {
+        await _service.signInWithCode(verificationId, smsCode);
+      }
       state = state.copyWith(phase: OtpPhase.signedIn);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
@@ -195,3 +204,7 @@ class OtpController extends Notifier<OtpState> {
 }
 
 final otpControllerProvider = NotifierProvider<OtpController, OtpState>(OtpController.new);
+
+/// Separate state for changing the number from the account screen.
+final phoneChangeOtpProvider =
+    NotifierProvider<OtpController, OtpState>(() => OtpController(changePhone: true));

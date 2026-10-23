@@ -482,6 +482,66 @@ class AppLocalizationsAr extends AppLocalizations {
   String get childNotFound => 'الطفل ده مش موجود في حسابك.';
 
   @override
+  String get accountChildren => 'أطفالي';
+
+  @override
+  String get accountChangePhone => 'تغيير رقم الموبايل';
+
+  @override
+  String get accountChangePhoneSub => 'بكود على الرقم الجديد';
+
+  @override
+  String get accountNotifications => 'الإشعارات';
+
+  @override
+  String get accountPrivacy => 'الخصوصية والشروط';
+
+  @override
+  String accountPrivacySub(String version) {
+    return 'وافقتي على الإصدار $version';
+  }
+
+  @override
+  String get accountWhatsApp => 'كلمي العيادة على واتساب';
+
+  @override
+  String get accountWhatsAppSub => 'للاستفسار والدعم، مش للحجز';
+
+  @override
+  String get accountWhatsAppUnavailable => 'رقم واتساب العيادة لسه مش متاح.';
+
+  @override
+  String get accountSignOut => 'تسجيل الخروج';
+
+  @override
+  String get accountDeleteTitle => 'حذف الحساب';
+
+  @override
+  String get accountDeleteBody =>
+      'هنمسح حسابك وبياناتك من التطبيق. ملفات أطفالك الطبية بتفضل عند العيادة للمدة اللي يحددها القانون.';
+
+  @override
+  String get accountDeleteButton => 'حذف حسابي';
+
+  @override
+  String get changePhoneHeading => 'رقمك الجديد';
+
+  @override
+  String get changePhoneIntro =>
+      'هنبعت كود على الرقم الجديد. أطفالك وبياناتك بيفضلوا زي ما هما.';
+
+  @override
+  String get changePhoneSend => 'ابعتي الكود';
+
+  @override
+  String get changePhoneSame => 'ده نفس رقمك الحالي.';
+
+  @override
+  String changePhoneDone(String phone) {
+    return 'اتغير رقمك لـ $phone.';
+  }
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

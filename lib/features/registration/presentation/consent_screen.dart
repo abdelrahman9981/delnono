@@ -14,6 +14,7 @@ import '../../../core/widgets/notice.dart';
 import '../../../core/widgets/step_indicator.dart';
 import '../application/registration_controller.dart';
 import '../data/guardian_repository.dart';
+import 'policy_sheet.dart';
 
 /// Privacy consent (design screen 5, docs/design/screens/Consent.dc.html). Two separate, unticked
 /// consents (FR-014). For a new guardian this sends details and consent together (FR-015); for a
@@ -57,31 +58,6 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
     } else {
       await controller.consentAndRegister(policy.currentVersion);
     }
-  }
-
-  void _showFullText(PolicySettings policy, AppLocalizations l10n) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (context) => DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.8,
-        builder: (context, scroll) => ListView(
-          controller: scroll,
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
-          children: [
-            Text(l10n.policyPrivacyTitle, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text(policy.privacyPolicyText),
-            const SizedBox(height: 24),
-            Text(l10n.policyTermsTitle, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text(policy.termsText),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -152,7 +128,7 @@ class _ConsentScreenState extends ConsumerState<ConsentScreen> {
                         ),
                       ),
                     TextButton(
-                      onPressed: () => _showFullText(policy, l10n),
+                      onPressed: () => showPolicySheet(context, policy),
                       style: TextButton.styleFrom(padding: EdgeInsets.zero),
                       child: Text(l10n.consentReadFull),
                     ),

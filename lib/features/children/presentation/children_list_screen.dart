@@ -6,6 +6,7 @@ import '../../../app/l10n/app_localizations.dart';
 import '../../../app/route_guard.dart';
 import '../../../app/theme.dart';
 import '../../../core/format/age.dart';
+import '../../account/presentation/account_button.dart';
 import '../data/children_repository.dart';
 
 /// The guardian's children (`/children`, the "My child" tab). The full child profile with
@@ -21,7 +22,11 @@ class ChildrenListScreen extends ConsumerWidget {
     final children = ref.watch(childrenProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.screenChildren), automaticallyImplyLeading: false),
+      appBar: AppBar(
+        title: Text(l10n.screenChildren),
+        automaticallyImplyLeading: false,
+        actions: const [AccountButton()],
+      ),
       body: SafeArea(
         child: children.when(
           loading: () => const Center(child: CircularProgressIndicator()),

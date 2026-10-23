@@ -63,6 +63,7 @@ abstract final class Routes {
   static const account = '/account';
   static const accountPhone = '/account/phone';
   static const accountDelete = '/account/delete';
+  static const notifications = '/notifications';
 
   static const public = {welcome, home, content};
 

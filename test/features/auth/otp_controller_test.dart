@@ -198,4 +198,8 @@ class _ThrowingService implements PhoneAuthService {
   @override
   Future<void> signInWithCode(String verificationId, String smsCode) async =>
       throw FirebaseAuthException(code: code);
+
+  @override
+  Future<void> updatePhoneNumber(String verificationId, String smsCode) async =>
+      throw FirebaseAuthException(code: code);
 }
