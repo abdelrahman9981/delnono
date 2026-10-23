@@ -29,6 +29,8 @@ void main() {
     expect(days.last, '2026-11-29');
     expect(days, isNot(contains('2026-11-20'))); // Friday
     expect(bookableDays(s, now, vaccines: true).every((d) => isVaccineDay(s, d)), isTrue);
+    // After the last hour has started, today is no longer offered.
+    expect(bookableDays(s, DateTime.utc(2026, 11, 15, 18, 30), vaccines: false).first, '2026-11-16');
   });
 
   test('started hours are hidden', () {

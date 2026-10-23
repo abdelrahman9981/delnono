@@ -19,12 +19,13 @@ List<int> hoursOf(BookingSettings s, String date) {
   return hours.toList()..sort();
 }
 
-/// Days a guardian can pick: today up to the horizon, open (and vaccine days when [vaccines]).
+/// Days a guardian can pick: today up to the horizon, open (vaccine days when [vaccines]) and with
+/// at least one hour that has not started.
 List<String> bookableDays(BookingSettings s, DateTime now, {required bool vaccines}) {
   final today = ClinicTime.dateOf(now);
   return [
     for (var i = 0; i <= s.bookingHorizonDays; i++) ClinicTime.addDays(today, i),
-  ].where((d) => vaccines ? isVaccineDay(s, d) : isOpenDay(s, d)).toList();
+  ].where((d) => (vaccines ? isVaccineDay(s, d) : isOpenDay(s, d)) && openHours(s, d, now).isNotEmpty).toList();
 }
 
 /// Hours of [date] that have not started.

@@ -10,6 +10,8 @@ import '../features/account/presentation/delete_account_screen.dart';
 import '../features/auth/presentation/otp_screen.dart';
 import '../features/auth/presentation/reverify_screen.dart';
 import '../features/auth/presentation/phone_screen.dart';
+import '../features/booking/presentation/booking_screen.dart';
+import '../features/booking/presentation/booking_success_screen.dart';
 import '../features/children/data/children_repository.dart';
 import '../features/children/presentation/add_child_screen.dart';
 import '../features/children/presentation/child_profile_screen.dart';
@@ -21,6 +23,7 @@ import '../features/registration/presentation/link_children_screen.dart';
 import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
 import '../features/welcome/welcome_screen.dart';
+import 'l10n/app_localizations.dart';
 import 'route_guard.dart';
 import 'session_flags.dart';
 
@@ -67,7 +70,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, child) => ShellScaffold(location: state.uri.path, child: child),
         routes: [
           GoRoute(path: Routes.home, builder: (_, _) => const HomePlaceholder()),
-          GoRoute(path: Routes.booking, builder: (_, _) => const BookingPlaceholder()),
+          GoRoute(
+            path: Routes.booking,
+            builder: (_, _) => const BookingScreen(),
+            routes: [
+              GoRoute(path: 'done/:id', builder: (_, state) => BookingSuccessScreen(bookingId: state.pathParameters['id']!)),
+              // My bookings arrives with US4; until then a marked placeholder.
+              GoRoute(path: 'mine', builder: (context, _) => PlaceholderScreen(title: AppLocalizations.of(context).myBookings)),
+            ],
+          ),
           GoRoute(
             path: Routes.children,
             builder: (_, _) => const ChildrenListScreen(),

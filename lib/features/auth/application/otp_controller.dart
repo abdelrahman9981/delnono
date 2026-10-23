@@ -2,13 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/clock.dart';
 import '../../../core/settings/settings_repository.dart';
+
+export '../../../core/clock.dart';
 import '../data/phone_auth_service.dart';
 
-typedef Clock = DateTime Function();
-
-/// Current time; overridden in tests.
-final clockProvider = Provider<Clock>((ref) => DateTime.now);
 
 enum OtpPhase { idle, sending, codeSent, verifying, signedIn }
 

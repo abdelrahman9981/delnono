@@ -8,3 +8,4 @@ export { syncPhoneNumber } from "./callables/syncPhoneNumber";
 export { deleteAccount } from "./callables/deleteAccount";
 export { touchSession } from "./callables/touchSession";
 export { reverifyGuardian } from "./callables/reverifyGuardian";
+export { createBooking } from "./callables/createBooking";

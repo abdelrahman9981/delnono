@@ -112,6 +112,24 @@ service cloud.firestore {
       allow read: if signedIn();
       allow write: if false;
     }
+    // A guardian's own bookings, with their history; written only by Cloud Functions (002).
+    match /bookings/{bookingId} {
+      allow read: if guardianActive() && resource.data.guardianUid == request.auth.uid;
+      allow write: if false;
+
+      match /events/{eventId} {
+        allow read: if guardianActive()
+          && get(/databases/$(database)/documents/bookings/$(bookingId)).data.guardianUid == request.auth.uid;
+        allow write: if false;
+      }
+    }
+
+    // Annual packages (006); read here to show "covered by package".
+    match /packages/{packageId} {
+      allow read: if guardianActive() && resource.data.guardianUid == request.auth.uid;
+      allow write: if false;
+    }
+
     match /counters/{counterId} {
       allow read, write: if false;
     }
