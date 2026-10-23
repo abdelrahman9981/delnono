@@ -99,12 +99,20 @@ class _NavItem extends StatelessWidget {
               child: Icon(icon, size: 22, color: color),
             ),
             const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: color,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+            // One line that shrinks to fit: slots are ~73 pt wide on a 390 pt phone, and labels
+            // must not wrap or overflow at large system text sizes.
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                label,
+                maxLines: 1,
+                softWrap: false,
+                style: TextStyle(
+                  fontSize: 11,
+                  height: 1.3,
+                  color: color,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                ),
               ),
             ),
           ],

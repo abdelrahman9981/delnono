@@ -66,8 +66,17 @@ Future<void> startApp(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-/// From any shell screen: Booking → sign in with [phone] and the emulator's code.
+/// A signed-out launch starts at Welcome; "browse content first" enters the app's tabs.
+Future<void> leaveWelcome(WidgetTester tester) async {
+  final browse = find.text('اتفرجي على المحتوى الأول');
+  if (!shows(browse)) return;
+  await tester.tap(browse);
+  await settle(tester, () => shows(find.text('حجز')));
+}
+
+/// From Welcome or any shell screen: Booking → sign in with [phone] and the emulator's code.
 Future<void> signInFromBooking(WidgetTester tester, String phone) async {
+  await leaveWelcome(tester);
   await tester.tap(find.text('حجز'));
   await settle(tester, () => shows(find.byKey(const Key('phone-field'))));
   await tester.enterText(find.byKey(const Key('phone-field')), phone.substring(3));

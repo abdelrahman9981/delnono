@@ -348,6 +348,56 @@ class AppLocalizationsAr extends AppLocalizations {
   String get errAllergies => 'اكتبي الحساسية في أقل من ٥٠٠ حرف.';
 
   @override
+  String get welcomeClinic => 'دكتور النونو';
+
+  @override
+  String get welcomeDoctorName => 'د. أحمد العبد';
+
+  @override
+  String get welcomeDoctorTitle => 'استشاري طب الأطفال وحديثي الولادة · المقطم';
+
+  @override
+  String get welcomePhotoPlaceholder => 'صورة د. أحمد';
+
+  @override
+  String get welcomePhotoSoon => 'هنضيف الصورة الحقيقية قريب';
+
+  @override
+  String get welcomeHeading => 'أهلًا بيكي';
+
+  @override
+  String get welcomeIntro =>
+      'احجزي ميعادك وتابعي نمو وتطعيمات طفلك من مكان واحد.';
+
+  @override
+  String get welcomeBookTitle => 'احجزي من التطبيق';
+
+  @override
+  String get welcomeBookBody => 'اختاري اليوم والساعة وشوفي الأماكن الفاضية';
+
+  @override
+  String get welcomeProfileTitle => 'ملف طفلك معاكي';
+
+  @override
+  String get welcomeProfileBody => 'القياسات والتطعيمات والزيارات';
+
+  @override
+  String get welcomeTipsTitle => 'نصايح من الدكتور';
+
+  @override
+  String get welcomeTipsBody => 'فيديوهات حسب سن طفلك';
+
+  @override
+  String get welcomeRegister => 'سجّلي برقم موبايلك';
+
+  @override
+  String get welcomeBrowse => 'اتفرجي على المحتوى الأول';
+
+  @override
+  String get welcomeDisclaimer =>
+      'التطبيق للحجز والمتابعة بس، ومش بديل للكشف أو تشخيص الطبيب.';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

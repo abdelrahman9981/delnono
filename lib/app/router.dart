@@ -13,6 +13,7 @@ import '../features/registration/presentation/consent_screen.dart';
 import '../features/registration/presentation/guardian_details_screen.dart';
 import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
+import '../features/welcome/welcome_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'route_guard.dart';
 import 'session_flags.dart';
@@ -51,7 +52,8 @@ final routerProvider = Provider<GoRouter>((ref) {
   ref.listen(guardStateProvider, (_, next) => guard.value = next);
 
   final router = GoRouter(
-    initialLocation: Routes.home,
+    // Signed-out visitors start at Welcome; the guard sends signed-in guardians on to home.
+    initialLocation: Routes.welcome,
     refreshListenable: guard,
     redirect: (context, state) => guardRedirect(state.uri, guard.value),
     routes: [
@@ -71,7 +73,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: Routes.content, builder: (_, _) => const ContentPlaceholder()),
         ],
       ),
-      _screen(Routes.welcome, (l) => l.screenWelcome),
+      GoRoute(path: Routes.welcome, builder: (_, _) => const WelcomeScreen()),
       GoRoute(
         path: Routes.signIn,
         builder: (_, state) => PhoneScreen(from: state.uri.queryParameters['from']),

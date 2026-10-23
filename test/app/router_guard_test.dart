@@ -101,11 +101,25 @@ void main() {
     });
   });
 
-  group('public routes', () {
-    test('welcome, home and content never redirect', () {
+  group('public routes (US3)', () {
+    test('welcome, home and content are open to a signed-out visitor', () {
       for (final path in ['/welcome', '/', '/content']) {
         expect(go(path, const GuardState()), isNull, reason: path);
       }
+    });
+
+    test('home and content stay open to a signed-in guardian', () {
+      expect(go('/', ready), isNull);
+      expect(go('/content', ready), isNull);
+    });
+
+    test('welcome is only for signed-out visitors; a signed-in guardian goes home', () {
+      expect(go('/welcome', ready), '/');
+      expect(go('/welcome', with_(hasGuardian: false, consentCurrent: false)), '/');
+    });
+
+    test('welcome waits while auth is loading', () {
+      expect(go('/welcome', GuardState.loadingState), isNull);
     });
   });
 
@@ -163,6 +177,10 @@ void main() {
 
   group('router with overridden providers', () {
     Future<GoRouter> pumpApp(WidgetTester tester, GuardState state) async {
+      // Phone-sized screen, as in the design mockups (390 × 844 pt).
+      tester.view.physicalSize = const Size(1170, 2532);
+      tester.view.devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
       await tester.pumpWidget(ProviderScope(
         overrides: [guardStateProvider.overrideWithValue(state)],
         child: const App(),
@@ -172,6 +190,34 @@ void main() {
     }
 
     String location(GoRouter router) => router.routerDelegate.currentConfiguration.uri.toString();
+
+    testWidgets('signed out: the app starts at Welcome', (tester) async {
+      final router = await pumpApp(tester, const GuardState());
+      expect(location(router), '/welcome');
+      expect(find.text('سجّلي برقم موبايلك'), findsOneWidget);
+      expect(find.byType(ShellScaffold), findsNothing);
+    });
+
+    testWidgets('signed in: the app starts at home inside the shell', (tester) async {
+      final router = await pumpApp(tester, ready);
+      expect(location(router), '/');
+      expect(find.byType(ShellScaffold), findsOneWidget);
+    });
+
+    testWidgets('signed out: browse content first opens Content inside the shell', (tester) async {
+      final router = await pumpApp(tester, const GuardState());
+      await tester.tap(find.text('اتفرجي على المحتوى الأول'));
+      await tester.pumpAndSettle();
+      expect(location(router), '/content');
+      expect(find.byType(ShellScaffold), findsOneWidget);
+    });
+
+    testWidgets('signed out: register with mobile opens sign-in', (tester) async {
+      final router = await pumpApp(tester, const GuardState());
+      await tester.tap(find.text('سجّلي برقم موبايلك'));
+      await tester.pumpAndSettle();
+      expect(location(router), '/sign-in');
+    });
 
     testWidgets('signed out: booking goes to sign-in with from', (tester) async {
       final router = await pumpApp(tester, const GuardState());
@@ -186,6 +232,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(location(router), '/booking');
       expect(find.byType(ShellScaffold), findsOneWidget);
+    });
+
+    testWidgets('bottom navigation fits at the largest system text size', (tester) async {
+      tester.platformDispatcher.textScaleFactorTestValue = 2.0;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      await pumpApp(tester, ready);
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('shell has four tabs and an empty reserved slot', (tester) async {

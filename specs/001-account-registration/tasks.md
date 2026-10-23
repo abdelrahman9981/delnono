@@ -136,9 +136,9 @@ story, write the tests first and confirm they fail.
 
 **Independent Test**: Quickstart scenarios 1 and 2.
 
-- [ ] T051 [P] [US3] Create `lib/features/welcome/welcome_screen.dart` matching `docs/design/screens/Main.dc.html`: "register with your mobile" → `/sign-in`, "browse content first" → `/content`; doctor photo is a marked placeholder.
-- [ ] T052 [US3] In `lib/app/router.dart`, start signed-out users at `/welcome` and signed-in users at `/`; keep `/`, `/content` and `/welcome` public.
-- [ ] T053 [P] [US3] Create `integration_test/browse_test.dart`: fresh start shows Welcome; Home and Content open without sign-in; tapping Booking goes to sign-in and, after sign-in and registration, lands on `/booking` (FR-001 to FR-003).
+- [X] T051 [P] [US3] Create `lib/features/welcome/welcome_screen.dart` matching `docs/design/screens/Main.dc.html`: "register with your mobile" → `/sign-in`, "browse content first" → `/content`; doctor photo is a marked placeholder.
+- [X] T052 [US3] In `lib/app/router.dart`, start signed-out users at `/welcome` and signed-in users at `/`; keep `/`, `/content` and `/welcome` public.
+- [X] T053 [P] [US3] Create `integration_test/browse_test.dart`: fresh start shows Welcome; Home and Content open without sign-in; tapping Booking goes to sign-in and, after sign-in and registration, lands on `/booking` (FR-001 to FR-003).
 
 **Checkpoint**: browsing works signed out; FR-003 return works end to end.
 

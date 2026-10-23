@@ -676,6 +676,102 @@ abstract class AppLocalizations {
   /// **'اكتبي الحساسية في أقل من ٥٠٠ حرف.'**
   String get errAllergies;
 
+  /// No description provided for @welcomeClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'دكتور النونو'**
+  String get welcomeClinic;
+
+  /// No description provided for @welcomeDoctorName.
+  ///
+  /// In ar, this message translates to:
+  /// **'د. أحمد العبد'**
+  String get welcomeDoctorName;
+
+  /// No description provided for @welcomeDoctorTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'استشاري طب الأطفال وحديثي الولادة · المقطم'**
+  String get welcomeDoctorTitle;
+
+  /// No description provided for @welcomePhotoPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'صورة د. أحمد'**
+  String get welcomePhotoPlaceholder;
+
+  /// No description provided for @welcomePhotoSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'هنضيف الصورة الحقيقية قريب'**
+  String get welcomePhotoSoon;
+
+  /// No description provided for @welcomeHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهلًا بيكي'**
+  String get welcomeHeading;
+
+  /// No description provided for @welcomeIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'احجزي ميعادك وتابعي نمو وتطعيمات طفلك من مكان واحد.'**
+  String get welcomeIntro;
+
+  /// No description provided for @welcomeBookTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'احجزي من التطبيق'**
+  String get welcomeBookTitle;
+
+  /// No description provided for @welcomeBookBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري اليوم والساعة وشوفي الأماكن الفاضية'**
+  String get welcomeBookBody;
+
+  /// No description provided for @welcomeProfileTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملف طفلك معاكي'**
+  String get welcomeProfileTitle;
+
+  /// No description provided for @welcomeProfileBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'القياسات والتطعيمات والزيارات'**
+  String get welcomeProfileBody;
+
+  /// No description provided for @welcomeTipsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'نصايح من الدكتور'**
+  String get welcomeTipsTitle;
+
+  /// No description provided for @welcomeTipsBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيديوهات حسب سن طفلك'**
+  String get welcomeTipsBody;
+
+  /// No description provided for @welcomeRegister.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّلي برقم موبايلك'**
+  String get welcomeRegister;
+
+  /// No description provided for @welcomeBrowse.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتفرجي على المحتوى الأول'**
+  String get welcomeBrowse;
+
+  /// No description provided for @welcomeDisclaimer.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطبيق للحجز والمتابعة بس، ومش بديل للكشف أو تشخيص الطبيب.'**
+  String get welcomeDisclaimer;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

@@ -30,6 +30,7 @@ void main() {
       (tester) async {
     await tester.pumpWidget(const ProviderScope(child: App()));
     await tester.pumpAndSettle();
+    await leaveWelcome(tester);
 
     // A protected tab sends a signed-out visitor to sign-in, remembering where they were going.
     await tester.tap(find.text('حجز'));

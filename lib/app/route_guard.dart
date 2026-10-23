@@ -107,6 +107,8 @@ String safeFrom(String? from) {
 String? guardRedirect(Uri location, GuardState s) {
   if (s.loading) return null;
   final path = location.path;
+  // Welcome is the signed-out start (US3); a signed-in guardian starts at home.
+  if (path == Routes.welcome) return s.signedIn ? Routes.home : null;
   if (Routes.public.contains(path)) return null;
 
   if (Routes.flow.contains(path)) {
