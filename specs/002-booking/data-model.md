@@ -75,6 +75,12 @@ Server only for writes; readable by the owning guardian with current consent and
 Server only; readable with the booking. `type` (`created`, `changed`, `cancelled`), `by` (uid), `at`,
 `from?` and `to?` (`{date, hour}` for changes).
 
+## familyQuota/{uid}
+
+Server only. Per-family lock for FR-011 and FR-011a (research R2): `active` — list of
+`{bookingId, date, startsAt}` for confirmed bookings that have not started. Rewritten by every create,
+change and cancel; entries whose `startsAt` has passed are dropped when read.
+
 ## counters/bookings
 
 Server only. `next` (number).

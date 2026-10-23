@@ -17,5 +17,6 @@ signed in, guardian doc with current consent and `lastActiveAt` within `reverify
 | `bookings/{id}/events/{e}` | read | as the booking | other guardian |
 | `bookings/{id}/events/{e}` | write | never | owner |
 | `counters/{id}` | any | never | guardian |
+| `familyQuota/{uid}` | any | never (functions only) | owner |
 | `packages/{id}` | read | active guardian and `resource.data.guardianUid == request.auth.uid` | other guardian |
 | `packages/{id}` | write | never (006) | guardian |

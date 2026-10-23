@@ -20,12 +20,19 @@ concurrency); one document per place (more writes, harder capacity changes); a c
 
 ## R2. One booking per family per day, upcoming limit (FR-011, FR-011a)
 
-**Decision**: inside the same transaction, query the caller's bookings with `status == confirmed` for the
-same `date` (must be empty) and with `startsAt >= now` (must be fewer than `maxUpcomingPerFamily`).
-"Family" is the guardian account (001, D-10: one guardian per account in Phase 1).
+**Decision**: a per-family lock document `familyQuota/{uid}` holding `active: [{bookingId, date,
+startsAt}]` for the family's confirmed bookings that have not started. Every `createBooking`,
+`changeBooking` and `cancelBooking` reads and rewrites it in its transaction: a new booking needs no
+entry for its `date` and fewer than `maxUpcomingPerFamily` entries that have not started (past entries
+are dropped as they are read). "Family" is the guardian account (001, D-10).
 
-**Rationale**: transactional queries see a consistent snapshot, so two quick bookings by the same
-guardian cannot both pass. No extra lock document is needed.
+**Rationale**: two bookings by the same guardian for different hours touch no common slot document, and
+Firestore does not lock query ranges, so query checks alone could let both pass (analyze H1). Writing
+the same per-family document makes concurrent requests conflict, and the transaction retry sees the
+first booking.
+
+**Alternatives considered**: queries inside the transaction (not safe for different hours); a
+deterministic booking id per family and day (covers FR-011 but not the upcoming limit).
 
 ## R3. Booking number (FR-010)
 
@@ -43,6 +50,11 @@ On change, lines for children and vaccines that stay keep their stored amounts; 
 prices; the visit line keeps its amount unless the booking had no visit before (FR-023, clarification).
 
 **Rationale**: the guardian always sees what they will pay, independent of later price edits (FR-47).
+
+**Price shown = price charged (analyze H2)**: the app sends `expectedTotal`, the total its summary
+showed. If the server's total differs (a price changed while she was choosing), the transaction writes
+nothing and returns `failed-precondition` with `reason: price_changed` and the new price; the app shows
+the new total and asks her to confirm again.
 
 ## R5. Time and the cancel window (FR-001, FR-020)
 

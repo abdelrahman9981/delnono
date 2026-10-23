@@ -163,7 +163,7 @@ If the family has an active annual package (created in feature 006), the visit p
 
 - **FR-013**: The visit price MUST be charged once per booking, whatever the number of children (FR-52); a vaccine-only booking has no visit price (D-31).
 - **FR-014**: Each chosen vaccine's price MUST be added per child (FR-54).
-- **FR-015**: Prices MUST be fixed when the booking is confirmed; later price changes MUST NOT change confirmed bookings, and the guardian sees the current price while booking (FR-47).
+- **FR-015**: Prices MUST be fixed when the booking is confirmed; later price changes MUST NOT change confirmed bookings, and the guardian sees the current price while booking (FR-47). If a price changed after the summary was shown, the booking MUST NOT be made at a different total: the guardian sees the new total and confirms again.
 - **FR-016**: When the family has an active package covering the booking date, the visit price MUST show as covered and not be charged; vaccines are still charged.
 - **FR-017**: Payment is cash at the clinic; the app shows the amount due and takes no payment (Phase 2 adds payment).
 

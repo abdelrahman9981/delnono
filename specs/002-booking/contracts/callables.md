@@ -17,12 +17,12 @@ selection: {
 ## createBooking
 
 ```text
-in:  selection
+in:  selection + { expectedTotal }   // the total the app showed
 out: { bookingId, number, price }
 ```
 
-One transaction: settings, slot, counter, the caller's same-day and upcoming bookings, package, vaccine
-prices. Writes the booking, increments `slots/{date}_{hour}.taken`, the counter, and an event.
+One transaction: settings, slot, counter, `familyQuota/{uid}`, package, vaccine prices. Writes the
+booking, increments `slots/{date}_{hour}.taken`, the counter, the family quota and an event.
 
 | Error | When |
 |-------|------|
@@ -31,6 +31,7 @@ prices. Writes the booking, increments `slots/{date}_{hour}.taken`, the counter,
 | `resource-exhausted` | the hour is full — "الميعاد اتحجز" (`details.reason: full`) |
 | `already-exists` | the family already has an active booking that day (`details.bookingId`) |
 | `out-of-range` | the family already holds `maxUpcomingPerFamily` upcoming bookings |
+| `failed-precondition` (`reason: price_changed`) | the server total differs from `expectedTotal`; `details.price` is the new snapshot and nothing was written |
 
 ## cancelBooking
 
@@ -39,14 +40,14 @@ in:  { bookingId }
 out: {}
 ```
 
-Owner only, `status == confirmed`, before the cancel window. Sets `cancelled`, decrements the slot, adds
-an event. Errors: `not-found` (not the caller's), `failed-precondition` (`details.reason`:
+Owner only, `status == confirmed`, before the cancel window. Sets `cancelled`, decrements the slot,
+removes the booking from `familyQuota/{uid}`, adds an event. Errors: `not-found` (not the caller's), `failed-precondition` (`details.reason`:
 `not_confirmed`, `inside_window`).
 
 ## changeBooking
 
 ```text
-in:  { bookingId, selection }
+in:  { bookingId, selection, expectedTotal }
 out: { bookingId, number, price }
 ```
 

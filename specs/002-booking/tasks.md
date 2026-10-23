@@ -37,7 +37,7 @@ All user-facing text goes in `l10n/app_ar.arb`.
 - [ ] T005 [P] Create `functions/src/lib/booking/schedule.ts`: from `settings/booking`, decide if a date is open (working weekday, not a holiday, within horizon), if an hour is within working hours and not started, and if a date is a vaccine day; returns the reasons named in contracts/callables.md; tests in `functions/test/lib/bookingSchedule.test.ts`.
 - [ ] T006 [P] Create `functions/src/lib/booking/pricing.ts`: price snapshot per research R4 (visit once or covered; vaccine lines per child, `amount: null` when hidden; `total`, `hasHiddenPrices`), and the change rule (kept lines keep amounts, new lines current prices, visit kept unless newly added); tests in `functions/test/lib/bookingPricing.test.ts`.
 - [ ] T007 [P] Create `functions/src/lib/booking/settings.ts` reading `settings/booking` with the defaults of data-model.md.
-- [ ] T008 Extend `firestore.rules` with `settings/booking` (read anyone, as other settings), `vaccines` (read signed in), `slots` (read signed in), `counters` (deny), and the `guardianActive()` helper (`consentCurrent()` and `active()` from 001) for later rows; tests in `functions/test/rules/booking-base.test.ts`.
+- [ ] T008 Extend `firestore.rules` with `settings/booking` (read anyone, as other settings), `vaccines` (read signed in), `slots` (read signed in), `counters` and `familyQuota` (deny), and the `guardianActive()` helper (`consentCurrent()` and `active()` from 001) for later rows; tests in `functions/test/rules/booking-base.test.ts`.
 - [ ] T009 [P] Create `lib/features/booking/data/booking_settings.dart` (model + stream of `settings/booking` with defaults) and `vaccines_repository.dart` (active vaccines), with providers.
 - [ ] T010 [P] Create `lib/features/booking/domain/schedule.dart` mirroring T005 for display (open days within the horizon, hours of a day, started hours, vaccine days) with tests in `test/features/booking/schedule_test.dart` using the same cases as T005.
 - [ ] T011 [P] Create `lib/features/booking/domain/price_preview.dart` mirroring T006 for the summary (visit once, covered by package, vaccine lines, hidden prices) with tests in `test/features/booking/price_preview_test.dart` using the same cases as T006.
@@ -56,17 +56,17 @@ All user-facing text goes in `l10n/app_ar.arb`.
 
 ### Tests for User Story 1
 
-- [ ] T014 [P] [US1] Create `functions/test/functions/createBooking.test.ts`: visit for one and for two children takes one place, visit price once, number assigned, event written; `invalid-argument` (unlinked child, malformed selection); `failed-precondition` reasons `closed`, `outside_hours`, `beyond_horizon`, `started`; `already-exists` for a second booking the same day (`details.bookingId`); `out-of-range` beyond `maxUpcomingPerFamily`; requires current consent.
+- [ ] T014 [P] [US1] Create `functions/test/functions/createBooking.test.ts`: visit for one and for two children takes one place, visit price once, number assigned, event written; `invalid-argument` (unlinked child, malformed selection); `failed-precondition` reasons `closed`, `outside_hours`, `beyond_horizon`, `started`; `already-exists` for a second booking the same day (`details.bookingId`); `out-of-range` beyond `maxUpcomingPerFamily`; `price_changed` when `expectedTotal` differs (nothing written, new price returned); requires current consent; a same-family race (two `createBooking` calls for different hours on the same day, and three for different days with a limit of 2, fired with `Promise.all`) never exceeds FR-011 or FR-011a.
 - [ ] T015 [P] [US1] Create `functions/test/rules/bookings.test.ts` for every `bookings`, `events` and `packages` row in contracts/firestore-access.md (owner read with filter, other guardian, outdated consent, inactive guardian, no client writes).
-- [ ] T016 [P] [US1] Create `test/features/booking/booking_screen_test.dart`: closed days disabled, hours show "فاضل N من M" and full hours "مكتمل" disabled, started hours hidden, multi-child selection, summary shows one visit price, confirm calls the API with the selection, errors in Arabic; no-children prompt.
+- [ ] T016 [P] [US1] Create `test/features/booking/booking_screen_test.dart`: closed days disabled, hours show "فاضل N من M" (never below zero when capacity was lowered) and full hours "مكتمل" disabled, a `price_changed` reply shows the new total and asks to confirm again, started hours hidden, multi-child selection, summary shows one visit price, confirm calls the API with the selection, errors in Arabic; no-children prompt.
 - [ ] T017 [P] [US1] Create `test/features/booking/booking_success_screen_test.dart`: number "نونو ٢٤٨" style, day, hour, children, amount, arrival-order note, both buttons.
 
 ### Implementation for User Story 1
 
-- [ ] T018 [US1] Create `functions/src/callables/createBooking.ts` per contracts/callables.md (one transaction: settings, slot, counter, same-day and upcoming queries, vaccines, package; booking, slot increment, counter, event) and export it.
+- [ ] T018 [US1] Create `functions/src/callables/createBooking.ts` per contracts/callables.md (one transaction: settings, slot, counter, `familyQuota/{uid}` (research R2), vaccines, package, `expectedTotal` check; booking, slot increment, counter, family quota, event) and export it.
 - [ ] T019 [US1] Extend `firestore.rules` with `bookings`, `bookings/{id}/events` and `packages` read rules per contracts/firestore-access.md.
 - [ ] T020 [P] [US1] Create `lib/features/booking/data/booking_api.dart` (createBooking, cancelBooking, changeBooking; maps errors to typed exceptions: full, closed reasons, already booked that day, too many upcoming) and `bookings_repository.dart` (stream of the guardian's bookings ordered by `startsAt`).
-- [ ] T021 [US1] Create `lib/features/booking/application/booking_form_controller.dart`: selection state (visit type, date, hour, children, vaccines per child), validation, preview via T011, submit.
+- [ ] T021 [US1] Create `lib/features/booking/application/booking_form_controller.dart`: selection state (visit type, date, hour, children, vaccines per child), validation, preview via T011, submit with `expectedTotal`; on `price_changed` show the new total and ask to confirm again (FR-015).
 - [ ] T022 [US1] Create `lib/features/booking/presentation/booking_screen.dart` matching `booking.jpg`: step indicator, visit type cards, day chips (vaccine-day dots), hour cards with places left / "مكتمل", children cards with checkboxes, summary card, confirm; "حجوزاتي" top-bar action.
 - [ ] T023 [US1] Create `lib/features/booking/presentation/booking_success_screen.dart` matching `booking-success.jpg`.
 - [ ] T024 [US1] Wire `/booking`, `/booking/done/:id` in `lib/app/router.dart` (replacing the Booking placeholder) and add both screens to `test/app/layout_test.dart` (light/dark, text ×2, RTL icons).
@@ -117,7 +117,7 @@ All user-facing text goes in `l10n/app_ar.arb`.
 
 ### Implementation for User Story 5
 
-- [ ] T037 [US5] Create `functions/src/callables/cancelBooking.ts` and `changeBooking.ts` per contracts/callables.md and export them.
+- [ ] T037 [US5] Create `functions/src/callables/cancelBooking.ts` and `changeBooking.ts` per contracts/callables.md (both update `familyQuota/{uid}`; change checks `expectedTotal`) and export them.
 - [ ] T038 [US5] Add cancel (with confirmation), change (`/booking/change/:id`, booking screen pre-filled) and the inside-window card to the app.
 - [ ] T039 [P] [US5] Create `integration_test/cancel_change_test.dart`: cancel frees the place; change keeps the number and moves the place.
 
