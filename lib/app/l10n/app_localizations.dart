@@ -772,6 +772,60 @@ abstract class AppLocalizations {
   /// **'التطبيق للحجز والمتابعة بس، ومش بديل للكشف أو تشخيص الطبيب.'**
   String get welcomeDisclaimer;
 
+  /// No description provided for @confirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد'**
+  String get confirm;
+
+  /// No description provided for @linkHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيه ملفات أطفال على رقمك'**
+  String get linkHeading;
+
+  /// No description provided for @linkIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'العيادة سجلت قبل كده أطفال على الرقم ده. عشان نتأكد إنهم أطفالك، جاوبي على سؤال واحد.'**
+  String get linkIntro;
+
+  /// No description provided for @linkBirthDateLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ ميلاد واحد من أطفالك المسجلين في العيادة'**
+  String get linkBirthDateLabel;
+
+  /// No description provided for @linkPrivacyNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'مش هنعرض أي بيانات غير لما الإجابة تبقى صح.'**
+  String get linkPrivacyNote;
+
+  /// No description provided for @linkWrongDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ مش مطابق. فاضلك {attempts}. بعدها هنوقف الربط وتقدري تكلمي العيادة.'**
+  String linkWrongDate(String attempts);
+
+  /// No description provided for @linkLocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'وقفنا الربط بعد المحاولات دي. كلمي العيادة عشان تربط أطفالك بحسابك.'**
+  String get linkLocked;
+
+  /// No description provided for @linkSuccess.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتضاف {names} لحسابك.'**
+  String linkSuccess(String names);
+
+  /// No description provided for @linkNotMine.
+  ///
+  /// In ar, this message translates to:
+  /// **'دول مش أطفالي · ضيفي طفل جديد'**
+  String get linkNotMine;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

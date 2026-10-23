@@ -7,6 +7,7 @@ import 'package:delnono/app/app.dart';
 import 'package:delnono/app/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 final emulatorHost = Platform.isAndroid ? '10.0.2.2' : 'localhost';
@@ -60,9 +61,9 @@ Future<void> tapInList(WidgetTester tester, Finder finder) async {
 }
 
 /// Starts the app fresh (new provider container; Firebase keeps its session).
-Future<void> startApp(WidgetTester tester) async {
+Future<void> startApp(WidgetTester tester, {List<Override> overrides = const []}) async {
   await tester.pumpWidget(const SizedBox());
-  await tester.pumpWidget(ProviderScope(key: UniqueKey(), child: const App()));
+  await tester.pumpWidget(ProviderScope(key: UniqueKey(), overrides: overrides, child: const App()));
   await tester.pumpAndSettle();
 }
 
@@ -84,4 +85,15 @@ Future<void> signInFromBooking(WidgetTester tester, String phone) async {
   await settle(tester, () => shows(find.byKey(const Key('otp-field'))));
   await tester.enterText(find.byKey(const Key('otp-field')), await latestCodeFor(phone));
   await settle(tester, () => location(tester).startsWith('/register'));
+}
+
+/// Guardian details and both consents, ending wherever the guard sends a new guardian next.
+Future<void> registerGuardian(WidgetTester tester, String name) async {
+  await tester.enterText(find.byKey(const Key('guardian-name')), name);
+  await tapInList(tester, find.text('أم'));
+  await tapInList(tester, find.text('التالي'));
+  await settle(tester, () => shows(find.byKey(const Key('consent-policy'))));
+  await tapInList(tester, find.byKey(const Key('consent-policy')));
+  await tapInList(tester, find.byKey(const Key('consent-child-data')));
+  await tapInList(tester, find.text('موافقة ومتابعة'));
 }

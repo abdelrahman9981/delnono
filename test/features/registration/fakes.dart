@@ -20,6 +20,19 @@ class FakeRegistrationApi implements RegistrationApi {
     if (error != null) throw error!;
     acceptedVersions.add(policyVersion);
   }
+
+  final linkAttempts = <String>[];
+
+  /// What the next [linkClinicChildren] call does: a list to return, or an exception to throw.
+  Object linkResult = const <LinkedChild>[];
+
+  @override
+  Future<List<LinkedChild>> linkClinicChildren(String birthDate) async {
+    linkAttempts.add(birthDate);
+    final r = linkResult;
+    if (r is Exception) throw r;
+    return r as List<LinkedChild>;
+  }
 }
 
 class FakeChildrenRepository extends Mock implements ChildrenRepository {

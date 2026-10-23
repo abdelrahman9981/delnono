@@ -15,6 +15,30 @@ class GuardianDetails {
 
 const consentScopes = ['privacy_policy', 'terms', 'child_data'];
 
+class LinkedChild {
+  const LinkedChild(this.childId, this.name);
+
+  final String childId;
+  final String name;
+}
+
+/// `linkClinicChildren`: the birth date matched none of the children; [remaining] tries are left.
+class LinkWrongBirthDate implements Exception {
+  const LinkWrongBirthDate(this.remaining);
+
+  final int remaining;
+}
+
+/// `linkClinicChildren`: locked after too many wrong dates; the clinic links the children (FR-021a).
+class LinkLocked implements Exception {
+  const LinkLocked();
+}
+
+/// `linkClinicChildren`: no unlinked children are left on the number.
+class LinkNothingToLink implements Exception {
+  const LinkNothingToLink();
+}
+
 /// Registration callables (contracts/callables.md).
 abstract interface class RegistrationApi {
   /// Writes guardian and consent together. Returns whether unlinked children exist on the number.
@@ -22,6 +46,10 @@ abstract interface class RegistrationApi {
 
   /// Records consent to a new policy version (FR-017).
   Future<void> acceptPolicy(int policyVersion);
+
+  /// Links the clinic's children on this number if [birthDate] (`YYYY-MM-DD`) matches one (FR-021).
+  /// Throws [LinkWrongBirthDate], [LinkLocked] or [LinkNothingToLink].
+  Future<List<LinkedChild>> linkClinicChildren(String birthDate);
 }
 
 class FirebaseRegistrationApi implements RegistrationApi {
@@ -44,6 +72,30 @@ class FirebaseRegistrationApi implements RegistrationApi {
   Future<void> acceptPolicy(int policyVersion) => _functions
       .httpsCallable('acceptPolicy')
       .call<Object?>({'policyVersion': policyVersion, 'scopes': consentScopes});
+
+  @override
+  Future<List<LinkedChild>> linkClinicChildren(String birthDate) async {
+    try {
+      final result =
+          await _functions.httpsCallable('linkClinicChildren').call<Map<String, dynamic>>({'birthDate': birthDate});
+      return [
+        for (final c in (result.data['linked'] as List).cast<Map<Object?, Object?>>())
+          LinkedChild(c['childId'] as String, c['name'] as String),
+      ];
+    } on FirebaseFunctionsException catch (e) {
+      switch (e.code) {
+        case 'permission-denied':
+          final details = e.details;
+          final remaining = details is Map ? details['remaining'] : null;
+          throw LinkWrongBirthDate(remaining is num ? remaining.toInt() : 0);
+        case 'resource-exhausted':
+          throw const LinkLocked();
+        case 'not-found':
+          throw const LinkNothingToLink();
+      }
+      rethrow;
+    }
+  }
 }
 
 final registrationApiProvider =

@@ -152,14 +152,14 @@ story, write the tests first and confirm they fail.
 
 ### Tests for User Story 4
 
-- [ ] T054 [P] [US4] Create `functions/test/functions/linkClinicChildren.test.ts`: correct birth date links every unlinked child on the caller's phone (any `registeredBy`, including one left by a deleted account) (sets `guardianUid`), clears `clinicChildrenPending`, resets `linkAttempts`, writes `children.linked`; wrong date returns `permission-denied` with `details.remaining` and writes `children.link_failed`; the `maxLinkAttempts`-th failure locks, clears `clinicChildrenPending` and writes `children.link_locked`; locked returns `resource-exhausted`; no clinic children returns `not-found`; no current consent returns `failed-precondition`.
-- [ ] T055 [P] [US4] Create `test/features/registration/link_children_screen_test.dart`: remaining-attempts message, locked message with "contact the clinic", and "these aren't my children, add a child" sets the session skip flag and opens add child without calling the function.
+- [X] T054 [P] [US4] Create `functions/test/functions/linkClinicChildren.test.ts`: correct birth date links every unlinked child on the caller's phone (any `registeredBy`, including one left by a deleted account) (sets `guardianUid`), clears `clinicChildrenPending`, resets `linkAttempts`, writes `children.linked`; wrong date returns `permission-denied` with `details.remaining` and writes `children.link_failed`; the `maxLinkAttempts`-th failure locks, clears `clinicChildrenPending` and writes `children.link_locked`; locked returns `resource-exhausted`; no clinic children returns `not-found`; no current consent returns `failed-precondition`.
+- [X] T055 [P] [US4] Create `test/features/registration/link_children_screen_test.dart`: remaining-attempts message, locked message with "contact the clinic", and "these aren't my children, add a child" sets the session skip flag and opens add child without calling the function.
 
 ### Implementation for User Story 4
 
-- [ ] T056 [US4] Create `functions/src/callables/linkClinicChildren.ts` per contracts/callables.md, using `settings/auth.maxLinkAttempts` and a transaction over `linkAttempts/{phone}` and the matching children; export it from `functions/src/index.ts`.
-- [ ] T057 [US4] Create `lib/features/registration/presentation/link_children_screen.dart` matching `docs/design/screens/LinkChildren.dc.html`: birth-date input, confirm, attempts-left and locked states, and the "these aren't my children, add a child" option (spec US4 scenario 4); on success show the linked children's names.
-- [ ] T058 [US4] Wire `/register/link` and guard step 4 (`clinicChildrenPending` and the session skip flag) in `lib/app/router.dart`; after linking, skip `/register/child` because children exist.
+- [X] T056 [US4] Create `functions/src/callables/linkClinicChildren.ts` per contracts/callables.md, using `settings/auth.maxLinkAttempts` and a transaction over `linkAttempts/{phone}` and the matching children; export it from `functions/src/index.ts`.
+- [X] T057 [US4] Create `lib/features/registration/presentation/link_children_screen.dart` matching `docs/design/screens/LinkChildren.dc.html`: birth-date input, confirm, attempts-left and locked states, and the "these aren't my children, add a child" option (spec US4 scenario 4); on success show the linked children's names.
+- [X] T058 [US4] Wire `/register/link` and guard step 4 (`clinicChildrenPending` and the session skip flag) in `lib/app/router.dart`; after linking, skip `/register/child` because children exist.
 
 **Checkpoint**: clinic children appear only after the birth-date check.
 

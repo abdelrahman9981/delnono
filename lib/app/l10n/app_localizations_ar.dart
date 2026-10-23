@@ -398,6 +398,40 @@ class AppLocalizationsAr extends AppLocalizations {
       'التطبيق للحجز والمتابعة بس، ومش بديل للكشف أو تشخيص الطبيب.';
 
   @override
+  String get confirm => 'تأكيد';
+
+  @override
+  String get linkHeading => 'فيه ملفات أطفال على رقمك';
+
+  @override
+  String get linkIntro =>
+      'العيادة سجلت قبل كده أطفال على الرقم ده. عشان نتأكد إنهم أطفالك، جاوبي على سؤال واحد.';
+
+  @override
+  String get linkBirthDateLabel =>
+      'تاريخ ميلاد واحد من أطفالك المسجلين في العيادة';
+
+  @override
+  String get linkPrivacyNote => 'مش هنعرض أي بيانات غير لما الإجابة تبقى صح.';
+
+  @override
+  String linkWrongDate(String attempts) {
+    return 'التاريخ مش مطابق. فاضلك $attempts. بعدها هنوقف الربط وتقدري تكلمي العيادة.';
+  }
+
+  @override
+  String get linkLocked =>
+      'وقفنا الربط بعد المحاولات دي. كلمي العيادة عشان تربط أطفالك بحسابك.';
+
+  @override
+  String linkSuccess(String names) {
+    return 'اتضاف $names لحسابك.';
+  }
+
+  @override
+  String get linkNotMine => 'دول مش أطفالي · ضيفي طفل جديد';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

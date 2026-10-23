@@ -1,4 +1,5 @@
 import 'package:delnono/app/l10n/app_localizations.dart';
+import 'package:delnono/app/messenger.dart';
 import 'package:delnono/app/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -43,6 +44,7 @@ class ScreenHarness {
           GlobalCupertinoLocalizations.delegate,
         ],
         theme: buildTheme(Brightness.light),
+        scaffoldMessengerKey: appMessengerKey,
         routerConfig: router,
       ),
     ));

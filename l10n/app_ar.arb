@@ -136,6 +136,18 @@
   "welcomeBrowse": "اتفرجي على المحتوى الأول",
   "welcomeDisclaimer": "التطبيق للحجز والمتابعة بس، ومش بديل للكشف أو تشخيص الطبيب.",
 
+  "confirm": "تأكيد",
+  "linkHeading": "فيه ملفات أطفال على رقمك",
+  "linkIntro": "العيادة سجلت قبل كده أطفال على الرقم ده. عشان نتأكد إنهم أطفالك، جاوبي على سؤال واحد.",
+  "linkBirthDateLabel": "تاريخ ميلاد واحد من أطفالك المسجلين في العيادة",
+  "linkPrivacyNote": "مش هنعرض أي بيانات غير لما الإجابة تبقى صح.",
+  "linkWrongDate": "التاريخ مش مطابق. فاضلك {attempts}. بعدها هنوقف الربط وتقدري تكلمي العيادة.",
+  "@linkWrongDate": { "placeholders": { "attempts": { "type": "String" } } },
+  "linkLocked": "وقفنا الربط بعد المحاولات دي. كلمي العيادة عشان تربط أطفالك بحسابك.",
+  "linkSuccess": "اتضاف {names} لحسابك.",
+  "@linkSuccess": { "placeholders": { "names": { "type": "String" } } },
+  "linkNotMine": "دول مش أطفالي · ضيفي طفل جديد",
+
   "errInvalidCode": "الكود مش صح.",
   "errCodeExpired": "الكود خلص وقته. اطلبي كود جديد.",
   "errTooManyRequests": "محاولات كتير. استني شوية وجربي تاني.",

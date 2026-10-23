@@ -11,6 +11,7 @@ import '../features/children/presentation/add_child_screen.dart';
 import '../features/registration/data/guardian_repository.dart';
 import '../features/registration/presentation/consent_screen.dart';
 import '../features/registration/presentation/guardian_details_screen.dart';
+import '../features/registration/presentation/link_children_screen.dart';
 import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
 import '../features/welcome/welcome_screen.dart';
@@ -90,7 +91,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.registerConsent,
         builder: (_, state) => ConsentScreen(from: state.uri.queryParameters['from']),
       ),
-      _screen(Routes.registerLink, (l) => l.screenLinkChildren),
+      GoRoute(
+        path: Routes.registerLink,
+        builder: (_, state) => LinkChildrenScreen(from: state.uri.queryParameters['from']),
+      ),
       GoRoute(
         path: Routes.registerChild,
         builder: (_, state) => AddChildScreen(registration: true, from: state.uri.queryParameters['from']),

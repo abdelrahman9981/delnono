@@ -2,3 +2,4 @@
 export { completeRegistration } from "./callables/completeRegistration";
 export { acceptPolicy } from "./callables/acceptPolicy";
 export { createChild } from "./callables/createChild";
+export { linkClinicChildren } from "./callables/linkClinicChildren";

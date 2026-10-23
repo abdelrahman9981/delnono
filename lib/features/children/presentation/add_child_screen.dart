@@ -10,6 +10,7 @@ import '../../../app/theme.dart';
 import '../../../core/errors/arabic_errors.dart';
 import '../../../core/format/arabic_digits.dart';
 import '../../../core/validation/registration_rules.dart';
+import '../../../core/widgets/birth_date_picker.dart';
 import '../../../core/widgets/notice.dart';
 import '../../../core/widgets/segmented.dart';
 import '../../../core/widgets/step_indicator.dart';
@@ -53,13 +54,7 @@ class _AddChildScreenState extends ConsumerState<AddChildScreen> {
   bool get _allergiesOk => validAllergies(_allergies.text);
 
   Future<void> _pickDate() async {
-    final today = DateUtils.dateOnly(DateTime.now());
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _birthDate ?? today,
-      firstDate: DateTime(today.year - 18, today.month, today.day),
-      lastDate: today,
-    );
+    final picked = await ref.read(birthDatePickerProvider)(context, initial: _birthDate);
     if (picked != null) setState(() => _birthDate = picked);
   }
 
