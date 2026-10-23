@@ -370,6 +370,312 @@ abstract class AppLocalizations {
   /// **'الكود مش صح، والمحاولات خلصت. اطلبي كود جديد.'**
   String get otpNoAttemptsLeft;
 
+  /// No description provided for @next.
+  ///
+  /// In ar, this message translates to:
+  /// **'التالي'**
+  String get next;
+
+  /// No description provided for @save.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ'**
+  String get save;
+
+  /// No description provided for @guardianHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'نتعرف عليكي'**
+  String get guardianHeading;
+
+  /// No description provided for @guardianIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'البيانات دي بتظهر للعيادة مع كل حجز.'**
+  String get guardianIntro;
+
+  /// No description provided for @guardianFullName.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاسم بالكامل'**
+  String get guardianFullName;
+
+  /// No description provided for @guardianRelation.
+  ///
+  /// In ar, this message translates to:
+  /// **'صلة القرابة بالطفل'**
+  String get guardianRelation;
+
+  /// No description provided for @relationMother.
+  ///
+  /// In ar, this message translates to:
+  /// **'أم'**
+  String get relationMother;
+
+  /// No description provided for @relationFather.
+  ///
+  /// In ar, this message translates to:
+  /// **'أب'**
+  String get relationFather;
+
+  /// No description provided for @relationOther.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر'**
+  String get relationOther;
+
+  /// No description provided for @guardianEmail.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإيميل (اختياري)'**
+  String get guardianEmail;
+
+  /// No description provided for @guardianEmailHelp.
+  ///
+  /// In ar, this message translates to:
+  /// **'بنستخدمه بس لو احتجنا نبعتلك حاجة مكتوبة.'**
+  String get guardianEmailHelp;
+
+  /// No description provided for @guardianNothingSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'مش هنحفظ أي بيانات غير بعد ما توافقي على سياسة الخصوصية في الخطوة الجاية.'**
+  String get guardianNothingSaved;
+
+  /// No description provided for @errFullName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتبي اسمك بالكامل، من حرفين لحد ٨٠ حرف.'**
+  String get errFullName;
+
+  /// No description provided for @errRelation.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري صلة القرابة.'**
+  String get errRelation;
+
+  /// No description provided for @errEmail.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإيميل مش مكتوب صح.'**
+  String get errEmail;
+
+  /// No description provided for @consentTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخصوصية'**
+  String get consentTitle;
+
+  /// No description provided for @consentHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيانات طفلك أمانة'**
+  String get consentHeading;
+
+  /// No description provided for @consentIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'قبل ما نحفظ أي حاجة، اعرفي هنعمل إيه بالبيانات.'**
+  String get consentIntro;
+
+  /// No description provided for @consentUpdatedHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'سياسة الخصوصية اتحدثت'**
+  String get consentUpdatedHeading;
+
+  /// No description provided for @consentUpdatedIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'راجعي الإصدار الجديد ووافقي عليه عشان تكملي.'**
+  String get consentUpdatedIntro;
+
+  /// No description provided for @consentWhat.
+  ///
+  /// In ar, this message translates to:
+  /// **'بنجمع إيه: بياناتك، وبيانات طفلك، وقياساته وتطعيماته وزياراته.'**
+  String get consentWhat;
+
+  /// No description provided for @consentWho.
+  ///
+  /// In ar, this message translates to:
+  /// **'مين يشوفها: انتي، والدكتور. السكرتارية تشوف المواعيد والقياسات بس.'**
+  String get consentWho;
+
+  /// No description provided for @consentDelete.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحذف: تقدري تمسحي حسابك في أي وقت. السجل الطبي بيفضل عند العيادة.'**
+  String get consentDelete;
+
+  /// No description provided for @consentReadFull.
+  ///
+  /// In ar, this message translates to:
+  /// **'اقري سياسة الخصوصية وشروط الاستخدام كاملة'**
+  String get consentReadFull;
+
+  /// No description provided for @consentPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'نص مؤقت · يراجعه المحامي قبل الإطلاق'**
+  String get consentPlaceholder;
+
+  /// No description provided for @consentPolicyCheck.
+  ///
+  /// In ar, this message translates to:
+  /// **'موافقة على سياسة الخصوصية وشروط الاستخدام'**
+  String get consentPolicyCheck;
+
+  /// No description provided for @consentVersion.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإصدار {version}'**
+  String consentVersion(String version);
+
+  /// No description provided for @consentVersionDated.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإصدار {version} · {date}'**
+  String consentVersionDated(String version, String date);
+
+  /// No description provided for @consentChildDataCheck.
+  ///
+  /// In ar, this message translates to:
+  /// **'موافقة على جمع بيانات طفلي الصحية'**
+  String get consentChildDataCheck;
+
+  /// No description provided for @consentChildDataSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'عشان نسجل ملفه وتطعيماته ونفكرك بمواعيده'**
+  String get consentChildDataSub;
+
+  /// No description provided for @consentAccept.
+  ///
+  /// In ar, this message translates to:
+  /// **'موافقة ومتابعة'**
+  String get consentAccept;
+
+  /// No description provided for @consentBothRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'لازم الموافقتين عشان تكملي.'**
+  String get consentBothRequired;
+
+  /// No description provided for @policyPrivacyTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سياسة الخصوصية'**
+  String get policyPrivacyTitle;
+
+  /// No description provided for @policyTermsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'شروط الاستخدام'**
+  String get policyTermsTitle;
+
+  /// No description provided for @childName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم الطفل'**
+  String get childName;
+
+  /// No description provided for @childBirthDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الميلاد'**
+  String get childBirthDate;
+
+  /// No description provided for @childBirthDatePick.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري التاريخ'**
+  String get childBirthDatePick;
+
+  /// No description provided for @childSex.
+  ///
+  /// In ar, this message translates to:
+  /// **'النوع'**
+  String get childSex;
+
+  /// No description provided for @sexMale.
+  ///
+  /// In ar, this message translates to:
+  /// **'ولد'**
+  String get sexMale;
+
+  /// No description provided for @sexFemale.
+  ///
+  /// In ar, this message translates to:
+  /// **'بنت'**
+  String get sexFemale;
+
+  /// No description provided for @childFixedFieldsNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ الميلاد والنوع بيحددوا جدول التطعيمات، فتعديلهم بعد كده بيبقى من العيادة.'**
+  String get childFixedFieldsNote;
+
+  /// No description provided for @childBirthWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'وزن الولادة (اختياري)'**
+  String get childBirthWeight;
+
+  /// No description provided for @kg.
+  ///
+  /// In ar, this message translates to:
+  /// **'كجم'**
+  String get kg;
+
+  /// No description provided for @childAllergies.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحساسية (اختياري)'**
+  String get childAllergies;
+
+  /// No description provided for @childDuplicateLinked.
+  ///
+  /// In ar, this message translates to:
+  /// **'«{name}» متسجل في حسابك بنفس تاريخ الميلاد، فمش هنضيفه تاني.'**
+  String childDuplicateLinked(String name);
+
+  /// No description provided for @childDuplicateClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيه طفل اسمه «{name}» بنفس تاريخ الميلاد مسجل على رقمك بالفعل، فمش هنضيفه تاني. لو ده غلط كلمي العيادة.'**
+  String childDuplicateClinic(String name);
+
+  /// No description provided for @errChildName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتبي اسم الطفل، من حرفين لحد ٦٠ حرف.'**
+  String get errChildName;
+
+  /// No description provided for @errBirthDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري تاريخ الميلاد.'**
+  String get errBirthDate;
+
+  /// No description provided for @errSex.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري النوع.'**
+  String get errSex;
+
+  /// No description provided for @errBirthWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن لازم يكون بين ٠٫٣ و٧ كجم.'**
+  String get errBirthWeight;
+
+  /// No description provided for @errAllergies.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتبي الحساسية في أقل من ٥٠٠ حرف.'**
+  String get errAllergies;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

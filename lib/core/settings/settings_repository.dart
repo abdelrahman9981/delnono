@@ -35,7 +35,12 @@ class AuthSettings {
 
 /// `settings/policy`. Version 1 with empty text until the clinic's policy is loaded.
 class PolicySettings {
-  const PolicySettings({this.currentVersion = 1, this.privacyPolicyText = '', this.termsText = ''});
+  const PolicySettings({
+    this.currentVersion = 1,
+    this.privacyPolicyText = '',
+    this.termsText = '',
+    this.updatedAt,
+  });
 
   factory PolicySettings.fromMap(Map<String, dynamic>? data) {
     const d = PolicySettings();
@@ -44,12 +49,22 @@ class PolicySettings {
       currentVersion: _int(data['currentVersion']) ?? d.currentVersion,
       privacyPolicyText: data['privacyPolicyText'] as String? ?? d.privacyPolicyText,
       termsText: data['termsText'] as String? ?? d.termsText,
+      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
     );
   }
 
   final int currentVersion;
   final String privacyPolicyText;
   final String termsText;
+
+  /// When this version was published; shown next to the version on the consent screen.
+  final DateTime? updatedAt;
+
+  /// Clinic-supplied text is marked placeholder with a leading "[" until the lawyer approves it (D-36).
+  bool get isPlaceholder =>
+      privacyPolicyText.trim().isEmpty ||
+      privacyPolicyText.trimLeft().startsWith('[') ||
+      termsText.trimLeft().startsWith('[');
 }
 
 /// `settings/clinic`.

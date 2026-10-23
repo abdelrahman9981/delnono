@@ -71,10 +71,5 @@ describe("rules: base", () => {
       await assertFails(setDoc(doc(user(), "anything/x"), { x: 1 }));
       await assertFails(getDoc(doc(anon(), "anything/x")));
     });
-
-    it("guardians and children stay closed until their stories add rules", async () => {
-      await assertFails(getDoc(doc(user(), "guardians/u1")));
-      await assertFails(setDoc(doc(user(), "children/c1"), { name: "x" }));
-    });
   });
 });

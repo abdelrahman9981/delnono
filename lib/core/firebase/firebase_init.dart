@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 import 'firebase_options.dart';
+import 'functions_region.dart';
 
 /// Set with `--dart-define=USE_EMULATOR=true` to use the local Firebase Emulator Suite.
 const useEmulator = bool.fromEnvironment('USE_EMULATOR');
@@ -25,6 +26,6 @@ Future<void> initFirebase() async {
     // pass. Never set outside the emulator.
     await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
-    FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
+    FirebaseFunctions.instanceFor(region: functionsRegion).useFunctionsEmulator(host, 5001);
   }
 }

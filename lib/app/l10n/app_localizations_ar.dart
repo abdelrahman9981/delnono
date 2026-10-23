@@ -181,6 +181,173 @@ class AppLocalizationsAr extends AppLocalizations {
       'الكود مش صح، والمحاولات خلصت. اطلبي كود جديد.';
 
   @override
+  String get next => 'التالي';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get guardianHeading => 'نتعرف عليكي';
+
+  @override
+  String get guardianIntro => 'البيانات دي بتظهر للعيادة مع كل حجز.';
+
+  @override
+  String get guardianFullName => 'الاسم بالكامل';
+
+  @override
+  String get guardianRelation => 'صلة القرابة بالطفل';
+
+  @override
+  String get relationMother => 'أم';
+
+  @override
+  String get relationFather => 'أب';
+
+  @override
+  String get relationOther => 'آخر';
+
+  @override
+  String get guardianEmail => 'الإيميل (اختياري)';
+
+  @override
+  String get guardianEmailHelp => 'بنستخدمه بس لو احتجنا نبعتلك حاجة مكتوبة.';
+
+  @override
+  String get guardianNothingSaved =>
+      'مش هنحفظ أي بيانات غير بعد ما توافقي على سياسة الخصوصية في الخطوة الجاية.';
+
+  @override
+  String get errFullName => 'اكتبي اسمك بالكامل، من حرفين لحد ٨٠ حرف.';
+
+  @override
+  String get errRelation => 'اختاري صلة القرابة.';
+
+  @override
+  String get errEmail => 'الإيميل مش مكتوب صح.';
+
+  @override
+  String get consentTitle => 'الخصوصية';
+
+  @override
+  String get consentHeading => 'بيانات طفلك أمانة';
+
+  @override
+  String get consentIntro => 'قبل ما نحفظ أي حاجة، اعرفي هنعمل إيه بالبيانات.';
+
+  @override
+  String get consentUpdatedHeading => 'سياسة الخصوصية اتحدثت';
+
+  @override
+  String get consentUpdatedIntro =>
+      'راجعي الإصدار الجديد ووافقي عليه عشان تكملي.';
+
+  @override
+  String get consentWhat =>
+      'بنجمع إيه: بياناتك، وبيانات طفلك، وقياساته وتطعيماته وزياراته.';
+
+  @override
+  String get consentWho =>
+      'مين يشوفها: انتي، والدكتور. السكرتارية تشوف المواعيد والقياسات بس.';
+
+  @override
+  String get consentDelete =>
+      'الحذف: تقدري تمسحي حسابك في أي وقت. السجل الطبي بيفضل عند العيادة.';
+
+  @override
+  String get consentReadFull => 'اقري سياسة الخصوصية وشروط الاستخدام كاملة';
+
+  @override
+  String get consentPlaceholder => 'نص مؤقت · يراجعه المحامي قبل الإطلاق';
+
+  @override
+  String get consentPolicyCheck => 'موافقة على سياسة الخصوصية وشروط الاستخدام';
+
+  @override
+  String consentVersion(String version) {
+    return 'الإصدار $version';
+  }
+
+  @override
+  String consentVersionDated(String version, String date) {
+    return 'الإصدار $version · $date';
+  }
+
+  @override
+  String get consentChildDataCheck => 'موافقة على جمع بيانات طفلي الصحية';
+
+  @override
+  String get consentChildDataSub => 'عشان نسجل ملفه وتطعيماته ونفكرك بمواعيده';
+
+  @override
+  String get consentAccept => 'موافقة ومتابعة';
+
+  @override
+  String get consentBothRequired => 'لازم الموافقتين عشان تكملي.';
+
+  @override
+  String get policyPrivacyTitle => 'سياسة الخصوصية';
+
+  @override
+  String get policyTermsTitle => 'شروط الاستخدام';
+
+  @override
+  String get childName => 'اسم الطفل';
+
+  @override
+  String get childBirthDate => 'تاريخ الميلاد';
+
+  @override
+  String get childBirthDatePick => 'اختاري التاريخ';
+
+  @override
+  String get childSex => 'النوع';
+
+  @override
+  String get sexMale => 'ولد';
+
+  @override
+  String get sexFemale => 'بنت';
+
+  @override
+  String get childFixedFieldsNote =>
+      'تاريخ الميلاد والنوع بيحددوا جدول التطعيمات، فتعديلهم بعد كده بيبقى من العيادة.';
+
+  @override
+  String get childBirthWeight => 'وزن الولادة (اختياري)';
+
+  @override
+  String get kg => 'كجم';
+
+  @override
+  String get childAllergies => 'الحساسية (اختياري)';
+
+  @override
+  String childDuplicateLinked(String name) {
+    return '«$name» متسجل في حسابك بنفس تاريخ الميلاد، فمش هنضيفه تاني.';
+  }
+
+  @override
+  String childDuplicateClinic(String name) {
+    return 'فيه طفل اسمه «$name» بنفس تاريخ الميلاد مسجل على رقمك بالفعل، فمش هنضيفه تاني. لو ده غلط كلمي العيادة.';
+  }
+
+  @override
+  String get errChildName => 'اكتبي اسم الطفل، من حرفين لحد ٦٠ حرف.';
+
+  @override
+  String get errBirthDate => 'اختاري تاريخ الميلاد.';
+
+  @override
+  String get errSex => 'اختاري النوع.';
+
+  @override
+  String get errBirthWeight => 'الوزن لازم يكون بين ٠٫٣ و٧ كجم.';
+
+  @override
+  String get errAllergies => 'اكتبي الحساسية في أقل من ٥٠٠ حرف.';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

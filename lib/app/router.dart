@@ -7,7 +7,10 @@ import '../features/auth/data/auth_repository.dart';
 import '../features/auth/presentation/otp_screen.dart';
 import '../features/auth/presentation/phone_screen.dart';
 import '../features/children/data/children_repository.dart';
+import '../features/children/presentation/add_child_screen.dart';
 import '../features/registration/data/guardian_repository.dart';
+import '../features/registration/presentation/consent_screen.dart';
+import '../features/registration/presentation/guardian_details_screen.dart';
 import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
 import 'l10n/app_localizations.dart';
@@ -61,7 +64,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: Routes.children,
             builder: (context, _) => _placeholder(context, (l) => l.screenChildren),
             routes: [
-              GoRoute(path: 'add', builder: (context, _) => _placeholder(context, (l) => l.screenAddChild)),
+              GoRoute(path: 'add', builder: (_, _) => const AddChildScreen()),
               GoRoute(path: ':id', builder: (context, _) => _placeholder(context, (l) => l.screenChildProfile)),
             ],
           ),
@@ -77,10 +80,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.signInCode,
         builder: (_, state) => OtpScreen(from: state.uri.queryParameters['from']),
       ),
-      _screen(Routes.registerGuardian, (l) => l.screenGuardian),
-      _screen(Routes.registerConsent, (l) => l.screenConsent),
+      GoRoute(
+        path: Routes.registerGuardian,
+        builder: (_, state) => GuardianDetailsScreen(from: state.uri.queryParameters['from']),
+      ),
+      GoRoute(
+        path: Routes.registerConsent,
+        builder: (_, state) => ConsentScreen(from: state.uri.queryParameters['from']),
+      ),
       _screen(Routes.registerLink, (l) => l.screenLinkChildren),
-      _screen(Routes.registerChild, (l) => l.screenAddChild),
+      GoRoute(
+        path: Routes.registerChild,
+        builder: (_, state) => AddChildScreen(registration: true, from: state.uri.queryParameters['from']),
+      ),
       _screen(Routes.reverify, (l) => l.screenReverify),
       _screen(Routes.account, (l) => l.screenAccount),
       _screen(Routes.accountPhone, (l) => l.screenChangePhone),

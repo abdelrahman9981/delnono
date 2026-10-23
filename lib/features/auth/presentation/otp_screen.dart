@@ -105,7 +105,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
           children: [
-            const StepIndicator(current: 2),
+            // Number and code are one step in the design (Guardian.dc.html shows ✓ then ٢).
+            const StepIndicator(current: 1),
             Text(l10n.otpHeading, style: text.headlineMedium),
             const SizedBox(height: 8),
             Wrap(

@@ -35,6 +35,36 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    function validGuardianDetails(d) {
+      return d.fullName is string && d.fullName.size() >= 2 && d.fullName.size() <= 80
+        && d.relation in ['mother', 'father', 'other']
+        && (!('email' in d) || d.email == null
+            || (d.email is string && d.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$')));
+    }
+
+    // Created and deleted only by functions (completeRegistration, deleteAccount). The guardian may
+    // edit their own details, never phone, consentVersion, clinicChildrenPending or lastActiveAt.
+    match /guardians/{uid} {
+      allow read: if isOwner(uid);
+      allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['fullName', 'relation', 'email', 'updatedAt'])
+        && request.resource.data.updatedAt == request.time
+        && validGuardianDetails(request.resource.data);
+      allow create, delete: if false;
+
+      match /consents/{consentId} {
+        allow read: if isOwner(uid);
+        allow write: if false;
+      }
+    }
+
+    // Created only by functions (createChild, clinic registration in 004).
+    match /children/{childId} {
+      allow read: if consentCurrent() && resource.data.guardianUid == request.auth.uid;
+      allow create, delete: if false;
+    }
+
     // Server only: written and read by Cloud Functions with the Admin SDK.
     match /clinicGuardians/{phone} {
       allow read, write: if false;
