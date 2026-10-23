@@ -1042,6 +1042,36 @@ abstract class AppLocalizations {
   /// **'اتمسح حسابك.'**
   String get deleteDone;
 
+  /// No description provided for @reverifyHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد إنك صاحبة الحساب'**
+  String get reverifyHeading;
+
+  /// No description provided for @reverifyIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'بقالك فترة مدخلتيش التطبيق. عشان نحمي بيانات أطفالك، اكتبي تاريخ ميلاد واحد منهم.'**
+  String get reverifyIntro;
+
+  /// No description provided for @reverifyBirthDateLabel.
+  ///
+  /// In ar, this message translates to:
+  /// **'تاريخ ميلاد واحد من أطفالك'**
+  String get reverifyBirthDateLabel;
+
+  /// No description provided for @reverifyWrongDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ مش مطابق. فاضلك {attempts}. بعدها هنقفل بيانات الأطفال لحد ما تكلمي العيادة.'**
+  String reverifyWrongDate(String attempts);
+
+  /// No description provided for @reverifyLocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'قفلنا بيانات الأطفال بعد المحاولات دي. كلمي العيادة عشان نفتحها تاني.'**
+  String get reverifyLocked;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

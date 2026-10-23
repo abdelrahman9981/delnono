@@ -572,6 +572,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deleteDone => 'اتمسح حسابك.';
 
   @override
+  String get reverifyHeading => 'تأكيد إنك صاحبة الحساب';
+
+  @override
+  String get reverifyIntro =>
+      'بقالك فترة مدخلتيش التطبيق. عشان نحمي بيانات أطفالك، اكتبي تاريخ ميلاد واحد منهم.';
+
+  @override
+  String get reverifyBirthDateLabel => 'تاريخ ميلاد واحد من أطفالك';
+
+  @override
+  String reverifyWrongDate(String attempts) {
+    return 'التاريخ مش مطابق. فاضلك $attempts. بعدها هنقفل بيانات الأطفال لحد ما تكلمي العيادة.';
+  }
+
+  @override
+  String get reverifyLocked =>
+      'قفلنا بيانات الأطفال بعد المحاولات دي. كلمي العيادة عشان نفتحها تاني.';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

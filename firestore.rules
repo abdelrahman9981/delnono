@@ -65,8 +65,17 @@ service cloud.firestore {
             || (d.allergies is string && d.allergies.size() <= 500));
     }
 
+    // Used the app within settings/auth.reverifyAfterDays (default 90). Older accounts must pass
+    // the birth-date re-check before reading child data, since numbers get reassigned (FR-010a).
+    function active() {
+      let authSettings = /databases/$(database)/documents/settings/auth;
+      let days = exists(authSettings) ? get(authSettings).data.get('reverifyAfterDays', 90) : 90;
+      let last = get(guardianPath()).data.get('lastActiveAt', null);
+      return last != null && last > request.time - duration.value(days, 'd');
+    }
+
     function linkedGuardian(child) {
-      return consentCurrent() && child.guardianUid == request.auth.uid;
+      return consentCurrent() && child.guardianUid == request.auth.uid && active();
     }
 
     // Created only by functions (createChild, clinic registration in 004). The linked guardian may

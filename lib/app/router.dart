@@ -8,6 +8,7 @@ import '../features/account/presentation/account_screen.dart';
 import '../features/account/presentation/change_phone_screen.dart';
 import '../features/account/presentation/delete_account_screen.dart';
 import '../features/auth/presentation/otp_screen.dart';
+import '../features/auth/presentation/reverify_screen.dart';
 import '../features/auth/presentation/phone_screen.dart';
 import '../features/children/data/children_repository.dart';
 import '../features/children/presentation/add_child_screen.dart';
@@ -20,7 +21,6 @@ import '../features/registration/presentation/link_children_screen.dart';
 import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
 import '../features/welcome/welcome_screen.dart';
-import 'l10n/app_localizations.dart';
 import 'route_guard.dart';
 import 'session_flags.dart';
 
@@ -104,7 +104,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.registerChild,
         builder: (_, state) => AddChildScreen(registration: true, from: state.uri.queryParameters['from']),
       ),
-      _screen(Routes.reverify, (l) => l.screenReverify),
+      GoRoute(
+        path: Routes.reverify,
+        builder: (_, state) => ReverifyScreen(from: state.uri.queryParameters['from']),
+      ),
       GoRoute(path: Routes.account, builder: (_, _) => const AccountScreen()),
       GoRoute(path: Routes.accountPhone, builder: (_, _) => const ChangePhoneScreen()),
       GoRoute(path: Routes.notifications, builder: (_, _) => const NotificationsPlaceholder()),
@@ -118,10 +121,3 @@ final routerProvider = Provider<GoRouter>((ref) {
   });
   return router;
 });
-
-/// Placeholder until the user story that builds the screen replaces it.
-GoRoute _screen(String path, String Function(AppLocalizations) title) =>
-    GoRoute(path: path, builder: (context, _) => _placeholder(context, title));
-
-Widget _placeholder(BuildContext context, String Function(AppLocalizations) title) =>
-    PlaceholderScreen(title: title(AppLocalizations.of(context)));

@@ -9,6 +9,7 @@ import '../../../app/theme.dart';
 import '../../../core/errors/arabic_errors.dart';
 import '../../../core/widgets/check_row.dart';
 import '../../../core/widgets/notice.dart';
+import '../../auth/application/session_controller.dart';
 import '../../auth/data/auth_repository.dart';
 import '../data/account_api.dart';
 
@@ -35,6 +36,7 @@ class _DeleteAccountScreenState extends ConsumerState<DeleteAccountScreen> {
       await ref.read(accountApiProvider).deleteAccount();
       // The server removed the Auth user; sign out here and clear the offline cache.
       await ref.read(authRepositoryProvider).signOut();
+      ref.read(sessionControllerProvider.notifier).reset();
       appMessengerKey.currentState?.clearSnackBars();
       showAppMessage(l10n.deleteDone);
       if (mounted) context.go(Routes.welcome);

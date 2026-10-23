@@ -98,3 +98,26 @@ Future<void> registerGuardian(WidgetTester tester, String name) async {
   await tapInList(tester, find.byKey(const Key('consent-child-data')));
   await tapInList(tester, find.text('موافقة ومتابعة'));
 }
+
+/// Sets a guardian's `lastActiveAt` [days] ago through the Firestore emulator's admin access
+/// (the app itself may never write that field).
+Future<void> ageGuardian(String uid, int days) async {
+  final when = DateTime.now().toUtc().subtract(Duration(days: days)).toIso8601String();
+  final client = HttpClient();
+  try {
+    final req = await client.patchUrl(Uri.parse(
+      'http://$emulatorHost:8080/v1/projects/demo-delnono/databases/(default)/documents/guardians/$uid'
+      '?updateMask.fieldPaths=lastActiveAt',
+    ));
+    req.headers.set('Authorization', 'Bearer owner');
+    req.headers.contentType = ContentType.json;
+    req.write(jsonEncode({
+      'fields': {'lastActiveAt': {'timestampValue': when}},
+    }));
+    final res = await req.close();
+    await res.drain<void>();
+    if (res.statusCode != 200) throw StateError('ageGuardian: HTTP ${res.statusCode}');
+  } finally {
+    client.close();
+  }
+}

@@ -10,6 +10,7 @@ import '../../../core/format/arabic_digits.dart';
 import '../../../core/launch/external_links.dart';
 import '../../../core/phone/egypt_phone.dart';
 import '../../../core/settings/settings_repository.dart';
+import '../../auth/application/session_controller.dart';
 import '../../auth/data/auth_repository.dart';
 import '../../children/data/children_repository.dart';
 import '../../registration/data/guardian_repository.dart';
@@ -176,6 +177,7 @@ class AccountScreen extends ConsumerWidget {
               key: const Key('account-sign-out'),
               onPressed: () async {
                 await ref.read(authRepositoryProvider).signOut();
+                ref.read(sessionControllerProvider.notifier).reset();
                 // Messages about this account must not stay on screen for the next person.
                 appMessengerKey.currentState?.clearSnackBars();
                 if (context.mounted) context.go(Routes.welcome);

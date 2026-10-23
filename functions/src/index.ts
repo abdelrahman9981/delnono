@@ -6,3 +6,5 @@ export { linkClinicChildren } from "./callables/linkClinicChildren";
 export { onChildUpdated } from "./triggers/onChildUpdated";
 export { syncPhoneNumber } from "./callables/syncPhoneNumber";
 export { deleteAccount } from "./callables/deleteAccount";
+export { touchSession } from "./callables/touchSession";
+export { reverifyGuardian } from "./callables/reverifyGuardian";

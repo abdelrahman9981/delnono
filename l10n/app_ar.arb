@@ -192,6 +192,13 @@
   "deleteButton": "حذف حسابي نهائيًا",
   "deleteDone": "اتمسح حسابك.",
 
+  "reverifyHeading": "تأكيد إنك صاحبة الحساب",
+  "reverifyIntro": "بقالك فترة مدخلتيش التطبيق. عشان نحمي بيانات أطفالك، اكتبي تاريخ ميلاد واحد منهم.",
+  "reverifyBirthDateLabel": "تاريخ ميلاد واحد من أطفالك",
+  "reverifyWrongDate": "التاريخ مش مطابق. فاضلك {attempts}. بعدها هنقفل بيانات الأطفال لحد ما تكلمي العيادة.",
+  "@reverifyWrongDate": { "placeholders": { "attempts": { "type": "String" } } },
+  "reverifyLocked": "قفلنا بيانات الأطفال بعد المحاولات دي. كلمي العيادة عشان نفتحها تاني.",
+
   "errInvalidCode": "الكود مش صح.",
   "errCodeExpired": "الكود خلص وقته. اطلبي كود جديد.",
   "errTooManyRequests": "محاولات كتير. استني شوية وجربي تاني.",
