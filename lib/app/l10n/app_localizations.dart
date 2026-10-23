@@ -988,6 +988,60 @@ abstract class AppLocalizations {
   /// **'اتغير رقمك لـ {phone}.'**
   String changePhoneDone(String phone);
 
+  /// No description provided for @deleteHeading.
+  ///
+  /// In ar, this message translates to:
+  /// **'قبل ما تمسحي حسابك'**
+  String get deleteHeading;
+
+  /// No description provided for @deleteRemovedTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'هنمسح من التطبيق'**
+  String get deleteRemovedTitle;
+
+  /// No description provided for @deleteRemoved.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابك ورقمك واسمك وإعداداتك. هتخرجي من التطبيق على الموبايل ده.'**
+  String get deleteRemoved;
+
+  /// No description provided for @deleteKeptTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'هيفضل عند العيادة'**
+  String get deleteKeptTitle;
+
+  /// No description provided for @deleteKept.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملفات أطفالك الطبية وسجل موافقتك، للمدة اللي يحددها القانون.'**
+  String get deleteKept;
+
+  /// No description provided for @deleteComeBack.
+  ///
+  /// In ar, this message translates to:
+  /// **'لو سجلتي تاني بنفس الرقم، هتبدأي من الأول وتقدري تربطي أطفالك تاني.'**
+  String get deleteComeBack;
+
+  /// No description provided for @deleteConfirmCheck.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاهمة، وعايزة أمسح حسابي'**
+  String get deleteConfirmCheck;
+
+  /// No description provided for @deleteButton.
+  ///
+  /// In ar, this message translates to:
+  /// **'حذف حسابي نهائيًا'**
+  String get deleteButton;
+
+  /// No description provided for @deleteDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتمسح حسابك.'**
+  String get deleteDone;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

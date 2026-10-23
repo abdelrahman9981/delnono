@@ -20,7 +20,7 @@ class ScreenHarness {
     initialLocation: initial,
     routes: [
       ...routes,
-      GoRoute(path: '/:rest(.*)', builder: (_, s) => Text('route:${s.uri.path}')),
+      GoRoute(path: '/:rest(.*)', builder: (_, s) => Scaffold(body: Text('route:${s.uri.path}'))),
     ],
   );
 

@@ -181,7 +181,9 @@ class OtpController extends Notifier<OtpState> {
       } else {
         await _service.signInWithCode(verificationId, smsCode);
       }
-      state = state.copyWith(phase: OtpPhase.signedIn);
+      // The code is used up: drop it and the resend timer, so a later sign-in with the same number
+      // (after signing out or deleting the account) sends a fresh code.
+      state = OtpState(phase: OtpPhase.signedIn, phone: state.phone);
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-verification-code':

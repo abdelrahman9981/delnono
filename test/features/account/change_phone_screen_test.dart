@@ -17,6 +17,9 @@ class _AccountApi implements AccountApi {
 
   @override
   Future<void> syncPhoneNumber() async => syncs++;
+
+  @override
+  Future<void> deleteAccount() async {}
 }
 
 void main() {

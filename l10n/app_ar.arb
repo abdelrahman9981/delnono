@@ -182,6 +182,16 @@
   "changePhoneDone": "اتغير رقمك لـ {phone}.",
   "@changePhoneDone": { "placeholders": { "phone": { "type": "String" } } },
 
+  "deleteHeading": "قبل ما تمسحي حسابك",
+  "deleteRemovedTitle": "هنمسح من التطبيق",
+  "deleteRemoved": "حسابك ورقمك واسمك وإعداداتك. هتخرجي من التطبيق على الموبايل ده.",
+  "deleteKeptTitle": "هيفضل عند العيادة",
+  "deleteKept": "ملفات أطفالك الطبية وسجل موافقتك، للمدة اللي يحددها القانون.",
+  "deleteComeBack": "لو سجلتي تاني بنفس الرقم، هتبدأي من الأول وتقدري تربطي أطفالك تاني.",
+  "deleteConfirmCheck": "فاهمة، وعايزة أمسح حسابي",
+  "deleteButton": "حذف حسابي نهائيًا",
+  "deleteDone": "اتمسح حسابك.",
+
   "errInvalidCode": "الكود مش صح.",
   "errCodeExpired": "الكود خلص وقته. اطلبي كود جديد.",
   "errTooManyRequests": "محاولات كتير. استني شوية وجربي تاني.",

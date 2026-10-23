@@ -542,6 +542,36 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get deleteHeading => 'قبل ما تمسحي حسابك';
+
+  @override
+  String get deleteRemovedTitle => 'هنمسح من التطبيق';
+
+  @override
+  String get deleteRemoved =>
+      'حسابك ورقمك واسمك وإعداداتك. هتخرجي من التطبيق على الموبايل ده.';
+
+  @override
+  String get deleteKeptTitle => 'هيفضل عند العيادة';
+
+  @override
+  String get deleteKept =>
+      'ملفات أطفالك الطبية وسجل موافقتك، للمدة اللي يحددها القانون.';
+
+  @override
+  String get deleteComeBack =>
+      'لو سجلتي تاني بنفس الرقم، هتبدأي من الأول وتقدري تربطي أطفالك تاني.';
+
+  @override
+  String get deleteConfirmCheck => 'فاهمة، وعايزة أمسح حسابي';
+
+  @override
+  String get deleteButton => 'حذف حسابي نهائيًا';
+
+  @override
+  String get deleteDone => 'اتمسح حسابك.';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

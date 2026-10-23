@@ -7,6 +7,9 @@ import '../../../core/firebase/functions_region.dart';
 abstract interface class AccountApi {
   /// Copies the account's new number to the guardian and children (FR-025, FR-026).
   Future<void> syncPhoneNumber();
+
+  /// Deletes the app account; the clinic keeps the children's records (FR-027 to FR-030).
+  Future<void> deleteAccount();
 }
 
 class FirebaseAccountApi implements AccountApi {
@@ -16,6 +19,9 @@ class FirebaseAccountApi implements AccountApi {
 
   @override
   Future<void> syncPhoneNumber() => _functions.httpsCallable('syncPhoneNumber').call<Object?>({});
+
+  @override
+  Future<void> deleteAccount() => _functions.httpsCallable('deleteAccount').call<Object?>({'confirm': true});
 }
 
 final accountApiProvider = Provider<AccountApi>((ref) => FirebaseAccountApi(ref.watch(functionsProvider)));

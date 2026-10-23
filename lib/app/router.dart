@@ -6,6 +6,7 @@ import '../core/settings/settings_repository.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/account/presentation/account_screen.dart';
 import '../features/account/presentation/change_phone_screen.dart';
+import '../features/account/presentation/delete_account_screen.dart';
 import '../features/auth/presentation/otp_screen.dart';
 import '../features/auth/presentation/phone_screen.dart';
 import '../features/children/data/children_repository.dart';
@@ -107,7 +108,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.account, builder: (_, _) => const AccountScreen()),
       GoRoute(path: Routes.accountPhone, builder: (_, _) => const ChangePhoneScreen()),
       GoRoute(path: Routes.notifications, builder: (_, _) => const NotificationsPlaceholder()),
-      _screen(Routes.accountDelete, (l) => l.screenDeleteAccount),
+      GoRoute(path: Routes.accountDelete, builder: (_, _) => const DeleteAccountScreen()),
     ],
   );
 

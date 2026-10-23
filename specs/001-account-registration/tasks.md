@@ -219,13 +219,13 @@ story, write the tests first and confirm they fail.
 
 ### Tests for User Story 7
 
-- [ ] T073 [P] [US7] Create `functions/test/functions/deleteAccount.test.ts`: consents moved to `deletedGuardians/{uid}/consents`; linked children get `guardianUid: null` and keep `guardianPhone`; `guardians/{uid}` deleted; audit `account.deleted`; Auth user deleted; a retry after a simulated failure between steps completes the rest.
+- [X] T073 [P] [US7] Create `functions/test/functions/deleteAccount.test.ts`: consents moved to `deletedGuardians/{uid}/consents`; linked children get `guardianUid: null` and keep `guardianPhone`; `guardians/{uid}` deleted; audit `account.deleted`; Auth user deleted; a retry after a simulated failure between steps completes the rest.
 
 ### Implementation for User Story 7
 
-- [ ] T074 [US7] Create `functions/src/callables/deleteAccount.ts` per contracts/callables.md (steps in order, idempotent) and export it.
-- [ ] T075 [US7] Create `lib/features/account/presentation/delete_account_screen.dart` (`/account/delete`): explains what is removed and what the clinic keeps (text from the Account mockup), requires an explicit confirm; on success sign out, clear the Firestore cache and go to `/welcome`.
-- [ ] T076 [P] [US7] Create `test/features/account/delete_account_screen_test.dart`: nothing is called before confirm; success leads to `/welcome`.
+- [X] T074 [US7] Create `functions/src/callables/deleteAccount.ts` per contracts/callables.md (steps in order, idempotent) and export it.
+- [X] T075 [US7] Create `lib/features/account/presentation/delete_account_screen.dart` (`/account/delete`): explains what is removed and what the clinic keeps (text from the Account mockup), requires an explicit confirm; on success sign out, clear the Firestore cache and go to `/welcome`.
+- [X] T076 [P] [US7] Create `test/features/account/delete_account_screen_test.dart`: nothing is called before confirm; success leads to `/welcome`.
 
 **Checkpoint**: all seven stories work.
 

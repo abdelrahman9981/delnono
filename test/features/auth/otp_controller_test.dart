@@ -110,6 +110,15 @@ void main() {
       expect(container.read(otpControllerProvider).phase, OtpPhase.signedIn);
     });
 
+    test('after signing in, the same number gets a fresh code right away', () async {
+      final (container, otp, _, service) = await setUp_();
+      await otp.sendCode(phone);
+      await otp.verify('123456');
+      expect(container.read(otpControllerProvider).hasCode, isFalse);
+      await otp.sendCode(phone);
+      expect(service.sent, hasLength(2), reason: 'the used code is not reused');
+    });
+
     test('a new code resets the count', () async {
       final (container, otp, clock, _) = await setUp_();
       await otp.sendCode(phone);
