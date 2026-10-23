@@ -23,9 +23,9 @@ All user-facing text goes in `l10n/app_ar.arb`.
 
 ## Phase 1: Setup
 
-- [ ] T001 Add `settings/booking` and placeholder `vaccines` to `functions/scripts/seed.ts` per data-model.md (capacity 6; working hours Sat–Thu 17–21, Fri closed; vaccine weekdays Mon and Wed; visit price 300; cancel window 3; horizon 14; max upcoming 2; `placeholder: true`; vaccine names in brackets, e.g. "[تطعيم مؤقت ١]", some with `showPrice: false`), then re-export `emulator-seed/`.
-- [ ] T002 [P] Add the composite indexes for `bookings` (`guardianUid` + `startsAt`; `guardianUid` + `date` + `status`) to `firestore.indexes.json`.
-- [ ] T003 [P] Create the folders `lib/features/booking/{data,domain,application,presentation}` and `functions/src/lib/booking/`.
+- [X] T001 Add `settings/booking` and placeholder `vaccines` to `functions/scripts/seed.ts` per data-model.md (capacity 6; working hours Sat–Thu 17–21, Fri closed; vaccine weekdays Mon and Wed; visit price 300; cancel window 3; horizon 14; max upcoming 2; `placeholder: true`; vaccine names in brackets, e.g. "[تطعيم مؤقت ١]", some with `showPrice: false`), then re-export `emulator-seed/`.
+- [X] T002 [P] Add the composite indexes for `bookings` (`guardianUid` + `startsAt`; `guardianUid` + `date` + `status`) to `firestore.indexes.json`.
+- [X] T003 [P] Create the folders `lib/features/booking/{data,domain,application,presentation}` and `functions/src/lib/booking/`.
 
 ---
 
