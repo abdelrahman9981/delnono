@@ -97,6 +97,28 @@ service cloud.firestore {
       }
     }
 
+    // A guardian who may see family data: current consent and recent activity (001, FR-010a).
+    function guardianActive() {
+      return consentCurrent() && active();
+    }
+
+    // Booking (002). The clinic's vaccine list and the places taken per hour (counts only, no
+    // personal data) are readable by signed-in users; all writes happen in Cloud Functions.
+    match /vaccines/{vaccineId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /slots/{slotId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /counters/{counterId} {
+      allow read, write: if false;
+    }
+    match /familyQuota/{uid} {
+      allow read, write: if false;
+    }
+
     // Server only: written and read by Cloud Functions with the Admin SDK.
     match /clinicGuardians/{phone} {
       allow read, write: if false;

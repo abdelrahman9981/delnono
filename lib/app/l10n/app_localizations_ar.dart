@@ -594,6 +594,296 @@ class AppLocalizationsAr extends AppLocalizations {
   String get nameListSeparator => ' و';
 
   @override
+  String get bookingTitle => 'احجزي زيارة';
+
+  @override
+  String get visitTypeVisit => 'كشف أطفال';
+
+  @override
+  String get visitTypeVaccine => 'تطعيم';
+
+  @override
+  String get visitTypeVaccineSub => 'حسب الجرعة';
+
+  @override
+  String priceEgp(String amount) {
+    return '$amount جنيه';
+  }
+
+  @override
+  String get chooseDay => 'اختاري اليوم';
+
+  @override
+  String get chooseHour => 'اختاري الساعة';
+
+  @override
+  String get arrivalOrder => 'الدخول بالأسبقية';
+
+  @override
+  String hourRange(String from, String to) {
+    return '$from لـ $to';
+  }
+
+  @override
+  String get periodAm => 'ص';
+
+  @override
+  String get periodPm => 'م';
+
+  @override
+  String placesLeft(String left, String capacity) {
+    return 'فاضل $left من $capacity';
+  }
+
+  @override
+  String get hourFull => 'مكتمل';
+
+  @override
+  String get noHoursThatDay => 'مفيش ساعات متاحة في اليوم ده.';
+
+  @override
+  String get whoIsComing => 'مين هييجي؟';
+
+  @override
+  String get chooseMoreThanOne => 'اختاري أكتر من طفل';
+
+  @override
+  String vaccinesFor(String name) {
+    return 'تطعيمات $name';
+  }
+
+  @override
+  String get noVaccine => 'من غير تطعيم';
+
+  @override
+  String get summaryTotal => 'إجمالي الزيارة';
+
+  @override
+  String get coveredByPackage => 'مغطّى بالباقة';
+
+  @override
+  String get activePackage => 'باقة نشطة';
+
+  @override
+  String get summaryWhen => 'المعاد';
+
+  @override
+  String get summaryChildren => 'الأطفال';
+
+  @override
+  String get summaryPayment => 'الدفع';
+
+  @override
+  String get cashAtClinic => 'كاش في العيادة';
+
+  @override
+  String get summaryVisit => 'الكشف';
+
+  @override
+  String get priceAtClinic => 'بالسعر في العيادة';
+
+  @override
+  String get totalExcludesHidden =>
+      'الإجمالي من غير التطعيمات اللي سعرها في العيادة.';
+
+  @override
+  String hoursCount(int count, String countText) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countText ساعة',
+      few: '$countText ساعات',
+      two: 'ساعتين',
+      one: 'ساعة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String cancelUntil(String hours) {
+    return 'تقدري تلغي لحد $hours قبل الميعاد';
+  }
+
+  @override
+  String get confirmBooking => 'تأكيد الحجز';
+
+  @override
+  String get myBookings => 'حجوزاتي';
+
+  @override
+  String get noChildrenToBook => 'ضيفي طفل الأول عشان تحجزي.';
+
+  @override
+  String get bookingFull => 'الميعاد اتحجز. اختاري ساعة تانية.';
+
+  @override
+  String priceChanged(String total) {
+    return 'السعر اتغير. الإجمالي دلوقتي $total جنيه، أكدي تاني.';
+  }
+
+  @override
+  String get bookingClosedDay => 'العيادة مقفولة في اليوم ده.';
+
+  @override
+  String get bookingStarted => 'الساعة دي بدأت خلاص. اختاري ساعة تانية.';
+
+  @override
+  String get bookingBeyondHorizon =>
+      'الحجز متاح للأيام الجاية بس، مش أبعد من كده.';
+
+  @override
+  String get bookingNotVaccineDay => 'التطعيمات في أيام التطعيم بس.';
+
+  @override
+  String get bookingAlreadyThatDay =>
+      'عندك حجز في اليوم ده بالفعل. عدّليه لو عايزة تضيفي طفل.';
+
+  @override
+  String get bookingTooMany =>
+      'عندك أقصى عدد من الحجوزات الجاية. استني لما واحد يخلص أو الغيه.';
+
+  @override
+  String get bookingVaccineRequired => 'اختاري تطعيم واحد على الأقل.';
+
+  @override
+  String get successTag => 'تم الحجز بنجاح';
+
+  @override
+  String successTitle(String name) {
+    return 'ميعادكم اتأكد يا $name';
+  }
+
+  @override
+  String successWaiting(String children) {
+    return 'مستنيين $children في العيادة';
+  }
+
+  @override
+  String get bookingNumber => 'رقم الحجز';
+
+  @override
+  String bookingNumberValue(String number) {
+    return '# نونو $number';
+  }
+
+  @override
+  String get statusConfirmed => 'مؤكد';
+
+  @override
+  String get statusArrived => 'وصل';
+
+  @override
+  String get statusDone => 'تم';
+
+  @override
+  String get statusCancelled => 'ملغي';
+
+  @override
+  String get statusNoShow => 'لم يحضر';
+
+  @override
+  String get statusSoon => 'قريب';
+
+  @override
+  String get labelDay => 'اليوم';
+
+  @override
+  String get labelHour => 'الساعة';
+
+  @override
+  String get labelVisit => 'الزيارة';
+
+  @override
+  String get payAtClinic => 'الدفع في العيادة';
+
+  @override
+  String get arrivalOrderInHour => 'الدخول بالأسبقية جوه الساعة المحجوزة';
+
+  @override
+  String get viewMyBookings => 'عرض حجوزاتي';
+
+  @override
+  String get backHome => 'الرجوع للرئيسية';
+
+  @override
+  String get tabUpcoming => 'القادمة';
+
+  @override
+  String get tabPast => 'السابقة';
+
+  @override
+  String get dueAtClinic => 'المطلوب في العيادة';
+
+  @override
+  String get canChange => 'لسه ينفع تعدلي أو تلغي';
+
+  @override
+  String canChangeSub(String hours) {
+    return 'متبقي أكتر من $hours على الميعاد';
+  }
+
+  @override
+  String lessThan(String hours) {
+    return 'فاضل أقل من $hours';
+  }
+
+  @override
+  String get lessThanSub => 'التعديل والإلغاء عن طريق العيادة';
+
+  @override
+  String get changeBooking => 'تعديل';
+
+  @override
+  String get cancelBooking => 'إلغاء الحجز';
+
+  @override
+  String get callClinic => 'كلمي العيادة';
+
+  @override
+  String get newBooking => 'احجزي ميعاد جديد';
+
+  @override
+  String get noBookings => 'لسه مفيش حجوزات.';
+
+  @override
+  String get cancelConfirmTitle => 'تلغي الحجز؟';
+
+  @override
+  String cancelConfirmBody(String when) {
+    return 'هيتلغى حجز $when والمكان هيرجع متاح لغيرك.';
+  }
+
+  @override
+  String get keepBooking => 'لأ، خليه';
+
+  @override
+  String get bookingCancelled => 'اتلغى الحجز.';
+
+  @override
+  String titleVisit(String names) {
+    return 'كشف $names';
+  }
+
+  @override
+  String titleVaccine(String names) {
+    return 'تطعيم $names';
+  }
+
+  @override
+  String titleVisitAndVaccine(String names) {
+    return 'كشف وتطعيم $names';
+  }
+
+  @override
+  String get changeTitle => 'تعديل الحجز';
+
+  @override
+  String get confirmChange => 'تأكيد التعديل';
+
+  @override
+  String get bookingChanged => 'اتعدل الحجز.';
+
+  @override
   String get errInvalidCode => 'الكود مش صح.';
 
   @override

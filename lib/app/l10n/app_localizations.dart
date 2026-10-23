@@ -1078,6 +1078,498 @@ abstract class AppLocalizations {
   /// **' و'**
   String get nameListSeparator;
 
+  /// No description provided for @bookingTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'احجزي زيارة'**
+  String get bookingTitle;
+
+  /// No description provided for @visitTypeVisit.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشف أطفال'**
+  String get visitTypeVisit;
+
+  /// No description provided for @visitTypeVaccine.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطعيم'**
+  String get visitTypeVaccine;
+
+  /// No description provided for @visitTypeVaccineSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسب الجرعة'**
+  String get visitTypeVaccineSub;
+
+  /// No description provided for @priceEgp.
+  ///
+  /// In ar, this message translates to:
+  /// **'{amount} جنيه'**
+  String priceEgp(String amount);
+
+  /// No description provided for @chooseDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري اليوم'**
+  String get chooseDay;
+
+  /// No description provided for @chooseHour.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري الساعة'**
+  String get chooseHour;
+
+  /// No description provided for @arrivalOrder.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدخول بالأسبقية'**
+  String get arrivalOrder;
+
+  /// No description provided for @hourRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'{from} لـ {to}'**
+  String hourRange(String from, String to);
+
+  /// No description provided for @periodAm.
+  ///
+  /// In ar, this message translates to:
+  /// **'ص'**
+  String get periodAm;
+
+  /// No description provided for @periodPm.
+  ///
+  /// In ar, this message translates to:
+  /// **'م'**
+  String get periodPm;
+
+  /// No description provided for @placesLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاضل {left} من {capacity}'**
+  String placesLeft(String left, String capacity);
+
+  /// No description provided for @hourFull.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكتمل'**
+  String get hourFull;
+
+  /// No description provided for @noHoursThatDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش ساعات متاحة في اليوم ده.'**
+  String get noHoursThatDay;
+
+  /// No description provided for @whoIsComing.
+  ///
+  /// In ar, this message translates to:
+  /// **'مين هييجي؟'**
+  String get whoIsComing;
+
+  /// No description provided for @chooseMoreThanOne.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري أكتر من طفل'**
+  String get chooseMoreThanOne;
+
+  /// No description provided for @vaccinesFor.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطعيمات {name}'**
+  String vaccinesFor(String name);
+
+  /// No description provided for @noVaccine.
+  ///
+  /// In ar, this message translates to:
+  /// **'من غير تطعيم'**
+  String get noVaccine;
+
+  /// No description provided for @summaryTotal.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجمالي الزيارة'**
+  String get summaryTotal;
+
+  /// No description provided for @coveredByPackage.
+  ///
+  /// In ar, this message translates to:
+  /// **'مغطّى بالباقة'**
+  String get coveredByPackage;
+
+  /// No description provided for @activePackage.
+  ///
+  /// In ar, this message translates to:
+  /// **'باقة نشطة'**
+  String get activePackage;
+
+  /// No description provided for @summaryWhen.
+  ///
+  /// In ar, this message translates to:
+  /// **'المعاد'**
+  String get summaryWhen;
+
+  /// No description provided for @summaryChildren.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأطفال'**
+  String get summaryChildren;
+
+  /// No description provided for @summaryPayment.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدفع'**
+  String get summaryPayment;
+
+  /// No description provided for @cashAtClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'كاش في العيادة'**
+  String get cashAtClinic;
+
+  /// No description provided for @summaryVisit.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكشف'**
+  String get summaryVisit;
+
+  /// No description provided for @priceAtClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'بالسعر في العيادة'**
+  String get priceAtClinic;
+
+  /// No description provided for @totalExcludesHidden.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإجمالي من غير التطعيمات اللي سعرها في العيادة.'**
+  String get totalExcludesHidden;
+
+  /// No description provided for @hoursCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count, plural, =1{ساعة} =2{ساعتين} few{{countText} ساعات} other{{countText} ساعة}}'**
+  String hoursCount(int count, String countText);
+
+  /// No description provided for @cancelUntil.
+  ///
+  /// In ar, this message translates to:
+  /// **'تقدري تلغي لحد {hours} قبل الميعاد'**
+  String cancelUntil(String hours);
+
+  /// No description provided for @confirmBooking.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد الحجز'**
+  String get confirmBooking;
+
+  /// No description provided for @myBookings.
+  ///
+  /// In ar, this message translates to:
+  /// **'حجوزاتي'**
+  String get myBookings;
+
+  /// No description provided for @noChildrenToBook.
+  ///
+  /// In ar, this message translates to:
+  /// **'ضيفي طفل الأول عشان تحجزي.'**
+  String get noChildrenToBook;
+
+  /// No description provided for @bookingFull.
+  ///
+  /// In ar, this message translates to:
+  /// **'الميعاد اتحجز. اختاري ساعة تانية.'**
+  String get bookingFull;
+
+  /// No description provided for @priceChanged.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر اتغير. الإجمالي دلوقتي {total} جنيه، أكدي تاني.'**
+  String priceChanged(String total);
+
+  /// No description provided for @bookingClosedDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'العيادة مقفولة في اليوم ده.'**
+  String get bookingClosedDay;
+
+  /// No description provided for @bookingStarted.
+  ///
+  /// In ar, this message translates to:
+  /// **'الساعة دي بدأت خلاص. اختاري ساعة تانية.'**
+  String get bookingStarted;
+
+  /// No description provided for @bookingBeyondHorizon.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحجز متاح للأيام الجاية بس، مش أبعد من كده.'**
+  String get bookingBeyondHorizon;
+
+  /// No description provided for @bookingNotVaccineDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات في أيام التطعيم بس.'**
+  String get bookingNotVaccineDay;
+
+  /// No description provided for @bookingAlreadyThatDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'عندك حجز في اليوم ده بالفعل. عدّليه لو عايزة تضيفي طفل.'**
+  String get bookingAlreadyThatDay;
+
+  /// No description provided for @bookingTooMany.
+  ///
+  /// In ar, this message translates to:
+  /// **'عندك أقصى عدد من الحجوزات الجاية. استني لما واحد يخلص أو الغيه.'**
+  String get bookingTooMany;
+
+  /// No description provided for @bookingVaccineRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري تطعيم واحد على الأقل.'**
+  String get bookingVaccineRequired;
+
+  /// No description provided for @successTag.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم الحجز بنجاح'**
+  String get successTag;
+
+  /// No description provided for @successTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ميعادكم اتأكد يا {name}'**
+  String successTitle(String name);
+
+  /// No description provided for @successWaiting.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستنيين {children} في العيادة'**
+  String successWaiting(String children);
+
+  /// No description provided for @bookingNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الحجز'**
+  String get bookingNumber;
+
+  /// No description provided for @bookingNumberValue.
+  ///
+  /// In ar, this message translates to:
+  /// **'# نونو {number}'**
+  String bookingNumberValue(String number);
+
+  /// No description provided for @statusConfirmed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مؤكد'**
+  String get statusConfirmed;
+
+  /// No description provided for @statusArrived.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصل'**
+  String get statusArrived;
+
+  /// No description provided for @statusDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم'**
+  String get statusDone;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملغي'**
+  String get statusCancelled;
+
+  /// No description provided for @statusNoShow.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يحضر'**
+  String get statusNoShow;
+
+  /// No description provided for @statusSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'قريب'**
+  String get statusSoon;
+
+  /// No description provided for @labelDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'اليوم'**
+  String get labelDay;
+
+  /// No description provided for @labelHour.
+  ///
+  /// In ar, this message translates to:
+  /// **'الساعة'**
+  String get labelHour;
+
+  /// No description provided for @labelVisit.
+  ///
+  /// In ar, this message translates to:
+  /// **'الزيارة'**
+  String get labelVisit;
+
+  /// No description provided for @payAtClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدفع في العيادة'**
+  String get payAtClinic;
+
+  /// No description provided for @arrivalOrderInHour.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدخول بالأسبقية جوه الساعة المحجوزة'**
+  String get arrivalOrderInHour;
+
+  /// No description provided for @viewMyBookings.
+  ///
+  /// In ar, this message translates to:
+  /// **'عرض حجوزاتي'**
+  String get viewMyBookings;
+
+  /// No description provided for @backHome.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرجوع للرئيسية'**
+  String get backHome;
+
+  /// No description provided for @tabUpcoming.
+  ///
+  /// In ar, this message translates to:
+  /// **'القادمة'**
+  String get tabUpcoming;
+
+  /// No description provided for @tabPast.
+  ///
+  /// In ar, this message translates to:
+  /// **'السابقة'**
+  String get tabPast;
+
+  /// No description provided for @dueAtClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'المطلوب في العيادة'**
+  String get dueAtClinic;
+
+  /// No description provided for @canChange.
+  ///
+  /// In ar, this message translates to:
+  /// **'لسه ينفع تعدلي أو تلغي'**
+  String get canChange;
+
+  /// No description provided for @canChangeSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'متبقي أكتر من {hours} على الميعاد'**
+  String canChangeSub(String hours);
+
+  /// No description provided for @lessThan.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاضل أقل من {hours}'**
+  String lessThan(String hours);
+
+  /// No description provided for @lessThanSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'التعديل والإلغاء عن طريق العيادة'**
+  String get lessThanSub;
+
+  /// No description provided for @changeBooking.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل'**
+  String get changeBooking;
+
+  /// No description provided for @cancelBooking.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء الحجز'**
+  String get cancelBooking;
+
+  /// No description provided for @callClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمي العيادة'**
+  String get callClinic;
+
+  /// No description provided for @newBooking.
+  ///
+  /// In ar, this message translates to:
+  /// **'احجزي ميعاد جديد'**
+  String get newBooking;
+
+  /// No description provided for @noBookings.
+  ///
+  /// In ar, this message translates to:
+  /// **'لسه مفيش حجوزات.'**
+  String get noBookings;
+
+  /// No description provided for @cancelConfirmTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تلغي الحجز؟'**
+  String get cancelConfirmTitle;
+
+  /// No description provided for @cancelConfirmBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'هيتلغى حجز {when} والمكان هيرجع متاح لغيرك.'**
+  String cancelConfirmBody(String when);
+
+  /// No description provided for @keepBooking.
+  ///
+  /// In ar, this message translates to:
+  /// **'لأ، خليه'**
+  String get keepBooking;
+
+  /// No description provided for @bookingCancelled.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتلغى الحجز.'**
+  String get bookingCancelled;
+
+  /// No description provided for @titleVisit.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشف {names}'**
+  String titleVisit(String names);
+
+  /// No description provided for @titleVaccine.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطعيم {names}'**
+  String titleVaccine(String names);
+
+  /// No description provided for @titleVisitAndVaccine.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشف وتطعيم {names}'**
+  String titleVisitAndVaccine(String names);
+
+  /// No description provided for @changeTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل الحجز'**
+  String get changeTitle;
+
+  /// No description provided for @confirmChange.
+  ///
+  /// In ar, this message translates to:
+  /// **'تأكيد التعديل'**
+  String get confirmChange;
+
+  /// No description provided for @bookingChanged.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتعدل الحجز.'**
+  String get bookingChanged;
+
   /// No description provided for @errInvalidCode.
   ///
   /// In ar, this message translates to:

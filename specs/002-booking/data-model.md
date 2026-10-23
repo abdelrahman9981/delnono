@@ -65,8 +65,8 @@ Server only for writes; readable by the owning guardian with current consent and
 | Field | Type |
 |-------|------|
 | visit | `{amount: number, covered: boolean}` or null for `vaccine_only` |
-| vaccines | list `{childId, vaccineId, name, amount: number \| null}` (null = hidden price) |
-| total | number (sum of known amounts) |
+| vaccines | list `{childId, vaccineId, name, amount: number, shown: boolean}`; `shown: false` = the clinic hides the price: the app shows "بالسعر في العيادة", the clinic still charges `amount` |
+| total | number (visit plus shown vaccine amounts: what the app shows) |
 | hasHiddenPrices | boolean |
 | packageId | string? |
 

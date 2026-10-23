@@ -44,7 +44,8 @@ is stored as `number` and shown as "نونو ٢٤٨" (Arabic-Indic digits).
 ## R4. Price snapshot and changes (FR-013 to FR-016, FR-023)
 
 **Decision**: the booking stores a `price` snapshot: visit `{amount, covered}`, one line per chosen
-vaccine `{childId, vaccineId, name, amount | null when hidden}`, and `total` (with `hasHiddenPrices`).
+vaccine `{childId, vaccineId, name, amount, shown}` (the real price is kept for the clinic even when it is
+hidden from the guardian), and `total` (with `hasHiddenPrices`).
 The server computes it from `settings/booking`, `vaccines/*` and the family's package in the transaction.
 On change, lines for children and vaccines that stay keep their stored amounts; new lines use current
 prices; the visit line keeps its amount unless the booking had no visit before (FR-023, clarification).
@@ -104,3 +105,12 @@ the shell so the Booking tab stays selected; nested routes get a back button poi
 
 **Note**: docs/design/README.md maps the Home screenshot to 002, but the feature description lists only
 booking, success and my bookings. Home stays a placeholder; its design is left for a later feature.
+
+## R12. Cairo time in the app
+
+**Decision**: add the `timezone` package (Dart team) to compute Cairo dates and hour starts in the app,
+including Egypt's summer time, for showing open days, started hours and the cancel window.
+
+**Rationale**: Dart has no time-zone database; using the device's zone would be wrong for guardians
+with another zone set. Display only: every booking decision is made on the server (R5). Constitution
+Principle VI: new dependency with a stated reason.
