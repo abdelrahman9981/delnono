@@ -10,6 +10,14 @@
 
 **Design**: `docs/design/figma/booking.jpg`, `booking-success.jpg`, `my-bookings.jpg` and the Figma prototype in `docs/design/README.md`. The Figma list chevrons point the wrong way for RTL; the app's rule applies (forward ‹, back ›). The dark-mode toggle and notification bell in the Figma top bar are not part of this feature (the app follows the system theme; notifications are feature 007).
 
+## Clarifications
+
+### Session 2026-10-23
+
+- Q: When a guardian changes a confirmed booking, which prices does it keep? → A: The fixed prices for children and vaccines already booked are kept; only added items get today's prices.
+- Q: Can one family have more than one active booking on the same day? → A: No. One active booking per family per day; to add a child, change the existing booking.
+- Q: How many upcoming bookings can one family hold at once? → A: Up to 2 upcoming bookings per family, as a clinic setting.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Book a clinic visit (Priority: P1)
@@ -87,7 +95,7 @@ Until a set time before the hour starts (default 3 hours), the guardian can canc
 
 **Why this priority**: Freeing places early lets other families book; a late change needs the clinic's judgment (D-04).
 
-**Independent Test**: Cancel a booking 4 hours before its hour and check that the place is free; try at 2 hours and check that only "كلمي العيادة" is offered.
+**Independent Test**: Cancel a booking 4 hours before its hour and check that the place is free; try at 2 hours and check that only "كلمي العيادة" is offered. Change a booking after a price rise and check that the booked items keep their old prices.
 
 **Acceptance Scenarios**:
 
@@ -120,7 +128,8 @@ If the family has an active annual package (created in feature 006), the visit p
 - The guardian has no children linked: the booking screen asks them to add a child first (link to add child).
 - No connection: booking, cancelling and changing need a connection; the app says so in Arabic and nothing is half-done (constitution Principle VII).
 - An hour that has already started: it cannot be booked.
-- The same child already has an active booking on the same day: a second booking for that child that day is refused with a clear message; the guardian can change the existing one.
+- The family already has an active booking that day: a second booking that day is refused with a clear message pointing to the existing one, where children can be added by changing it.
+- The family already holds the maximum number of upcoming bookings (default 2): a new booking is refused until one is done, cancelled or past.
 - Capacity is lowered by the clinic below the number already booked: existing bookings stay; the hour shows full until places free up.
 - A vaccine day is removed after vaccine bookings were made: existing bookings stay as booked; the clinic handles them (004).
 - The selected child is unlinked or the account is deleted (001): their upcoming bookings are cancelled and the places freed.
@@ -146,7 +155,8 @@ If the family has an active annual package (created in feature 006), the visit p
 - **FR-008**: Vaccines MUST be chosen per child from the clinic's vaccine list, and only on vaccine days (FR-53, D-31). A vaccine-only booking MUST include at least one vaccine.
 - **FR-009**: Confirmation MUST be instant and atomic: the place is taken on the first successful confirmation; if the hour filled meanwhile, the guardian sees "الميعاد اتحجز" and nothing is booked (D-01, D-03).
 - **FR-010**: Each booking MUST get a short booking number shown to the guardian and staff (for example "نونو ٢٤٨").
-- **FR-011**: A child MUST NOT have two active bookings on the same day.
+- **FR-011**: A family MUST NOT have more than one active booking on the same day; siblings for that day are added to the same booking (FR-52).
+- **FR-011a**: A family MUST NOT hold more than the maximum number of upcoming bookings (default 2, a clinic setting).
 - **FR-012**: Booking MUST be possible only in the app; WhatsApp is offered for questions and late changes only (D-27).
 
 **Price**
@@ -164,11 +174,11 @@ If the family has an active annual package (created in feature 006), the visit p
 - **FR-020**: Guardians MUST be able to cancel or change a confirmed booking until the cancel window (default 3 hours) before the hour starts; after that the app MUST offer only "كلمي العيادة" (D-04, FR-06).
 - **FR-021**: Cancelling MUST free the place at once (D-02).
 - **FR-022**: Changing MUST move the booking to another hour atomically (free the old place and take the new one together), keeping the booking number; if the new hour is full, the original booking is unchanged.
-- **FR-023**: A change MAY also change children and vaccines, under the same rules as a new booking; prices are fixed again at the time of the change.
+- **FR-023**: A change MAY also change children and vaccines, under the same rules as a new booking. Prices already fixed for the children and vaccines kept in the booking stay as they were; only added children's vaccines, added vaccines, or a visit price that was not charged before (for example a vaccine-only booking changed to a clinic visit) use today's prices (FR-47).
 
 **Settings**
 
-- **FR-024**: Capacity per hour, working days and hours, holidays, vaccine days, the visit price, each vaccine's price and whether it is shown, the cancel window and the booking horizon MUST be clinic settings, not constants (constitution Principle III). Until feature 004 adds the editing screens, they are seeded with values clearly marked as placeholders (D-36).
+- **FR-024**: Capacity per hour, working days and hours, holidays, vaccine days, the visit price, each vaccine's price and whether it is shown, the cancel window, the booking horizon and the maximum upcoming bookings per family MUST be clinic settings, not constants (constitution Principle III). Until feature 004 adds the editing screens, they are seeded with values clearly marked as placeholders (D-36).
 
 **General**
 
@@ -179,7 +189,7 @@ If the family has an active annual package (created in feature 006), the visit p
 
 - **Booking**: number, guardian, children (one place), visit type, vaccines per child, day and hour, status, price snapshot (visit price or "covered by package", each vaccine price, total), created and changed times, cancel time.
 - **Hour slot**: a day and hour with its capacity and the places taken in it (bookings now, walk-ins from 004).
-- **Clinic booking settings**: capacity, working days and hours, holidays, vaccine days, visit price, cancel window, booking horizon.
+- **Clinic booking settings**: capacity, working days and hours, holidays, vaccine days, visit price, cancel window, booking horizon, maximum upcoming bookings per family.
 - **Vaccine**: name, price, whether the price is shown, basic or additional (defined by the doctor; full schedule logic in 003).
 - **Package** (read-only here, owned by 006): family, start and end dates, active or not.
 
@@ -200,7 +210,7 @@ If the family has an active annual package (created in feature 006), the visit p
 - Booking horizon (14 days), working hours and holidays are placeholders until the doctor sets them in 004.
 - Vaccines offered for booking come from a clinic vaccine list with prices; due-date suggestions per child come with the vaccine schedule in feature 003.
 - A vaccine price marked hidden is still charged at the clinic; the app shows it as "بالسعر في العيادة".
-- Changing a booking re-fixes prices at the time of the change (it is a new commitment); cancelling has no fee.
+- Cancelling has no fee.
 - Upcoming bookings of a deleted account are cancelled and their places freed (001 edge case, delivered here).
 - Packages are read from a family package record created by feature 006; until then no family has one.
 - The success screen and "My bookings" follow the Figma screenshots; "قريب" marks a booking inside the cancel window.
