@@ -48,27 +48,16 @@ Additional vaccines are **given** or have no state (clarified in spec FR-010).
 **Rationale**: states change with the date alone, so storing them would need a daily job (Blaze).
 Display-only; nothing on the server depends on them. Reminders (007) use the same rules on the server.
 
-## R4. Prescription photos (FR-014, FR-015, FR-022)
+## R4. Prescription photos (moved to Phase 2)
 
-**Decision**: Cloud Storage at `prescriptions/{childId}/{visitId}/{fileName}`, listed on the visit as
-`prescriptions: [{path, page}]`. `storage.rules` allow read when the caller is the child's linked active
-guardian (cross-service `firestore.get` of the child and guardian documents, same checks as
-`linkedGuardian`) or has the custom claim `role == 'doctor'` (staff claims arrive in 004); never the
-secretary; writes are denied until 004. The app downloads bytes with the SDK (`getData`), which applies
-the rules, and keeps them in the app's support folder (not the OS cache folder, which iOS may purge) so opened photos stay readable offline. The cache is
-deleted on sign-out together with the Firestore cache. Local development uses the Storage emulator
-(port 9199). Deploying Storage is **blocked: Blaze** (D-38).
+**Decision (2026-10-24)**: prescription photos and Cloud Storage move to Phase 2 (BRD D-39, constitution
+1.2.0). 003 shows the visit history without photos; the `visits` documents carry no `prescriptions` field
+yet, and no Storage rules, emulator or SDK are part of the app.
 
-**Rationale**: download URLs carry a bearer token that bypasses the rules and could be forwarded; SDK
-reads are checked every time. Bytes in the app's own support folder meet the offline requirement without a
-caching library.
-
-**Alternatives considered**: download URLs plus an image-cache package (URL works for anyone who has it);
-storing photos in Firestore (1 MB limit, cost).
-
-**New dependencies** (constitution Principle VI): `firebase_storage` (the Storage SDK, required by D-30)
-and `path_provider` (Flutter team package to find the app's cache folder). Versions resolved with the
-current FlutterFire set: firebase_storage 14.0.1, path_provider 2.1.6.
+**Kept for Phase 2** (designed and tested before the scope change, then removed): photos at
+`prescriptions/{childId}/{visitId}/{file}`; Storage rules mirroring `linkedGuardian` with cross-service
+`firestore.get`, plus the doctor's `role` claim and never the secretary; reads through the SDK (`getData`),
+never download URLs, cached among the app's private files for offline reading and deleted on sign-out.
 
 ## R5. Growth chart (FR-004)
 
@@ -93,12 +82,13 @@ control over what is drawn, so nothing can imply a judgment.
 
 **Decision**: Firestore offline persistence (already on since 001) serves every screen from the cache;
 streams use the cached snapshot first and show "إنتي أوفلاين · دي آخر بيانات اتحملت" when
-`metadata.isFromCache` is true and the device has no connection. Photos come from the app cache (R4).
+`metadata.isFromCache` is true and the device has no connection.
 
 ## R8. Selected child
 
-**Decision**: the last selected child id is kept on the device (a small value in the app's preferences
-folder through a JSON file next to the photo cache, read at start); if that child is no longer linked,
-the first child is used.
+**Decision**: the last selected child id is kept on the device in a one-line file among the app's private
+files (the app support folder, found with `path_provider`, deleted on sign-out); if that child is no longer
+linked, the first child is used.
 
-**Rationale**: avoids another dependency (shared_preferences) for one value.
+**Rationale**: `path_provider` (Flutter team) is the one new dependency (constitution Principle VI); it
+avoids shared_preferences for one value and gives a folder the OS does not purge. Version 2.1.6.

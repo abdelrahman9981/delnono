@@ -1,6 +1,6 @@
 # Data Model: Child Profile and Vaccines (003)
 
-Firestore and Cloud Storage. Dates are `YYYY-MM-DD` in Cairo time. Guardians only read; every write
+Firestore only (Cloud Storage and prescription photos are Phase 2, D-39). Dates are `YYYY-MM-DD` in Cairo time. Guardians only read; every write
 below is made by staff in feature 004 (or by the seed script in development). Existing documents from
 001 (`children/{id}`) and 002 (`vaccines/{id}`, `packages/{id}`, `settings/clinic`) are extended, not
 replaced.
@@ -40,7 +40,6 @@ a staff-only entry under `measurements/{id}/changes/{c}`; the guardian sees only
 | date | string date | |
 | type | `clinic` \| `vaccine` \| `walkIn` | |
 | bookingId | string? | 002 booking, if any |
-| prescriptions | list of `{path, page}` | Storage paths, pages in order; may be empty |
 | createdAt | timestamp | |
 
 The doctor's notes are in `visits/{visitId}/staff/notes` (004), denied to guardians.
@@ -94,11 +93,6 @@ only when `showPrice`).
 ## settings/clinic (001, extended)
 
 Adds `phoneNumber` (E.164, placeholder) for the "اتصلي بالعيادة" button. The 123 number is fixed.
-
-## Cloud Storage: prescriptions/{childId}/{visitId}/{fileName}
-
-JPEG or PNG, up to 10 MB, uploaded by the doctor in 004. Read rules in
-[contracts/storage-access.md](contracts/storage-access.md).
 
 ## App-side derived values (not stored)
 
