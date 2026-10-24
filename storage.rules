@@ -1,0 +1,11 @@
+rules_version = '2';
+
+// Access contract: specs/003-child-profile/contracts/storage-access.md. Deployment is blocked until
+// the project is on Blaze (D-38); everything runs on the Storage emulator until then.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}
