@@ -12,6 +12,8 @@ class DefaultFirebaseOptions {
   static const _demoApiKey = 'AIzaDemoKeyForLocalEmulatorsOnly0000000';
 
   static FirebaseOptions get currentPlatform {
+    // The clinic dashboard (005) runs in the browser.
+    if (kIsWeb) return _web;
     switch (defaultTargetPlatform) {
       case TargetPlatform.iOS:
       case TargetPlatform.macOS:
@@ -34,5 +36,13 @@ class DefaultFirebaseOptions {
     messagingSenderId: '000000000000',
     projectId: 'demo-delnono',
     iosBundleId: 'eg.drelnono.app',
+  );
+
+  static const _web = FirebaseOptions(
+    apiKey: _demoApiKey,
+    appId: '1:000000000000:web:0000000000000000',
+    messagingSenderId: '000000000000',
+    projectId: 'demo-delnono',
+    authDomain: 'demo-delnono.firebaseapp.com',
   );
 }

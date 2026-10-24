@@ -6,6 +6,7 @@
  *     --export-on-exit emulator-seed "cd functions && npm run seed"
  */
 import { initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { nameKey } from "../src/lib/nameKey";
 
@@ -13,7 +14,8 @@ if (!process.env.FIRESTORE_EMULATOR_HOST) {
   throw new Error("FIRESTORE_EMULATOR_HOST is not set; refusing to seed anything but the emulator.");
 }
 
-const db = getFirestore(initializeApp({ projectId: "demo-delnono" }));
+const app = initializeApp({ projectId: "demo-delnono" });
+const db = getFirestore(app);
 
 const PLACEHOLDER = "[نص مؤقت · يراجعه المحامي قبل الإطلاق]";
 const CLINIC_PHONE = "+201000000001";
@@ -92,7 +94,7 @@ async function main() {
     },
   ];
   for (const { id, ...c } of clinics) {
-    batch.set(db.doc(`clinics/${id}`), { ...c, holidays: [], active: true, placeholder: true });
+    batch.set(db.doc(`clinics/${id}`), { ...c, holidays: [], packageMonths: 12, active: true, placeholder: true });
   }
 
   // Vaccine list (002). Names are placeholders in brackets until the doctor's list arrives
@@ -137,6 +139,7 @@ async function main() {
 
   seedChildProfile(batch);
   await batch.commit();
+  await seedStaff();
   console.log(
     "Seeded settings (auth, policy, booking, vaccines, followUp), 2 placeholder clinics, 4 placeholder vaccines, the placeholder",
     "schedule and follow-up lists, 1 clinic guardian and 3 unlinked clinic children with sample records on",
@@ -281,6 +284,27 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
       recordedAt: new Date(`${givenOn}T18:20:00+02:00`),
     });
   });
+}
+
+// Staff accounts (005), emulator only. The real project's doctor account is created during setup
+// (docs/demo-plan.md); never with this password.
+export const STAFF_PASSWORD = "Delnono-2026";
+
+async function seedStaff() {
+  if (!process.env.FIREBASE_AUTH_EMULATOR_HOST) throw new Error("FIREBASE_AUTH_EMULATOR_HOST is not set.");
+  const auth = getAuth(app);
+  const staff = [
+    { uid: "staff-doctor", email: "doctor@demo.delnono", name: "[د. أحمد العبد]", role: "doctor", clinicId: null },
+    { uid: "staff-sec1", email: "sec1@demo.delnono", name: "[سكرتيرة المقطم]", role: "secretary", clinicId: CLINIC_1 },
+    { uid: "staff-sec2", email: "sec2@demo.delnono", name: "[سكرتيرة مدينة نصر]", role: "secretary", clinicId: CLINIC_2 },
+  ];
+  for (const s of staff) {
+    await auth.createUser({ uid: s.uid, email: s.email, password: STAFF_PASSWORD, displayName: s.name });
+    await auth.setCustomUserClaims(s.uid, { role: s.role, clinicId: s.clinicId });
+    await db.doc(`staff/${s.uid}`).set({
+      name: s.name, email: s.email, role: s.role, clinicId: s.clinicId, active: true, mustChangePassword: false, createdAt: new Date(),
+    });
+  }
 }
 
 function ar(n: number) {
