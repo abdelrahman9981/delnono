@@ -1,9 +1,9 @@
 import 'package:delnono/core/widgets/birth_date_picker.dart';
+import 'package:delnono/features/child_profile/presentation/my_child_screen.dart';
 import 'package:delnono/features/auth/data/auth_repository.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/children/presentation/add_child_screen.dart';
 import 'package:delnono/features/children/presentation/child_profile_screen.dart';
-import 'package:delnono/features/children/presentation/children_list_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../helpers/screen_harness.dart';
+import '../child_profile/fakes.dart' show profileDataOverrides;
 import '../registration/fakes.dart';
 
 class _User extends Mock implements User {
@@ -28,7 +29,7 @@ void main() {
     final h = ScreenHarness(
       initial: initial,
       routes: [
-        GoRoute(path: '/children', builder: (_, _) => const ChildrenListScreen(), routes: [
+        GoRoute(path: '/children', builder: (_, _) => const MyChildScreen(), routes: [
           GoRoute(path: 'add', builder: (_, _) => const AddChildScreen()),
           GoRoute(path: ':id', builder: (_, s) => ChildProfileScreen(childId: s.pathParameters['id']!)),
         ]),
@@ -38,18 +39,18 @@ void main() {
         childrenProvider.overrideWith((ref) => Stream.value(children)),
         authStateProvider.overrideWith((ref) => Stream.value(_User())),
         birthDatePickerProvider.overrideWithValue((context, {initial}) async => DateTime(2019, 1, 1)),
+        ...profileDataOverrides(),
       ],
     );
     await h.pump(tester);
     return h;
   }
 
-  group('children list', () {
-    testWidgets('lists linked children with their age and opens a profile', (tester) async {
+  group('my child', () {
+    testWidgets('shows the linked child with their age and opens the details', (tester) async {
       final h = await open(tester, '/children');
       expect(find.text('يوسف'), findsOneWidget);
-      await tester.tap(find.text('يوسف'));
-      await tester.pumpAndSettle();
+      await tapVisible(tester, find.byKey(const Key('entry-details')));
       expect(h.location, '/children/c1');
     });
 

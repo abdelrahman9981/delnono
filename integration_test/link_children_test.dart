@@ -1,5 +1,6 @@
 // Linking clinic-registered children end to end (quickstart.md scenarios 8 and 18; FR-021).
-// Uses the seeded clinic number +201000000001 with Youssef (2024-03-15) and Mariam (2022-07-02).
+// Uses the seeded clinic number +201000000001 with Youssef (2024-03-15), Mariam (2022-07-02) and
+// Salma (2026-01-20).
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delnono/core/firebase/firebase_init.dart';
@@ -48,6 +49,6 @@ void main() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final children =
         await FirebaseFirestore.instance.collection('children').where('guardianUid', isEqualTo: uid).get();
-    expect(children.docs.map((d) => d.get('name')).toSet(), {'يوسف', 'مريم'});
+    expect(children.docs.map((d) => d.get('name')).toSet(), {'يوسف', 'مريم', 'سلمى'});
   });
 }

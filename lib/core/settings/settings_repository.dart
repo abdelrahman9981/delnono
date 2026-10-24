@@ -69,13 +69,18 @@ class PolicySettings {
 
 /// `settings/clinic`.
 class ClinicSettings {
-  const ClinicSettings({this.whatsappNumber});
+  const ClinicSettings({this.whatsappNumber, this.phoneNumber});
 
-  factory ClinicSettings.fromMap(Map<String, dynamic>? data) =>
-      ClinicSettings(whatsappNumber: data?['whatsappNumber'] as String?);
+  factory ClinicSettings.fromMap(Map<String, dynamic>? data) => ClinicSettings(
+        whatsappNumber: data?['whatsappNumber'] as String?,
+        phoneNumber: data?['phoneNumber'] as String?,
+      );
 
   /// E.164; null until the clinic supplies it.
   final String? whatsappNumber;
+
+  /// The number "اتصلي بالعيادة" calls (003, FR-017); E.164, null until the clinic supplies it.
+  final String? phoneNumber;
 }
 
 int? _int(Object? value) => value is num ? value.toInt() : null;

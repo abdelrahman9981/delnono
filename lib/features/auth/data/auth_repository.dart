@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/settings/settings_repository.dart';
+import '../../../core/storage/private_files.dart';
 
 class AuthRepository {
   AuthRepository(this._auth, this._db);
@@ -39,9 +40,12 @@ class AuthRepository {
 
   User? get currentUser => _auth.currentUser;
 
-  /// Signs out and clears the offline Firestore cache, so the next person on this phone cannot read
-  /// the children's data offline (constitution Principle I).
+  /// Signs out and clears the offline Firestore cache and the app's private files, so the next person
+  /// on this phone cannot read the children's data offline (constitution Principle I).
   Future<void> signOut() async {
+    // Files first: the guard moves on as soon as Auth signs out, and the caller's own navigation
+    // must not land after it.
+    await PrivateFiles.clear();
     await _auth.signOut();
     await _db.terminate();
     await _db.clearPersistence();

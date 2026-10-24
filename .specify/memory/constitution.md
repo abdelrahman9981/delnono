@@ -1,5 +1,15 @@
 <!--
 Sync Impact Report
+- Version change: 1.1.2 → 1.2.0 (MINOR: Phase 1 scope narrowed; Cloud Storage moved to Phase 2)
+- Source: docs/BRD.md D-39 (24 October 2026), which modifies D-30 and D-38; requested by the owner
+- Modified principles:
+  - VII. Cost and Reliability: Cloud Storage (prescription photos) is Phase 2; Blaze before the
+    closed test is required for SMS OTP and Cloud Functions only
+- Modified sections:
+  - Additional Constraints > Stack: Cloud Storage marked Phase 2
+  - Additional Constraints > Roles: prescription photo upload marked Phase 2
+- Follow-up: specs/003-child-profile updated (visit history without prescription photos)
+
 - Version change: 1.0.0 → 1.1.0 (MINOR: materially expanded guidance; no principle removed or redefined)
 - Source: docs/BRD.md section 17 (D-27..D-38), which overrides conflicting text in sections 1–16
 - Modified principles:
@@ -54,12 +64,12 @@ Phase 1 covers clinic visits, cash payment, registration, booking, child profile
 Every feature has written acceptance criteria and automated tests. Prefer the platform and Firebase features over extra libraries. A new dependency requires a stated reason in the plan.
 
 ### VII. Cost and Reliability
-The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Storage, Cloud Functions, Hosting). Development runs on the Spark plan using Firebase test phone numbers. The project MUST upgrade to Blaze before the closed test, because SMS OTP, Cloud Storage (prescription photos) and Cloud Functions (scheduled reminders) require it; budget alerts are enabled from day one. SMS OTP sends MUST be minimized (persistent sessions). Booking requires connectivity; child profile and loaded content are readable offline.
+The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Functions, Hosting; Cloud Storage in Phase 2). Development runs on the Spark plan using Firebase test phone numbers. The project MUST upgrade to Blaze before the closed test, because SMS OTP and Cloud Functions (scheduled reminders) require it (Cloud Storage for prescription photos follows in Phase 2, D-39); budget alerts are enabled from day one. SMS OTP sends MUST be minimized (persistent sessions). Booking requires connectivity; child profile and loaded content are readable offline.
 
 ## Additional Constraints
 
-- **Stack:** Flutter for Android and iOS; Firebase Authentication (phone OTP); Cloud Firestore; Firebase Cloud Messaging; Cloud Storage for prescription photos; Cloud Functions for scheduled reminders; web dashboard on Firebase Hosting.
-- **Roles:** Doctor: everything; the only role that corrects measurements and vaccine doses after they are saved (every correction recorded in a change log), uploads prescriptions (a photo of the paper prescription, from the dashboard) and writes medical notes. Secretary: appointments, queue, payments, prices, packages, vaccine days, basic child data (name, age, guardian phone), and recording measurements (weight, length, head circumference) and vaccine doses (date, lot number); no edits after saving, no medical notes or prescriptions. Guardian: own children only, read-only medical record.
+- **Stack:** Flutter for Android and iOS; Firebase Authentication (phone OTP); Cloud Firestore; Firebase Cloud Messaging; Cloud Storage for prescription photos; Cloud Functions for scheduled reminders; web dashboard on Firebase Hosting; Cloud Storage for prescription photos in Phase 2 (D-39).
+- **Roles:** Doctor: everything; the only role that corrects measurements and vaccine doses after they are saved (every correction recorded in a change log), uploads prescriptions (a photo of the paper prescription, from the dashboard; Phase 2, D-39) and writes medical notes. Secretary: appointments, queue, payments, prices, packages, vaccine days, basic child data (name, age, guardian phone), and recording measurements (weight, length, head circumference) and vaccine doses (date, lot number); no edits after saving, no medical notes or prescriptions. Guardian: own children only, read-only medical record.
 - **Booking:** app-only; phone and WhatsApp are for contact and support, not booking. Guardians book an hour slot with a configurable capacity; entry within the hour is by arrival order. Walk-ins added by the secretary continue.
 - **Source of requirements:** `docs/BRD.md` (requirements FR-xx, decisions D-xx). If a spec conflicts with the BRD, the BRD wins until it is formally amended.
 - **Secrets:** no keys, tokens or service accounts in the repository.
@@ -76,4 +86,4 @@ The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Storage, Cloud 
 
 This constitution overrides other practices for this project. Amendments are agreed by the clinic owner (the doctor) and the lead developer, documented with a version bump (semantic versioning), and any dependent specs and plans are updated.
 
-**Version**: 1.1.2 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-22
+**Version**: 1.2.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-24

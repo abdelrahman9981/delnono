@@ -95,6 +95,22 @@ service cloud.firestore {
         allow read: if linkedGuardian(get(/databases/$(database)/documents/children/$(childId)).data);
         allow write: if false;
       }
+
+      // The medical record (003): read only for the linked guardian; recorded by staff in 004.
+      // Staff-only documents below them (visits/{v}/staff, measurements/{m}/changes) match nothing
+      // here and stay denied.
+      match /measurements/{measurementId} {
+        allow read: if linkedGuardian(get(/databases/$(database)/documents/children/$(childId)).data);
+        allow write: if false;
+      }
+      match /doses/{doseId} {
+        allow read: if linkedGuardian(get(/databases/$(database)/documents/children/$(childId)).data);
+        allow write: if false;
+      }
+      match /visits/{visitId} {
+        allow read: if linkedGuardian(get(/databases/$(database)/documents/children/$(childId)).data);
+        allow write: if false;
+      }
     }
 
     // A guardian who may see family data: current consent and recent activity (001, FR-010a).
@@ -109,6 +125,16 @@ service cloud.firestore {
       allow write: if false;
     }
     match /slots/{slotId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+
+    // Doctor-owned schedule and follow-up lists (003); edited from the dashboard in 004.
+    match /vaccineSchedule/{entryId} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /followUp/{bandId} {
       allow read: if signedIn();
       allow write: if false;
     }

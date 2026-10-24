@@ -26,10 +26,13 @@ import 'package:delnono/features/booking/domain/price_preview.dart';
 import 'package:delnono/features/booking/presentation/booking_screen.dart';
 import 'package:delnono/features/booking/presentation/booking_success_screen.dart';
 import 'package:delnono/features/booking/presentation/my_bookings_screen.dart';
+import 'package:delnono/features/child_profile/presentation/follow_up_screen.dart';
+import 'package:delnono/features/child_profile/presentation/my_child_screen.dart';
+import 'package:delnono/features/child_profile/presentation/vaccines_screen.dart';
+import 'package:delnono/features/child_profile/presentation/visits_screen.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/children/presentation/add_child_screen.dart';
 import 'package:delnono/features/children/presentation/child_profile_screen.dart';
-import 'package:delnono/features/children/presentation/children_list_screen.dart';
 import 'package:delnono/features/registration/application/registration_controller.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:delnono/features/registration/data/registration_api.dart';
@@ -47,6 +50,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../features/auth/fakes.dart';
+import '../features/child_profile/fakes.dart' show profileDataOverrides;
 import '../helpers/rtl_icons.dart';
 import '../features/registration/fakes.dart';
 
@@ -58,6 +62,9 @@ class _User extends Mock implements User {
 class _Links implements ExternalLinks {
   @override
   Future<bool> openWhatsApp(String e164) async => true;
+
+  @override
+  Future<bool> callNumber(String number) async => true;
 }
 
 const guardian = Guardian(
@@ -106,7 +113,10 @@ final screens = <String, Widget Function()>{
   'add child': () => const AddChildScreen(registration: true),
   'link children': () => const LinkChildrenScreen(),
   'reverify': () => const ReverifyScreen(),
-  'children list': () => const ShellScaffold(location: '/children', child: ChildrenListScreen()),
+  'my child': () => const ShellScaffold(location: '/children', child: MyChildScreen()),
+  'vaccines': () => const VaccinesScreen(childId: 'a'),
+  'visits': () => const VisitsScreen(childId: 'a'),
+  'follow-up': () => const FollowUpScreen(childId: 'a'),
   'child profile': () => const ChildProfileScreen(childId: 'a'),
   'account': () => const AccountScreen(),
   'change phone': () => const ChangePhoneScreen(),
@@ -131,7 +141,9 @@ void main() {
             policySettingsProvider.overrideWith(
               (ref) => Stream.value(PolicySettings(privacyPolicyText: '[نص مؤقت]', updatedAt: DateTime(2026, 10, 22))),
             ),
-            clinicSettingsProvider.overrideWith((ref) => Stream.value(const ClinicSettings(whatsappNumber: '+201000000000'))),
+            clinicSettingsProvider.overrideWith(
+              (ref) => Stream.value(const ClinicSettings(whatsappNumber: '+201000000000', phoneNumber: '+201000000000')),
+            ),
             phoneAuthServiceProvider.overrideWithValue(FakePhoneAuthService()),
             registrationApiProvider.overrideWithValue(FakeRegistrationApi()),
             externalLinksProvider.overrideWithValue(_Links()),
@@ -144,6 +156,7 @@ void main() {
             slotsTakenProvider.overrideWith((ref, date) => Stream.value(const {17: 6, 18: 2})),
             myBookingsProvider.overrideWith((ref) => Stream.value([sampleBooking])),
             activePackageProvider.overrideWith((ref, date) => Stream.value(null)),
+            ...profileDataOverrides(anyChild: true),
           ]);
           addTearDown(container.dispose);
           container.read(registrationControllerProvider.notifier).setDetails(

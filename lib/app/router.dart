@@ -16,7 +16,10 @@ import '../features/booking/presentation/my_bookings_screen.dart';
 import '../features/children/data/children_repository.dart';
 import '../features/children/presentation/add_child_screen.dart';
 import '../features/children/presentation/child_profile_screen.dart';
-import '../features/children/presentation/children_list_screen.dart';
+import '../features/child_profile/presentation/follow_up_screen.dart';
+import '../features/child_profile/presentation/my_child_screen.dart';
+import '../features/child_profile/presentation/vaccines_screen.dart';
+import '../features/child_profile/presentation/visits_screen.dart';
 import '../features/registration/data/guardian_repository.dart';
 import '../features/registration/presentation/consent_screen.dart';
 import '../features/registration/presentation/guardian_details_screen.dart';
@@ -84,10 +87,14 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: Routes.children,
-            builder: (_, _) => const ChildrenListScreen(),
+            builder: (_, _) => const MyChildScreen(),
             routes: [
               GoRoute(path: 'add', builder: (_, _) => const AddChildScreen()),
               GoRoute(path: ':id', builder: (_, state) => ChildProfileScreen(childId: state.pathParameters['id']!)),
+              // Siblings of the details screen, so back returns to My child (contracts/routes.md).
+              GoRoute(path: ':id/vaccines', builder: (_, state) => VaccinesScreen(childId: state.pathParameters['id']!)),
+              GoRoute(path: ':id/visits', builder: (_, state) => VisitsScreen(childId: state.pathParameters['id']!)),
+              GoRoute(path: ':id/follow-up', builder: (_, state) => FollowUpScreen(childId: state.pathParameters['id']!)),
             ],
           ),
           GoRoute(path: Routes.content, builder: (_, _) => const ContentPlaceholder()),

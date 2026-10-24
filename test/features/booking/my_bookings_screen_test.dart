@@ -41,6 +41,9 @@ class _Links implements ExternalLinks {
     opened.add(e164);
     return true;
   }
+
+  @override
+  Future<bool> callNumber(String number) async => true;
 }
 
 void main() {

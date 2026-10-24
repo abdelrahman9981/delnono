@@ -1653,6 +1653,414 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'حصلت مشكلة. جربي تاني.'**
   String get errGeneric;
+
+  /// No description provided for @childProfileTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملف طفلي'**
+  String get childProfileTitle;
+
+  /// No description provided for @latestMeasurements.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر قياسات {name}'**
+  String latestMeasurements(String name);
+
+  /// No description provided for @measurementsUpdated.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتحدثت {date}'**
+  String measurementsUpdated(String date);
+
+  /// No description provided for @measuredOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتقاس {date}'**
+  String measuredOn(String date);
+
+  /// No description provided for @measureWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوزن'**
+  String get measureWeight;
+
+  /// No description provided for @measureLength.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطول'**
+  String get measureLength;
+
+  /// No description provided for @measureHead.
+  ///
+  /// In ar, this message translates to:
+  /// **'محيط الرأس'**
+  String get measureHead;
+
+  /// No description provided for @unitKg.
+  ///
+  /// In ar, this message translates to:
+  /// **'كجم'**
+  String get unitKg;
+
+  /// No description provided for @unitCm.
+  ///
+  /// In ar, this message translates to:
+  /// **'سم'**
+  String get unitCm;
+
+  /// No description provided for @notRecordedYet.
+  ///
+  /// In ar, this message translates to:
+  /// **'لسه متسجلش'**
+  String get notRecordedYet;
+
+  /// No description provided for @noMeasurements.
+  ///
+  /// In ar, this message translates to:
+  /// **'لسه مفيش قياسات متسجلة. القياسات بتتسجل في العيادة وقت الكشف.'**
+  String get noMeasurements;
+
+  /// No description provided for @growthChart.
+  ///
+  /// In ar, this message translates to:
+  /// **'منحنى النمو'**
+  String get growthChart;
+
+  /// No description provided for @growthChartSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'{metric} بالنسبة للعمر'**
+  String growthChartSubtitle(String metric);
+
+  /// No description provided for @chartBirth.
+  ///
+  /// In ar, this message translates to:
+  /// **'الولادة'**
+  String get chartBirth;
+
+  /// No description provided for @chartBirthWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'وزن الولادة'**
+  String get chartBirthWeight;
+
+  /// No description provided for @chartMonthsAxis.
+  ///
+  /// In ar, this message translates to:
+  /// **'{months} شهور'**
+  String chartMonthsAxis(String months);
+
+  /// No description provided for @doctorReviewsMeasurements.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدكتور هيراجع القياسات معاكي في الكشف'**
+  String get doctorReviewsMeasurements;
+
+  /// No description provided for @entryVaccines.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات'**
+  String get entryVaccines;
+
+  /// No description provided for @entryVisits.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل الزيارات'**
+  String get entryVisits;
+
+  /// No description provided for @entryFollowUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتابعة حسب العمر'**
+  String get entryFollowUp;
+
+  /// No description provided for @entryDetails.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيانات الطفل'**
+  String get entryDetails;
+
+  /// No description provided for @detailsAllergies.
+  ///
+  /// In ar, this message translates to:
+  /// **'حساسية: {allergies}'**
+  String detailsAllergies(String allergies);
+
+  /// No description provided for @detailsNoAllergies.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش حساسية متسجلة'**
+  String get detailsNoAllergies;
+
+  /// No description provided for @vaccinesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات'**
+  String get vaccinesTitle;
+
+  /// No description provided for @vaccinesSource.
+  ///
+  /// In ar, this message translates to:
+  /// **'المصدر: {source}'**
+  String vaccinesSource(String source);
+
+  /// No description provided for @vaccinesReviewed.
+  ///
+  /// In ar, this message translates to:
+  /// **'آخر مراجعة: {date}'**
+  String vaccinesReviewed(String date);
+
+  /// No description provided for @vaccinesBasic.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات الأساسية'**
+  String get vaccinesBasic;
+
+  /// No description provided for @vaccinesAdditional.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطعيمات إضافية'**
+  String get vaccinesAdditional;
+
+  /// No description provided for @additionalBadge.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافي'**
+  String get additionalBadge;
+
+  /// No description provided for @additionalChoice.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات الإضافية اختيارية، والقرار ليكي بعد ما تتكلمي مع الدكتور.'**
+  String get additionalChoice;
+
+  /// No description provided for @doseNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجرعة {number}'**
+  String doseNumber(String number);
+
+  /// No description provided for @doseDueOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'ميعادها {date}'**
+  String doseDueOn(String date);
+
+  /// No description provided for @doseGivenOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتاخدت {date}'**
+  String doseGivenOn(String date);
+
+  /// No description provided for @doseLot.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم التشغيلة: {lot}'**
+  String doseLot(String lot);
+
+  /// No description provided for @doseScheduled.
+  ///
+  /// In ar, this message translates to:
+  /// **'مجدولة'**
+  String get doseScheduled;
+
+  /// No description provided for @doseDue.
+  ///
+  /// In ar, this message translates to:
+  /// **'مستحقة'**
+  String get doseDue;
+
+  /// No description provided for @doseGiven.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتاخدت'**
+  String get doseGiven;
+
+  /// No description provided for @doseLate.
+  ///
+  /// In ar, this message translates to:
+  /// **'متأخرة'**
+  String get doseLate;
+
+  /// No description provided for @doseMissed.
+  ///
+  /// In ar, this message translates to:
+  /// **'فائتة'**
+  String get doseMissed;
+
+  /// No description provided for @additionalSuggestedAge.
+  ///
+  /// In ar, this message translates to:
+  /// **'العمر المناسب: {age}'**
+  String additionalSuggestedAge(String age);
+
+  /// No description provided for @additionalDoses.
+  ///
+  /// In ar, this message translates to:
+  /// **'عدد الجرعات: {count}'**
+  String additionalDoses(String count);
+
+  /// No description provided for @additionalInterval.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفاصل بين الجرعات: {weeks} أسابيع'**
+  String additionalInterval(String weeks);
+
+  /// No description provided for @additionalPrice.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر: {price} جنيه'**
+  String additionalPrice(String price);
+
+  /// No description provided for @vaccinesEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'جدول التطعيمات لسه مش متاح.'**
+  String get vaccinesEmpty;
+
+  /// No description provided for @visitsTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجل الزيارات'**
+  String get visitsTitle;
+
+  /// No description provided for @visitsEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لسه مفيش زيارات متسجلة.'**
+  String get visitsEmpty;
+
+  /// No description provided for @visitClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشف'**
+  String get visitClinic;
+
+  /// No description provided for @visitVaccine.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطعيم'**
+  String get visitVaccine;
+
+  /// No description provided for @visitWalkIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشف بدون حجز'**
+  String get visitWalkIn;
+
+  /// No description provided for @visitMeasurements.
+  ///
+  /// In ar, this message translates to:
+  /// **'القياسات: {values}'**
+  String visitMeasurements(String values);
+
+  /// No description provided for @visitDoses.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات: {names}'**
+  String visitDoses(String names);
+
+  /// No description provided for @followUpTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتابعة حسب العمر'**
+  String get followUpTitle;
+
+  /// No description provided for @followUpPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمثلة مؤقتة · يعتمدها الدكتور'**
+  String get followUpPlaceholder;
+
+  /// No description provided for @whenToCall.
+  ///
+  /// In ar, this message translates to:
+  /// **'متى تتصلين بالدكتور'**
+  String get whenToCall;
+
+  /// No description provided for @whenToCallIntro.
+  ///
+  /// In ar, this message translates to:
+  /// **'لو لاحظتي أي علامة من دول، كلمي العيادة فورًا'**
+  String get whenToCallIntro;
+
+  /// No description provided for @callClinicPhone.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتصلي بالعيادة'**
+  String get callClinicPhone;
+
+  /// No description provided for @callAmbulance.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإسعاف ١٢٣'**
+  String get callAmbulance;
+
+  /// No description provided for @followUpDisclaimer.
+  ///
+  /// In ar, this message translates to:
+  /// **'القوايم دي للمتابعة بس، ومش بتشخّص حالة طفلك.'**
+  String get followUpDisclaimer;
+
+  /// No description provided for @followUpOverAge.
+  ///
+  /// In ar, this message translates to:
+  /// **'المتابعة حسب العمر بتغطي لحد {years} سنين.'**
+  String followUpOverAge(String years);
+
+  /// No description provided for @followUpNoBand.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش قائمة متابعة للسن ده لسه.'**
+  String get followUpNoBand;
+
+  /// No description provided for @packageTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الباقة السنوية للعيلة'**
+  String get packageTitle;
+
+  /// No description provided for @packageActiveUntil.
+  ///
+  /// In ar, this message translates to:
+  /// **'نشطة لحد {date}'**
+  String packageActiveUntil(String date);
+
+  /// No description provided for @packageEndedOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'خلصت في {date}'**
+  String packageEndedOn(String date);
+
+  /// No description provided for @packageActive.
+  ///
+  /// In ar, this message translates to:
+  /// **'نشطة'**
+  String get packageActive;
+
+  /// No description provided for @packageEnded.
+  ///
+  /// In ar, this message translates to:
+  /// **'خلصت'**
+  String get packageEnded;
+
+  /// No description provided for @packageMonthsLeft.
+  ///
+  /// In ar, this message translates to:
+  /// **'متبقي {months}'**
+  String packageMonthsLeft(String months);
+
+  /// No description provided for @offlineBanner.
+  ///
+  /// In ar, this message translates to:
+  /// **'إنتي أوفلاين · دي آخر بيانات اتحملت'**
+  String get offlineBanner;
+
+  /// No description provided for @needsConnectionFirstTime.
+  ///
+  /// In ar, this message translates to:
+  /// **'محتاجين إنترنت أول مرة عشان نحمّل البيانات.'**
+  String get needsConnectionFirstTime;
 }
 
 class _AppLocalizationsDelegate

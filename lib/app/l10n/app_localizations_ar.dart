@@ -927,4 +927,257 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errGeneric => 'حصلت مشكلة. جربي تاني.';
+
+  @override
+  String get childProfileTitle => 'ملف طفلي';
+
+  @override
+  String latestMeasurements(String name) {
+    return 'آخر قياسات $name';
+  }
+
+  @override
+  String measurementsUpdated(String date) {
+    return 'اتحدثت $date';
+  }
+
+  @override
+  String measuredOn(String date) {
+    return 'اتقاس $date';
+  }
+
+  @override
+  String get measureWeight => 'الوزن';
+
+  @override
+  String get measureLength => 'الطول';
+
+  @override
+  String get measureHead => 'محيط الرأس';
+
+  @override
+  String get unitKg => 'كجم';
+
+  @override
+  String get unitCm => 'سم';
+
+  @override
+  String get notRecordedYet => 'لسه متسجلش';
+
+  @override
+  String get noMeasurements =>
+      'لسه مفيش قياسات متسجلة. القياسات بتتسجل في العيادة وقت الكشف.';
+
+  @override
+  String get growthChart => 'منحنى النمو';
+
+  @override
+  String growthChartSubtitle(String metric) {
+    return '$metric بالنسبة للعمر';
+  }
+
+  @override
+  String get chartBirth => 'الولادة';
+
+  @override
+  String get chartBirthWeight => 'وزن الولادة';
+
+  @override
+  String chartMonthsAxis(String months) {
+    return '$months شهور';
+  }
+
+  @override
+  String get doctorReviewsMeasurements =>
+      'الدكتور هيراجع القياسات معاكي في الكشف';
+
+  @override
+  String get entryVaccines => 'التطعيمات';
+
+  @override
+  String get entryVisits => 'سجل الزيارات';
+
+  @override
+  String get entryFollowUp => 'المتابعة حسب العمر';
+
+  @override
+  String get entryDetails => 'بيانات الطفل';
+
+  @override
+  String detailsAllergies(String allergies) {
+    return 'حساسية: $allergies';
+  }
+
+  @override
+  String get detailsNoAllergies => 'مفيش حساسية متسجلة';
+
+  @override
+  String get vaccinesTitle => 'التطعيمات';
+
+  @override
+  String vaccinesSource(String source) {
+    return 'المصدر: $source';
+  }
+
+  @override
+  String vaccinesReviewed(String date) {
+    return 'آخر مراجعة: $date';
+  }
+
+  @override
+  String get vaccinesBasic => 'التطعيمات الأساسية';
+
+  @override
+  String get vaccinesAdditional => 'تطعيمات إضافية';
+
+  @override
+  String get additionalBadge => 'إضافي';
+
+  @override
+  String get additionalChoice =>
+      'التطعيمات الإضافية اختيارية، والقرار ليكي بعد ما تتكلمي مع الدكتور.';
+
+  @override
+  String doseNumber(String number) {
+    return 'الجرعة $number';
+  }
+
+  @override
+  String doseDueOn(String date) {
+    return 'ميعادها $date';
+  }
+
+  @override
+  String doseGivenOn(String date) {
+    return 'اتاخدت $date';
+  }
+
+  @override
+  String doseLot(String lot) {
+    return 'رقم التشغيلة: $lot';
+  }
+
+  @override
+  String get doseScheduled => 'مجدولة';
+
+  @override
+  String get doseDue => 'مستحقة';
+
+  @override
+  String get doseGiven => 'اتاخدت';
+
+  @override
+  String get doseLate => 'متأخرة';
+
+  @override
+  String get doseMissed => 'فائتة';
+
+  @override
+  String additionalSuggestedAge(String age) {
+    return 'العمر المناسب: $age';
+  }
+
+  @override
+  String additionalDoses(String count) {
+    return 'عدد الجرعات: $count';
+  }
+
+  @override
+  String additionalInterval(String weeks) {
+    return 'الفاصل بين الجرعات: $weeks أسابيع';
+  }
+
+  @override
+  String additionalPrice(String price) {
+    return 'السعر: $price جنيه';
+  }
+
+  @override
+  String get vaccinesEmpty => 'جدول التطعيمات لسه مش متاح.';
+
+  @override
+  String get visitsTitle => 'سجل الزيارات';
+
+  @override
+  String get visitsEmpty => 'لسه مفيش زيارات متسجلة.';
+
+  @override
+  String get visitClinic => 'كشف';
+
+  @override
+  String get visitVaccine => 'تطعيم';
+
+  @override
+  String get visitWalkIn => 'كشف بدون حجز';
+
+  @override
+  String visitMeasurements(String values) {
+    return 'القياسات: $values';
+  }
+
+  @override
+  String visitDoses(String names) {
+    return 'التطعيمات: $names';
+  }
+
+  @override
+  String get followUpTitle => 'المتابعة حسب العمر';
+
+  @override
+  String get followUpPlaceholder => 'أمثلة مؤقتة · يعتمدها الدكتور';
+
+  @override
+  String get whenToCall => 'متى تتصلين بالدكتور';
+
+  @override
+  String get whenToCallIntro => 'لو لاحظتي أي علامة من دول، كلمي العيادة فورًا';
+
+  @override
+  String get callClinicPhone => 'اتصلي بالعيادة';
+
+  @override
+  String get callAmbulance => 'الإسعاف ١٢٣';
+
+  @override
+  String get followUpDisclaimer =>
+      'القوايم دي للمتابعة بس، ومش بتشخّص حالة طفلك.';
+
+  @override
+  String followUpOverAge(String years) {
+    return 'المتابعة حسب العمر بتغطي لحد $years سنين.';
+  }
+
+  @override
+  String get followUpNoBand => 'مفيش قائمة متابعة للسن ده لسه.';
+
+  @override
+  String get packageTitle => 'الباقة السنوية للعيلة';
+
+  @override
+  String packageActiveUntil(String date) {
+    return 'نشطة لحد $date';
+  }
+
+  @override
+  String packageEndedOn(String date) {
+    return 'خلصت في $date';
+  }
+
+  @override
+  String get packageActive => 'نشطة';
+
+  @override
+  String get packageEnded => 'خلصت';
+
+  @override
+  String packageMonthsLeft(String months) {
+    return 'متبقي $months';
+  }
+
+  @override
+  String get offlineBanner => 'إنتي أوفلاين · دي آخر بيانات اتحملت';
+
+  @override
+  String get needsConnectionFirstTime =>
+      'محتاجين إنترنت أول مرة عشان نحمّل البيانات.';
 }
