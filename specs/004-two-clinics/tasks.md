@@ -20,9 +20,9 @@ Per phase: analyze, `flutter test`, `npm test`, `npm run test:rules`; simulator 
 
 ## Phase 1: Setup
 
-- [ ] T001 Seed (`functions/scripts/seed.ts`): two `clinics` per data-model.md (placeholders in brackets, different hours, vaccine days, capacity, prices and cancel window as in quickstart.md, `vaccinePrices` for v1–v4 with one vaccine not offered at clinic 2); reduce `settings/booking` to `bookingHorizonDays` and `maxUpcomingPerFamily`; drop `price`/`showPrice` from `vaccines`; drop the numbers from `settings/clinic`; `clinicId` on every seeded visit, measurement and dose (both clinics used). Re-export `emulator-seed/`.
-- [ ] T002 [P] `firestore.rules`: `clinics/{id}` read by anyone, never written; rules tests in `functions/test/rules/clinics.test.ts`.
-- [ ] T003 [P] Create `lib/features/clinics/{data,domain}` and `lib/features/home/`.
+- [X] T001 Seed (`functions/scripts/seed.ts`): two `clinics` per data-model.md (placeholders in brackets, different hours, vaccine days, capacity, prices and cancel window as in quickstart.md, `vaccinePrices` for v1–v4 with one vaccine not offered at clinic 2); reduce `settings/booking` to `bookingHorizonDays` and `maxUpcomingPerFamily`; drop `price`/`showPrice` from `vaccines`; drop the numbers from `settings/clinic`; `clinicId` on every seeded visit, measurement and dose (both clinics used). Re-export `emulator-seed/`.
+- [X] T002 [P] `firestore.rules`: `clinics/{id}` read by anyone, never written; rules tests in `functions/test/rules/clinics.test.ts`.
+- [X] T003 [P] Create `lib/features/clinics/{data,domain}` and `lib/features/home/`.
 
 ---
 
