@@ -5,6 +5,8 @@ export interface QuotaEntry {
   bookingId: string;
   date: string;
   startsAt: Timestamp;
+  /** For display; limits count every clinic together (D-49). */
+  clinicId?: string;
 }
 
 /** Entries still counting: those whose hour has not started. */

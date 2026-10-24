@@ -16,6 +16,7 @@ final pickerOverride =
 Future<int> taken(String date, int hour) async {
   final q = await FirebaseFirestore.instance
       .collection('slots')
+      .where('clinicId', isEqualTo: 'clinic-1')
       .where('date', isEqualTo: date)
       .where('hour', isEqualTo: hour)
       .get();
@@ -36,7 +37,10 @@ void main() {
     await startApp(tester, overrides: [pickerOverride]);
     await registerWithChild(tester, '+201000000086', 'دعاء نبيل', 'سليم');
 
-    // Book the first open day at its first hour (a day after today, so outside the cancel window).
+    // At the main clinic (004), book the first open day at its first hour (a day after today, so
+    // outside the cancel window).
+    await settle(tester, () => shows(find.byKey(const Key('clinic-clinic-1'))));
+    await tapInList(tester, find.byKey(const Key('clinic-clinic-1')));
     await settle(tester, () => shows(keysStarting('day-')));
     await tapInList(tester, keysStarting('day-').at(1));
     await settle(tester, () => shows(keysStarting('hour-')));

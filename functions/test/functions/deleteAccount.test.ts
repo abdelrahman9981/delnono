@@ -1,7 +1,7 @@
 import { strict as assert } from "node:assert";
 import { getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
-import { guardianWithChildren, openNonVaccineDay, seedBookingSettings, visit } from "../helpers/booking";
+import { CLINIC_2, guardianWithChildren, openNonVaccineDay, seedBookingSettings, seedClinic, slotPath, visit } from "../helpers/booking";
 import {
   adminDb,
   callFunction,
@@ -89,13 +89,28 @@ describe("deleteAccount", () => {
     const day = openNonVaccineDay();
     const booked = await callFunction<{ bookingId: string }>("createBooking", visit(day, 18, g.childIds), g);
     assert.ok(booked.result, JSON.stringify(booked.error));
-    assert.equal((await adminDb().doc(`slots/${day}_18`).get()).get("taken"), 1);
+    assert.equal((await adminDb().doc(`slots/clinic-1_${day}_18`).get()).get("taken"), 1);
 
     await callFunction("deleteAccount", { confirm: true }, g);
     assert.equal((await adminDb().doc(`bookings/${booked.result.bookingId}`).get()).get("status"), "cancelled");
-    assert.equal((await adminDb().doc(`slots/${day}_18`).get()).get("taken"), 0);
+    assert.equal((await adminDb().doc(`slots/clinic-1_${day}_18`).get()).get("taken"), 0);
     assert.equal((await adminDb().doc(`familyQuota/${g.uid}`).get()).exists, false);
     const audit = await adminDb().collection("auditLog").where("action", "==", "account.deleted").get();
     assert.deepEqual(audit.docs[0].get("details"), { cancelledBookings: [booked.result.bookingId] });
+  });
+
+  it("frees each place at its own clinic (004)", async () => {
+    await seedBookingSettings();
+    await seedClinic(CLINIC_2, { visitPrice: 350 });
+    const g = await guardianWithChildren("+201000000077");
+    const d1 = openNonVaccineDay(1);
+    let from = 2;
+    while (openNonVaccineDay(from) === d1) from++;
+    const d2 = openNonVaccineDay(from);
+    assert.ok((await callFunction("createBooking", visit(d1, 18, g.childIds), g)).result);
+    assert.ok((await callFunction("createBooking", visit(d2, 18, g.childIds, 350, CLINIC_2), g)).result);
+    await callFunction("deleteAccount", { confirm: true }, g);
+    assert.equal((await adminDb().doc(slotPath(d1, 18)).get()).get("taken"), 0);
+    assert.equal((await adminDb().doc(slotPath(d2, 18, CLINIC_2)).get()).get("taken"), 0);
   });
 });

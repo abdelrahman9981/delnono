@@ -48,8 +48,6 @@ class VaccineInfo {
     required this.id,
     required this.name,
     required this.kind,
-    required this.price,
-    required this.showPrice,
     this.active = true,
     this.note,
     this.suggestedAge,
@@ -63,8 +61,6 @@ class VaccineInfo {
       id: s.id,
       name: d['name'] as String? ?? '',
       kind: d['kind'] == 'additional' ? VaccineKind.additional : VaccineKind.basic,
-      price: (d['price'] as num?)?.toInt() ?? 0,
-      showPrice: d['showPrice'] as bool? ?? true,
       active: d['active'] as bool? ?? true,
       note: d['note'] as String?,
       suggestedAge: d['suggestedAge'] == null ? null : AgeSpan.fromMap(d['suggestedAge']),
@@ -76,10 +72,6 @@ class VaccineInfo {
   final String id;
   final String name;
   final VaccineKind kind;
-  final int price;
-
-  /// The doctor decides whether the price is shown (FR-043).
-  final bool showPrice;
   final bool active;
   final String? note;
   final AgeSpan? suggestedAge;

@@ -13,6 +13,7 @@ import '../../../core/format/arabic_digits.dart';
 import '../../../core/widgets/notice.dart';
 import '../../../core/widgets/step_indicator.dart';
 import '../../children/data/children_repository.dart';
+import '../../clinics/data/clinics_repository.dart';
 import '../application/booking_form_controller.dart';
 import '../data/booking_api.dart';
 import '../data/booking_settings.dart';
@@ -25,12 +26,14 @@ import '../domain/price_preview.dart';
 import '../domain/schedule.dart';
 import 'booking_format.dart';
 
-/// Booking (`/booking`, docs/design/figma/booking.jpg; FR-001 to FR-017). With [changeBookingId] it
-/// changes an existing booking (`/booking/change/:id`, FR-022).
+/// Booking (`/booking`, docs/design/figma/booking.jpg; FR-001 to FR-017). The guardian picks the
+/// clinic first (004 FR-006); [initialClinicId] comes from a Home clinic card (`/booking?clinic=`).
+/// With [changeBookingId] it changes an existing booking at its own clinic (`/booking/change/:id`).
 class BookingScreen extends ConsumerStatefulWidget {
-  const BookingScreen({super.key, this.changeBookingId});
+  const BookingScreen({super.key, this.changeBookingId, this.initialClinicId});
 
   final String? changeBookingId;
+  final String? initialClinicId;
 
   @override
   ConsumerState<BookingScreen> createState() => _BookingScreenState();
@@ -38,30 +41,51 @@ class BookingScreen extends ConsumerStatefulWidget {
 
 class _BookingScreenState extends ConsumerState<BookingScreen> {
   bool _started = false;
+  bool _preselected = false;
 
-  /// Change mode: fills the form from the booking once it has loaded (FR-022).
-  void _startChange(Booking? booking) {
-    if (_started || booking == null) return;
+  /// Change mode: fills the form from the booking once it and its clinic have loaded (FR-022).
+  void _startChange(Booking? booking, Clinic? clinic) {
+    if (_started || booking == null || clinic == null) return;
     _started = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) ref.read(bookingFormProvider.notifier).start(editing: booking);
+      if (mounted) ref.read(bookingFormProvider.notifier).start(editing: booking, clinicId: clinic.id);
+    });
+  }
+
+  /// A new booking starts at the clinic from Home, or the only active clinic (004 FR-006).
+  void _preselect(List<Clinic> clinics) {
+    if (_preselected || widget.changeBookingId != null) return;
+    _preselected = true;
+    final wanted = clinics.where((c) => c.id == widget.initialClinicId).firstOrNull ?? (clinics.length == 1 ? clinics.first : null);
+    if (wanted == null) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(bookingFormProvider.notifier).setClinic(wanted.id);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final settings = ref.watch(bookingSettingsProvider);
+    final clinics = ref.watch(clinicsProvider);
     final children = ref.watch(childrenProvider);
     final changeId = widget.changeBookingId;
     if (changeId != null) {
       final booking = ref.watch(bookingByIdProvider(changeId));
-      _startChange(booking);
+      _startChange(booking, booking == null ? null : ref.watch(clinicOfProvider(booking.clinicId)));
       if (ref.watch(bookingFormProvider).editing == null) {
         return Scaffold(appBar: _appBar(l10n), body: const Center(child: CircularProgressIndicator()));
       }
     }
-    if (!settings.hasValue || !children.hasValue) {
+    if (!clinics.hasValue || !children.hasValue) {
+      return Scaffold(appBar: _appBar(l10n), body: const Center(child: CircularProgressIndicator()));
+    }
+    _preselect(clinics.value!);
+    final clinicId = ref.watch(bookingFormProvider).clinicId;
+    if (clinicId == null && children.value!.isNotEmpty) {
+      return Scaffold(appBar: _appBar(l10n), body: SafeArea(child: _ClinicStep(clinics: clinics.value!)));
+    }
+    final settings = clinicId == null ? null : ref.watch(bookingSettingsProvider(clinicId));
+    if (settings != null && !settings.hasValue) {
       return Scaffold(appBar: _appBar(l10n), body: const Center(child: CircularProgressIndicator()));
     }
     if (children.value!.isEmpty) {
@@ -84,7 +108,14 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     }
     return Scaffold(
       appBar: _appBar(l10n),
-      body: SafeArea(child: _BookingForm(settings: settings.value!)),
+      body: SafeArea(
+        child: _BookingForm(
+          clinic: ref.watch(clinicProvider(clinicId!)),
+          clinicId: clinicId,
+          canChangeClinic: changeId == null && clinics.value!.length > 1,
+          settings: settings!.value!,
+        ),
+      ),
     );
   }
 
@@ -102,9 +133,52 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
       );
 }
 
-class _BookingForm extends ConsumerWidget {
-  const _BookingForm({required this.settings});
+/// Step 0 (004 FR-006): one card per active clinic.
+class _ClinicStep extends ConsumerWidget {
+  const _ClinicStep({required this.clinics});
 
+  final List<Clinic> clinics;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final text = Theme.of(context).textTheme;
+    final c = Theme.of(context).extension<AppColors>()!;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
+      children: [
+        _Section(title: l10n.chooseClinic),
+        if (clinics.isEmpty) Text(l10n.noClinics, style: text.bodyMedium?.copyWith(color: c.muted)),
+        for (final clinic in clinics) ...[
+          Card(
+            child: ListTile(
+              key: Key('clinic-${clinic.id}'),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              leading: CircleAvatar(
+                backgroundColor: c.blueSoft,
+                foregroundColor: c.blue,
+                child: const Icon(Icons.location_on_outlined),
+              ),
+              title: Text(clinic.name, style: text.titleSmall),
+              subtitle: Text(clinic.address, style: text.bodySmall),
+              // chevron_right mirrors with the text direction: it points left (‹, forward) in RTL.
+              trailing: Icon(Icons.chevron_right, color: c.muted),
+              onTap: () => ref.read(bookingFormProvider.notifier).setClinic(clinic.id),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ],
+    );
+  }
+}
+
+class _BookingForm extends ConsumerWidget {
+  const _BookingForm({required this.clinic, required this.clinicId, required this.canChangeClinic, required this.settings});
+
+  final Clinic? clinic;
+  final String clinicId;
+  final bool canChangeClinic;
   final BookingSettings settings;
 
   @override
@@ -116,12 +190,14 @@ class _BookingForm extends ConsumerWidget {
     final controller = ref.read(bookingFormProvider.notifier);
     final now = ref.watch(clockProvider)();
     final kids = ref.watch(childrenProvider).value ?? const [];
-    final vaccines = ref.watch(vaccinesProvider).value ?? const <Vaccine>[];
+    final vaccines = ref.watch(vaccinesProvider(clinicId)).value ?? const <Vaccine>[];
     final vaccineOnly = form.visitType == VisitType.vaccineOnly;
     final days = bookableDays(settings, now, vaccines: vaccineOnly);
     final date = form.date;
     final vaccinesAllowed = date != null && isVaccineDay(settings, date);
-    final taken = date == null ? const <int, int>{} : (ref.watch(slotsTakenProvider(date)).value ?? const {});
+    final taken = date == null
+        ? const <int, int>{}
+        : (ref.watch(slotsTakenProvider((clinicId: clinicId, date: date))).value ?? const {});
     // The family's package covering the chosen day, if any (feature 006, FR-016).
     final packageId = date == null || vaccineOnly ? null : ref.watch(activePackageProvider(date)).value;
 
@@ -150,6 +226,24 @@ class _BookingForm extends ConsumerWidget {
       padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
       children: [
         StepIndicator(current: step, total: 3),
+        // The chosen clinic (004 FR-006); "تغيير" goes back to the clinic step.
+        if (clinic != null)
+          Card(
+            key: const Key('chosen-clinic'),
+            child: ListTile(
+              leading: Icon(Icons.location_on_outlined, color: c.blue),
+              title: Text(clinic!.name, style: text.titleSmall),
+              subtitle: Text(clinic!.address, style: text.bodySmall),
+              trailing: canChangeClinic
+                  ? TextButton(
+                      key: const Key('change-clinic'),
+                      onPressed: () => controller.setClinic(null),
+                      child: Text(l10n.changeClinic),
+                    )
+                  : null,
+            ),
+          ),
+        const SizedBox(height: 8),
         // Visit type.
         Row(
           children: [
@@ -300,6 +394,7 @@ class _BookingForm extends ConsumerWidget {
         BookingRefusedException(reason: 'closed') => l10n.bookingClosedDay,
         BookingRefusedException(reason: 'not_vaccine_day') => l10n.bookingNotVaccineDay,
         BookingRefusedException(reason: 'beyond_horizon') => l10n.bookingBeyondHorizon,
+        BookingRefusedException(reason: 'clinic_inactive') => l10n.bookingClinicInactive,
         BookingRefusedException() => l10n.bookingStarted,
         _ => arabicErrorMessage(e, l10n),
       };

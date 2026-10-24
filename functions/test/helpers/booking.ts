@@ -17,15 +17,41 @@ export const openNonVaccineDay = (from = 1) => nextDay((d) => isOpenDay(BOOKING_
 export const vaccineDay = (from = 1) => nextDay((d) => isVaccineDay(BOOKING_DEFAULTS, d), from);
 export const closedDay = () => nextDay((d) => !isOpenDay(BOOKING_DEFAULTS, d));
 
+export const CLINIC = "clinic-1";
+export const CLINIC_2 = "clinic-2";
+
+/** Clinic 1's vaccine offers (as the 002 vaccine prices); v4 is inactive in the doctor's list. */
+export const VACCINE_PRICES = {
+  v1: { offered: true, price: 150, shown: true },
+  v2: { offered: true, price: 200, shown: true },
+  v3: { offered: true, price: 450, shown: false },
+  v4: { offered: true, price: 300, shown: true },
+};
+
+/**
+ * Seeds the main clinic with 002's placeholder schedule and prices plus [overrides], the family-wide
+ * `settings/booking`, and the doctor's vaccine list. Overrides go to both documents; each reader picks
+ * its own fields (004 research R1).
+ */
 export async function seedBookingSettings(overrides: Record<string, unknown> = {}) {
-  await adminDb().doc("settings/booking").set({ ...BOOKING_DEFAULTS, placeholder: true, ...overrides });
+  const { bookingHorizonDays, maxUpcomingPerFamily, vaccinePrices: _, ...clinic } = BOOKING_DEFAULTS;
+  await adminDb().doc("settings/booking").set({ bookingHorizonDays, maxUpcomingPerFamily, placeholder: true, ...overrides });
+  await seedClinic(CLINIC, { ...clinic, order: 0, ...overrides });
   const vaccines = [
-    { id: "v1", name: "[تطعيم ١]", price: 150, showPrice: true, active: true },
-    { id: "v2", name: "[تطعيم ٢]", price: 200, showPrice: true, active: true },
-    { id: "v3", name: "[تطعيم ٣]", price: 450, showPrice: false, active: true },
-    { id: "v4", name: "[تطعيم ٤]", price: 300, showPrice: true, active: false },
+    { id: "v1", name: "[تطعيم ١]", active: true },
+    { id: "v2", name: "[تطعيم ٢]", active: true },
+    { id: "v3", name: "[تطعيم ٣]", active: true },
+    { id: "v4", name: "[تطعيم ٤]", active: false },
   ];
   await Promise.all(vaccines.map(({ id, ...v }) => adminDb().doc(`vaccines/${id}`).set({ ...v, kind: "basic", placeholder: true })));
+}
+
+/** A clinic document: active, with 002's schedule and clinic 1's vaccine prices unless overridden. */
+export async function seedClinic(id: string, fields: Record<string, unknown> = {}) {
+  const { bookingHorizonDays: _h, maxUpcomingPerFamily: _m, ...clinic } = BOOKING_DEFAULTS;
+  await adminDb()
+    .doc(`clinics/${id}`)
+    .set({ name: `[${id}]`, address: "[عنوان]", active: true, order: 1, ...clinic, vaccinePrices: VACCINE_PRICES, ...fields });
 }
 
 /** A registered guardian with [children] linked children named c1, c2, … (ids `<uid>-c1`, …). */
@@ -41,6 +67,9 @@ export async function guardianWithChildren(phone: string, children = 1): Promise
   return { ...user, childIds };
 }
 
-export function visit(date: string, hour: number, childIds: string[], expectedTotal = 300) {
-  return { visitType: "visit", date, hour, children: childIds.map((childId) => ({ childId, vaccines: [] })), expectedTotal };
+export function visit(date: string, hour: number, childIds: string[], expectedTotal = 300, clinicId = CLINIC) {
+  return { clinicId, visitType: "visit", date, hour, children: childIds.map((childId) => ({ childId, vaccines: [] })), expectedTotal };
 }
+
+/** The slot document of [clinicId] at [date] and [hour]. */
+export const slotPath = (date: string, hour: number, clinicId = CLINIC) => `slots/${clinicId}_${date}_${String(hour).padStart(2, "0")}`;

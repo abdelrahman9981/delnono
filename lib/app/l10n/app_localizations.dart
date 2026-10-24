@@ -1906,12 +1906,6 @@ abstract class AppLocalizations {
   /// **'الفاصل بين الجرعات: {weeks} أسابيع'**
   String additionalInterval(String weeks);
 
-  /// No description provided for @additionalPrice.
-  ///
-  /// In ar, this message translates to:
-  /// **'السعر: {price} جنيه'**
-  String additionalPrice(String price);
-
   /// No description provided for @vaccinesEmpty.
   ///
   /// In ar, this message translates to:
@@ -2061,6 +2055,126 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'محتاجين إنترنت أول مرة عشان نحمّل البيانات.'**
   String get needsConnectionFirstTime;
+
+  /// No description provided for @chooseClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري العيادة'**
+  String get chooseClinic;
+
+  /// No description provided for @noClinics.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش عيادات متاحة للحجز دلوقتي.'**
+  String get noClinics;
+
+  /// No description provided for @changeClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'تغيير'**
+  String get changeClinic;
+
+  /// No description provided for @bookingClinicInactive.
+  ///
+  /// In ar, this message translates to:
+  /// **'العيادة دي مش بتستقبل حجوزات دلوقتي. اختاري عيادة تانية.'**
+  String get bookingClinicInactive;
+
+  /// No description provided for @labelClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'العيادة'**
+  String get labelClinic;
+
+  /// No description provided for @labelAddress.
+  ///
+  /// In ar, this message translates to:
+  /// **'العنوان'**
+  String get labelAddress;
+
+  /// No description provided for @listSeparator.
+  ///
+  /// In ar, this message translates to:
+  /// **'، '**
+  String get listSeparator;
+
+  /// No description provided for @homeWelcome.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهلًا بيكي'**
+  String get homeWelcome;
+
+  /// No description provided for @homeGreeting.
+  ///
+  /// In ar, this message translates to:
+  /// **'أهلًا يا {name}'**
+  String homeGreeting(String name);
+
+  /// No description provided for @homeClinics.
+  ///
+  /// In ar, this message translates to:
+  /// **'عياداتنا'**
+  String get homeClinics;
+
+  /// No description provided for @doctorName.
+  ///
+  /// In ar, this message translates to:
+  /// **'د. أحمد العبد'**
+  String get doctorName;
+
+  /// No description provided for @doctorTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'استشاري طب الأطفال وحديثي الولادة'**
+  String get doctorTitle;
+
+  /// No description provided for @doctorTagline.
+  ///
+  /// In ar, this message translates to:
+  /// **'موجودين عشان نطمنك'**
+  String get doctorTagline;
+
+  /// No description provided for @doctorPhotoPlaceholder.
+  ///
+  /// In ar, this message translates to:
+  /// **'[صورة د. أحمد · هنضيف الصورة الحقيقية قريب]'**
+  String get doctorPhotoPlaceholder;
+
+  /// No description provided for @bookHere.
+  ///
+  /// In ar, this message translates to:
+  /// **'احجزي هنا'**
+  String get bookHere;
+
+  /// No description provided for @callClinicShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتصلي'**
+  String get callClinicShort;
+
+  /// No description provided for @whatsapp.
+  ///
+  /// In ar, this message translates to:
+  /// **'واتساب'**
+  String get whatsapp;
+
+  /// No description provided for @callClinicAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتصلي بعيادة {area}'**
+  String callClinicAt(String area);
+
+  /// No description provided for @additionalPriceAt.
+  ///
+  /// In ar, this message translates to:
+  /// **'السعر في {area}: {price} جنيه'**
+  String additionalPriceAt(String area, String price);
+
+  /// No description provided for @visitAtClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'في {clinic}'**
+  String visitAtClinic(String clinic);
 }
 
 class _AppLocalizationsDelegate

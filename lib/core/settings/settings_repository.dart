@@ -67,21 +67,6 @@ class PolicySettings {
       termsText.trimLeft().startsWith('[');
 }
 
-/// `settings/clinic`.
-class ClinicSettings {
-  const ClinicSettings({this.whatsappNumber, this.phoneNumber});
-
-  factory ClinicSettings.fromMap(Map<String, dynamic>? data) => ClinicSettings(
-        whatsappNumber: data?['whatsappNumber'] as String?,
-        phoneNumber: data?['phoneNumber'] as String?,
-      );
-
-  /// E.164; null until the clinic supplies it.
-  final String? whatsappNumber;
-
-  /// The number "اتصلي بالعيادة" calls (003, FR-017); E.164, null until the clinic supplies it.
-  final String? phoneNumber;
-}
 
 int? _int(Object? value) => value is num ? value.toInt() : null;
 
@@ -96,9 +81,6 @@ class SettingsRepository {
 
   Stream<PolicySettings> watchPolicy() =>
       _doc('policy').snapshots().map((s) => PolicySettings.fromMap(s.data()));
-
-  Stream<ClinicSettings> watchClinic() =>
-      _doc('clinic').snapshots().map((s) => ClinicSettings.fromMap(s.data()));
 }
 
 final firestoreProvider = Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
@@ -112,5 +94,3 @@ final authSettingsProvider =
 final policySettingsProvider =
     StreamProvider<PolicySettings>((ref) => ref.watch(settingsRepositoryProvider).watchPolicy());
 
-final clinicSettingsProvider =
-    StreamProvider<ClinicSettings>((ref) => ref.watch(settingsRepositoryProvider).watchClinic());

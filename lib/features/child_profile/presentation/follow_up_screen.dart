@@ -6,9 +6,9 @@ import '../../../app/theme.dart';
 import '../../../core/clock.dart';
 import '../../../core/format/arabic_digits.dart';
 import '../../../core/launch/external_links.dart';
-import '../../../core/settings/settings_repository.dart';
 import '../../booking/domain/clinic_time.dart';
 import '../../children/data/children_repository.dart';
+import '../../clinics/data/clinics_repository.dart';
 import '../data/follow_up_repository.dart';
 import '../domain/age_band.dart';
 import '../domain/child_age.dart';
@@ -32,7 +32,8 @@ class FollowUpScreen extends ConsumerWidget {
     final child = ref.watch(childrenProvider).value?.where((k) => k.id == childId).firstOrNull;
     final bands = ref.watch(followUpBandsProvider).value ?? const <FollowUpBand>[];
     final settings = ref.watch(followUpSettingsProvider).value ?? const FollowUpSettings();
-    final clinicPhone = ref.watch(clinicSettingsProvider).value?.phoneNumber;
+    // One call button per clinic with a phone (004 FR-019).
+    final clinics = (ref.watch(clinicsProvider).value ?? const <Clinic>[]).where((c) => c.phone != null).toList();
     final today = ClinicTime.dateOf(ref.watch(clockProvider)());
 
     if (child == null) {
@@ -118,12 +119,12 @@ class FollowUpScreen extends ConsumerWidget {
                       child: Text('• $sign', style: text.bodyMedium?.copyWith(color: c.dangerText)),
                     ),
                   const SizedBox(height: 12),
-                  if (clinicPhone != null && clinicPhone.isNotEmpty) ...[
+                  for (final clinic in clinics) ...[
                     FilledButton.icon(
-                      key: const Key('call-clinic'),
-                      onPressed: () => links.callNumber(clinicPhone),
+                      key: Key('call-clinic-${clinic.id}'),
+                      onPressed: () => links.callNumber(clinic.phone!),
                       icon: const Icon(Icons.call_outlined),
-                      label: Text(l10n.callClinicPhone),
+                      label: Text(clinics.length == 1 ? l10n.callClinicPhone : l10n.callClinicAt(clinic.area)),
                     ),
                     const SizedBox(height: 8),
                   ],

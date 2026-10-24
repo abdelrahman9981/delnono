@@ -59,7 +59,7 @@ void main() {
     expect(inRow('additional-v3', find.textContaining('السعر')), findsNothing, reason: 'price hidden by the doctor');
     expect(inRow('additional-v3', find.textContaining('LOT-3001')), findsOneWidget);
     await scrollTo(tester, find.byKey(const Key('additional-v5')));
-    expect(inRow('additional-v5', find.text('السعر: ٣٠٠ جنيه')), findsOneWidget);
+    expect(inRow('additional-v5', find.text('السعر في المقطم: ٣٠٠ جنيه')), findsOneWidget);
     expect(inRow('additional-v5', find.text('متأخرة')), findsNothing, reason: 'optional: no late or missed state');
   });
 

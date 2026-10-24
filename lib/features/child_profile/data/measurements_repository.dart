@@ -12,6 +12,7 @@ class Measurement {
     this.lengthCm,
     this.headCm,
     this.visitId,
+    this.clinicId,
   });
 
   factory Measurement.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> s) {
@@ -23,6 +24,7 @@ class Measurement {
       lengthCm: (d['lengthCm'] as num?)?.toDouble(),
       headCm: (d['headCm'] as num?)?.toDouble(),
       visitId: d['visitId'] as String?,
+      clinicId: d['clinicId'] as String?,
     );
   }
 
@@ -34,6 +36,9 @@ class Measurement {
   final double? lengthCm;
   final double? headCm;
   final String? visitId;
+
+  /// Where it was measured (D-48); null = the main clinic.
+  final String? clinicId;
 }
 
 /// A child's measurements, oldest first.

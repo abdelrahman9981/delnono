@@ -22,6 +22,6 @@ describe("booking time (Cairo)", () => {
 
   it("adds days across months and slot ids are padded", () => {
     assert.equal(addDays("2026-11-28", 5), "2026-12-03");
-    assert.equal(slotId("2026-11-15", 9), "2026-11-15_09");
+    assert.equal(slotId("clinic-1", "2026-11-15", 9), "clinic-1_2026-11-15_09");
   });
 });

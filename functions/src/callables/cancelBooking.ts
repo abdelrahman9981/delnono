@@ -3,7 +3,7 @@ import { HttpsError, onCall } from "firebase-functions/https";
 import { db } from "../lib/admin";
 import { stillActive, type QuotaEntry } from "../lib/booking/quota";
 import { insideCancelWindow } from "../lib/booking/schedule";
-import { bookingSettingsFrom } from "../lib/booking/settings";
+import { clinicOf, readBookingSettings } from "../lib/booking/settings";
 import { slotId } from "../lib/booking/time";
 import { requirePhoneUser } from "../lib/guards";
 import { REGION } from "../lib/region";
@@ -26,15 +26,16 @@ export const cancelBooking = onCall({ region: REGION }, async (request) => {
     if (!booking.exists || booking.get("guardianUid") !== uid) throw new HttpsError("not-found", "Booking not found.");
     const date = booking.get("date") as string;
     const hour = booking.get("hour") as number;
-    const [settingsSnap, slot, quota] = await Promise.all([
-      tx.get(db.doc("settings/booking")),
-      tx.get(db.doc(`slots/${slotId(date, hour)}`)),
+    // The cancel window is the booking's clinic's, even if the clinic closed since (004 FR-010).
+    const clinicId = await clinicOf(booking.data(), tx);
+    const settings = await readBookingSettings(clinicId, tx, true);
+    const [slot, quota] = await Promise.all([
+      tx.get(db.doc(`slots/${slotId(clinicId, date, hour)}`)),
       tx.get(db.doc(`familyQuota/${uid}`)),
     ]);
     if (booking.get("status") !== "confirmed") {
       throw new HttpsError("failed-precondition", "Only confirmed bookings can be cancelled.", { reason: "not_confirmed" });
     }
-    const settings = bookingSettingsFrom(settingsSnap.data());
     if (insideCancelWindow(settings, (booking.get("startsAt") as Timestamp).toDate(), now)) {
       throw new HttpsError("failed-precondition", "Too close to the hour; contact the clinic.", { reason: "inside_window" });
     }

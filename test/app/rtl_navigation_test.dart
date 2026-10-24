@@ -72,7 +72,6 @@ void main() {
         childrenProvider.overrideWith((ref) => Stream.value(kids)),
         authSettingsProvider.overrideWith((ref) => Stream.value(const AuthSettings())),
         policySettingsProvider.overrideWith((ref) => Stream.value(const PolicySettings(privacyPolicyText: 'x'))),
-        clinicSettingsProvider.overrideWith((ref) => Stream.value(const ClinicSettings(whatsappNumber: '+201000000000'))),
         sessionApiProvider.overrideWithValue(_Session()),
         accountApiProvider.overrideWithValue(_Account()),
         phoneAuthServiceProvider.overrideWithValue(FakePhoneAuthService()),

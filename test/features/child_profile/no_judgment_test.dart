@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:delnono/core/launch/external_links.dart';
-import 'package:delnono/core/settings/settings_repository.dart';
 import 'package:delnono/features/child_profile/presentation/follow_up_screen.dart';
 import 'package:delnono/features/child_profile/presentation/my_child_screen.dart';
 import 'package:delnono/features/child_profile/presentation/vaccines_screen.dart';
@@ -62,7 +61,6 @@ void main() {
         overrides: [
           ...profileOverrides(),
           externalLinksProvider.overrideWithValue(_Links()),
-          clinicSettingsProvider.overrideWith((ref) => Stream.value(const ClinicSettings(phoneNumber: '+201000000000'))),
         ],
       );
       await h.pump(tester);

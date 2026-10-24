@@ -1,5 +1,6 @@
 import 'package:delnono/core/launch/external_links.dart';
 import 'package:delnono/core/settings/settings_repository.dart';
+import 'package:delnono/features/clinics/data/clinics_repository.dart';
 import 'package:delnono/features/account/presentation/account_screen.dart';
 import 'package:delnono/features/auth/data/auth_repository.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
@@ -58,7 +59,9 @@ void main() {
         guardianProvider.overrideWith((ref) => Stream.value(guardian)),
         childrenProvider.overrideWith((ref) => Stream.value(kids)),
         policySettingsProvider.overrideWith((ref) => Stream.value(const PolicySettings(privacyPolicyText: 'سياسة'))),
-        clinicSettingsProvider.overrideWith((ref) => Stream.value(ClinicSettings(whatsappNumber: whatsapp))),
+        allClinicsProvider.overrideWith(
+          (ref) => Stream.value([Clinic(id: 'clinic-1', name: '[عيادة]', area: 'س', address: '[عنوان]', active: true, whatsapp: whatsapp)]),
+        ),
         externalLinksProvider.overrideWithValue(links),
         authRepositoryProvider.overrideWithValue(auth),
       ],

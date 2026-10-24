@@ -12,6 +12,7 @@ import '../../../core/phone/egypt_phone.dart';
 import '../../../core/settings/settings_repository.dart';
 import '../../auth/application/session_controller.dart';
 import '../../auth/data/auth_repository.dart';
+import '../../clinics/data/clinics_repository.dart';
 import '../../children/data/children_repository.dart';
 import '../../registration/data/guardian_repository.dart';
 import '../../registration/presentation/policy_sheet.dart';
@@ -29,7 +30,8 @@ class AccountScreen extends ConsumerWidget {
     final guardian = ref.watch(guardianProvider).value;
     final children = ref.watch(childrenProvider).value ?? const [];
     final policy = ref.watch(policySettingsProvider).value ?? const PolicySettings();
-    final whatsapp = ref.watch(clinicSettingsProvider).value?.whatsappNumber;
+    // Support goes to the main clinic's WhatsApp (004 clarification).
+    final whatsapp = ref.watch(mainClinicProvider)?.whatsapp;
 
     if (guardian == null) {
       return Scaffold(appBar: AppBar(title: Text(l10n.screenAccount)), body: const Center(child: CircularProgressIndicator()));

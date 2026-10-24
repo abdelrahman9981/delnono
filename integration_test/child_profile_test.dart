@@ -82,7 +82,7 @@ void main() {
     await tapInList(tester, find.byKey(const Key('entry-follow-up')));
     await settle(tester, () => shows(find.byKey(const Key('when-to-call'))));
     expect(find.byKey(const Key('follow-up-band')), findsOneWidget);
-    expect(find.byKey(const Key('call-clinic')), findsOneWidget);
+    expect(find.byKey(const Key('call-clinic-clinic-1')), findsOneWidget);
     expect(find.byKey(const Key('call-ambulance')), findsOneWidget);
     await back(tester);
     await openMyChild(tester, 'seed-mariam');

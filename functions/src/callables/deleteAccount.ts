@@ -3,6 +3,7 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { HttpsError, onCall } from "firebase-functions/https";
 import { db } from "../lib/admin";
 import { writeAudit } from "../lib/audit";
+import { clinicOf } from "../lib/booking/settings";
 import { slotId } from "../lib/booking/time";
 import { REGION } from "../lib/region";
 
@@ -31,7 +32,11 @@ export const deleteAccount = onCall({ region: REGION }, async (request) => {
     const upcoming = await tx.get(
       db.collection("bookings").where("guardianUid", "==", uid).where("status", "==", "confirmed").where("startsAt", ">", Timestamp.now()),
     );
-    const slots = await Promise.all(upcoming.docs.map((b) => tx.get(db.doc(`slots/${slotId(b.get("date"), b.get("hour"))}`))));
+    // Each place is freed at the booking's own clinic (004).
+    const clinicIds = await Promise.all(upcoming.docs.map((b) => clinicOf(b.data(), tx)));
+    const slots = await Promise.all(
+      upcoming.docs.map((b, i) => tx.get(db.doc(`slots/${slotId(clinicIds[i], b.get("date"), b.get("hour"))}`))),
+    );
     const phone = guardian.get("phone") as string;
     const now = FieldValue.serverTimestamp();
 

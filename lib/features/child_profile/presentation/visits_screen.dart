@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/l10n/app_localizations.dart';
 import '../../../app/theme.dart';
 import '../../../core/format/arabic_digits.dart';
+import '../../clinics/data/clinics_repository.dart';
 import '../data/doses_repository.dart';
 import '../data/measurements_repository.dart';
 import '../data/vaccine_schedule_repository.dart';
@@ -80,6 +81,12 @@ class VisitsScreen extends ConsumerWidget {
                                   }}',
                                   style: text.titleSmall,
                                 ),
+                                if (ref.watch(clinicOfProvider(v.clinicId)) case final clinic?)
+                                  Text(
+                                    key: Key('visit-clinic-${v.id}'),
+                                    l10n.visitAtClinic(clinic.name),
+                                    style: muted,
+                                  ),
                                 if (m.isNotEmpty) ...[
                                   const SizedBox(height: 4),
                                   Text(l10n.visitMeasurements(m), style: muted),

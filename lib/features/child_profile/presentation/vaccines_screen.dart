@@ -7,7 +7,9 @@ import '../../../core/clock.dart';
 import '../../../core/format/arabic_digits.dart';
 import '../../../core/widgets/notice.dart';
 import '../../booking/domain/clinic_time.dart';
+import '../../booking/data/booking_settings.dart';
 import '../../children/data/children_repository.dart';
+import '../../clinics/data/clinics_repository.dart';
 import '../data/doses_repository.dart';
 import '../data/vaccine_schedule_repository.dart';
 import '../domain/dose_state.dart';
@@ -197,14 +199,14 @@ class _AdditionalBadge extends StatelessWidget {
   }
 }
 
-class _AdditionalCard extends StatelessWidget {
+class _AdditionalCard extends ConsumerWidget {
   const _AdditionalCard({required this.vaccine, required this.given});
 
   final VaccineInfo vaccine;
   final List<DoseRecord> given;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final text = Theme.of(context).textTheme;
     final c = Theme.of(context).extension<AppColors>()!;
@@ -228,7 +230,11 @@ class _AdditionalCard extends StatelessWidget {
             Text(l10n.additionalDoses(arabicDigits(vaccine.doses)), style: muted),
             if (vaccine.doses > 1 && vaccine.intervalWeeks > 0)
               Text(l10n.additionalInterval(arabicDigits(vaccine.intervalWeeks)), style: muted),
-            if (vaccine.showPrice) Text(l10n.additionalPrice(arabicDigits(vaccine.price)), style: muted),
+            // The price at each clinic that offers it and shows its price (FR-043, D-45).
+            for (final clinic in ref.watch(clinicsProvider).value ?? const <Clinic>[])
+              if (ref.watch(bookingSettingsProvider(clinic.id)).value?.vaccinePrices[vaccine.id] case final offer?
+                  when offer.offered && offer.shown)
+                Text(l10n.additionalPriceAt(clinic.area, arabicDigits(offer.price)), style: muted),
             if (vaccine.note != null && vaccine.note!.trim().isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(vaccine.note!, style: text.bodyMedium),

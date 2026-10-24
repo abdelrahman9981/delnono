@@ -50,9 +50,9 @@ export function addDays(date: string, days: number): string {
   return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10);
 }
 
-/** Document id of an hour's slot: `YYYY-MM-DD_HH`. */
-export function slotId(date: string, hour: number): string {
-  return `${date}_${String(hour).padStart(2, "0")}`;
+/** Document id of an hour's slot at a clinic: `<clinicId>_YYYY-MM-DD_HH` (004 research R2). */
+export function slotId(clinicId: string, date: string, hour: number): string {
+  return `${clinicId}_${date}_${String(hour).padStart(2, "0")}`;
 }
 
 export const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;

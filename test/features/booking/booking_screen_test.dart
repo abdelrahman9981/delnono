@@ -7,10 +7,12 @@ import 'package:delnono/features/booking/data/vaccines_repository.dart';
 import 'package:delnono/features/booking/domain/price_preview.dart';
 import 'package:delnono/features/booking/presentation/booking_screen.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
+import 'package:delnono/features/clinics/data/clinics_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../helpers/clinic_fakes.dart';
 import '../../helpers/screen_harness.dart';
 import 'fakes.dart';
 
@@ -34,17 +36,27 @@ void main() {
     Map<int, int> taken = const {17: 6, 18: 2},
     BookingSettings settings = const BookingSettings(),
     String? packageId,
+    List<Clinic> clinics = const [clinic1],
+    String initial = '/booking',
   }) async {
     api = FakeBookingApi();
     final h = ScreenHarness(
-      initial: '/booking',
-      routes: [GoRoute(path: '/booking', builder: (_, _) => const BookingScreen())],
+      initial: initial,
+      routes: [
+        GoRoute(
+          path: '/booking',
+          builder: (_, s) => BookingScreen(initialClinicId: s.uri.queryParameters['clinic']),
+        ),
+      ],
       overrides: [
         clockProvider.overrideWithValue(() => now),
-        bookingSettingsProvider.overrideWith((ref) => Stream.value(settings)),
+        ...clinicOverrides(
+          clinics: clinics,
+          settings: {'clinic-1': settings, 'clinic-2': clinic2Settings},
+          vaccines: {'clinic-1': vaccines, 'clinic-2': const [Vaccine(id: 'v1', name: '[تطعيم ١]', price: 170, showPrice: true)]},
+        ),
         childrenProvider.overrideWith((ref) => Stream.value(children)),
-        vaccinesProvider.overrideWith((ref) => Stream.value(vaccines)),
-        slotsTakenProvider.overrideWith((ref, date) => Stream.value(taken)),
+        slotsTakenProvider.overrideWith((ref, key) => Stream.value(key.clinicId == 'clinic-1' ? taken : const {})),
         bookingApiProvider.overrideWithValue(api),
         activePackageProvider.overrideWith((ref, date) => Stream.value(packageId)),
       ],
@@ -198,6 +210,51 @@ void main() {
       await pick(tester, const Key('child-a'));
       await scrollTo(tester, find.byKey(const Key('summary-total')));
       expect(find.text('باقة نشطة'), findsNothing);
+    });
+  });
+
+  group('004 clinic step', () {
+    testWidgets('with two clinics the guardian picks one first (FR-006)', (tester) async {
+      await open(tester, clinics: const [clinic1, clinic2]);
+      expect(find.byKey(const Key('clinic-clinic-1')), findsOneWidget);
+      expect(find.byKey(const Key('clinic-clinic-2')), findsOneWidget);
+      expect(find.byKey(const Key('day-2026-11-16')), findsNothing, reason: 'no days before a clinic');
+    });
+
+    testWidgets('one active clinic is chosen for the guardian', (tester) async {
+      await open(tester);
+      expect(find.byKey(const Key('clinic-clinic-1')), findsNothing);
+      expect(find.byKey(const Key('chosen-clinic')), findsOneWidget);
+      expect(find.byKey(const Key('change-clinic')), findsNothing);
+    });
+
+    testWidgets("the chosen clinic's hours and price apply, and confirm sends its id (FR-007)", (tester) async {
+      await open(tester, clinics: const [clinic1, clinic2]);
+      await pick(tester, const Key('clinic-clinic-2'));
+      expect(find.descendant(of: find.byKey(const Key('chosen-clinic')), matching: find.text(clinic2.name)), findsOneWidget);
+      expect(find.text('٣٥٠ جنيه'), findsWidgets);
+      await pick(tester, const Key('day-2026-11-16'));
+      expect(find.byKey(const Key('hour-10')), findsOneWidget);
+      expect(find.byKey(const Key('hour-18')), findsNothing);
+      expect(find.text('فاضل ٥ من ٥'), findsWidgets);
+      await pick(tester, const Key('hour-10'));
+      await pick(tester, const Key('child-a'));
+      await pick(tester, const Key('confirm-booking'));
+      final (sel, total) = api.created.single;
+      expect(sel.clinicId, 'clinic-2');
+      expect(total, 350);
+    });
+
+    testWidgets('a clinic from Home is preselected (FR-013)', (tester) async {
+      await open(tester, clinics: const [clinic1, clinic2], initial: '/booking?clinic=clinic-2');
+      expect(find.byKey(const Key('clinic-clinic-1')), findsNothing);
+      expect(find.descendant(of: find.byKey(const Key('chosen-clinic')), matching: find.text(clinic2.name)), findsOneWidget);
+    });
+
+    testWidgets('"تغيير" returns to the clinic step', (tester) async {
+      await open(tester, clinics: const [clinic1, clinic2], initial: '/booking?clinic=clinic-2');
+      await pick(tester, const Key('change-clinic'));
+      expect(find.byKey(const Key('clinic-clinic-1')), findsOneWidget);
     });
   });
 }

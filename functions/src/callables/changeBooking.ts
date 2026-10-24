@@ -5,6 +5,7 @@ import { bookingFields, checkExpectedTotal, checkSelection, priceFor, readForSel
 import type { PriceSnapshot } from "../lib/booking/pricing";
 import { insideCancelWindow } from "../lib/booking/schedule";
 import { parseSelection } from "../lib/booking/selection";
+import { clinicOf } from "../lib/booking/settings";
 import { slotId } from "../lib/booking/time";
 import { requireGuardianWithCurrentConsent, requirePhoneUser } from "../lib/guards";
 import { REGION } from "../lib/region";
@@ -31,9 +32,11 @@ export const changeBooking = onCall({ region: REGION }, async (request) => {
     if (!booking.exists || booking.get("guardianUid") !== uid) throw new HttpsError("not-found", "Booking not found.");
     const oldDate = booking.get("date") as string;
     const oldHour = booking.get("hour") as number;
+    // A change stays at the booking's clinic (004 FR-010).
+    const clinicId = await clinicOf(booking.data(), tx);
     const sameSlot = oldDate === sel.date && oldHour === sel.hour;
-    const oldSlot = sameSlot ? null : await tx.get(db.doc(`slots/${slotId(oldDate, oldHour)}`));
-    const r = await readForSelection(tx, uid, sel, now);
+    const oldSlot = sameSlot ? null : await tx.get(db.doc(`slots/${slotId(clinicId, oldDate, oldHour)}`));
+    const r = await readForSelection(tx, uid, clinicId, sel, now);
 
     if (booking.get("status") !== "confirmed") {
       throw new HttpsError("failed-precondition", "Only confirmed bookings can be changed.", { reason: "not_confirmed" });
@@ -49,12 +52,12 @@ export const changeBooking = onCall({ region: REGION }, async (request) => {
     tx.update(ref, fields);
     if (oldSlot) {
       tx.set(oldSlot.ref, { taken: Math.max(0, ((oldSlot.get("taken") as number | undefined) ?? 1) - 1) }, { merge: true });
-      tx.set(r.slotRef, { date: sel.date, hour: sel.hour, taken: r.taken + 1 }, { merge: true });
+      tx.set(r.slotRef, { clinicId, date: sel.date, hour: sel.hour, taken: r.taken + 1 }, { merge: true });
     }
     tx.set(r.quotaRef, {
       active: [
         ...r.quota.filter((e) => e.bookingId !== bookingId),
-        { bookingId, date: sel.date, startsAt: fields.startsAt },
+        { bookingId, date: sel.date, startsAt: fields.startsAt, clinicId },
       ],
     });
     tx.set(ref.collection("events").doc(), {
