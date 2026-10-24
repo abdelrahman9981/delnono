@@ -10,6 +10,16 @@
 
 **Design**: Home follows `docs/design/figma/home.jpg` (greeting, doctor card, then the clinic cards in place of the single "احجزي ميعاد" and "واتساب" actions); booking, success and my bookings follow the 002 designs with a clinic step and the clinic name and address added. The app's RTL rule applies (forward chevrons ‹, back ›). The Home "خدمات العيادة" grid and "الجاي عندكم" list are not part of this feature.
 
+## Clarifications
+
+### Session 2026-10-24
+
+- Q: Can a guardian move a booking to the other clinic with "change"? → A: No. A change stays at the same clinic, because prices and hours differ; moving clinics is a cancel and a new booking (FR-010).
+- Q: Is the cancel window per clinic or the same for the whole app? → A: Per clinic, like the other clinic settings (D-44); the booking horizon and the upcoming maximum stay family-wide (D-49).
+- Q: Do booking numbers restart per clinic? → A: No. One series across clinics, so a number identifies one booking at either desk (FR-012).
+- Q: Are vaccine names and the schedule per clinic? → A: No. They are the doctor's medical data, shared; only whether a vaccine is offered, its price and whether the price is shown are per clinic (D-45, Principle II).
+- Q: Which number does the general "contact the clinic" in Account use? → A: The main clinic's WhatsApp (the first clinic in display order).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Book at the clinic I choose (Priority: P1)
