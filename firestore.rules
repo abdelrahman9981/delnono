@@ -29,6 +29,50 @@ service cloud.firestore {
         && get(guardianPath()).data.consentVersion == get(policyPath()).data.currentVersion;
     }
 
+    // Staff (005): a role claim and an active staff/{uid} document, so disabling takes effect at once
+    // (research R2). A secretary sees only her clinic (D-47); the doctor every clinic.
+    function staffRole() {
+      return signedIn() ? request.auth.token.get('role', '') : '';
+    }
+
+    function isStaff() {
+      let path = /databases/$(database)/documents/staff/$(request.auth.uid);
+      return staffRole() in ['doctor', 'secretary'] && exists(path) && get(path).data.active == true;
+    }
+
+    function isDoctor() {
+      return staffRole() == 'doctor' && isStaff();
+    }
+
+    function staffOf(clinicId) {
+      return isStaff() && (staffRole() == 'doctor' || request.auth.token.get('clinicId', '') == clinicId);
+    }
+
+    match /staff/{uid} {
+      allow read: if (isOwner(uid) && staffRole() != '') || isDoctor();
+      allow write: if false;
+    }
+
+    // Today's queue (005): walk-ins and the day's walk-in switch, read by the clinic's staff.
+    match /walkIns/{id} {
+      allow read: if staffOf(resource.data.clinicId);
+      allow write: if false;
+    }
+    match /days/{id} {
+      allow read: if staffOf(resource.data.clinicId);
+      allow write: if false;
+    }
+
+    // Tips and videos (005 FR-021): guardians and visitors see published items only.
+    match /content/{id} {
+      allow read: if resource.data.status == 'published' || isStaff();
+      allow write: if false;
+    }
+    match /followUpDrafts/{id} {
+      allow read: if isStaff();
+      allow write: if false;
+    }
+
     // Needed before sign-in (code rules, policy text, clinic WhatsApp). Edited by the doctor in 004.
     match /settings/{doc} {
       allow read: if true;
@@ -147,7 +191,8 @@ service cloud.firestore {
     }
     // A guardian's own bookings, with their history; written only by Cloud Functions (002).
     match /bookings/{bookingId} {
-      allow read: if guardianActive() && resource.data.guardianUid == request.auth.uid;
+      allow read: if (guardianActive() && resource.data.guardianUid == request.auth.uid)
+        || staffOf(resource.data.get('clinicId', ''));
       allow write: if false;
 
       match /events/{eventId} {
@@ -159,7 +204,7 @@ service cloud.firestore {
 
     // Annual packages (006); read here to show "covered by package".
     match /packages/{packageId} {
-      allow read: if guardianActive() && resource.data.guardianUid == request.auth.uid;
+      allow read: if (guardianActive() && resource.data.guardianUid == request.auth.uid) || isStaff();
       allow write: if false;
     }
 
@@ -184,7 +229,9 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /auditLog/{id} {
-      allow read, write: if false;
+      // Only the doctor reads the audit log (D-13).
+      allow read: if isDoctor();
+      allow write: if false;
     }
     match /deletedGuardians/{document=**} {
       allow read, write: if false;
