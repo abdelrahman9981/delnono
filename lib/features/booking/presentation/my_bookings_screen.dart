@@ -10,8 +10,8 @@ import '../../../core/clock.dart';
 import '../../../core/errors/arabic_errors.dart';
 import '../../../core/format/arabic_digits.dart';
 import '../../../core/launch/external_links.dart';
-import '../../../core/settings/settings_repository.dart';
 import '../data/booking_api.dart';
+import '../../clinics/data/clinics_repository.dart';
 import '../data/booking_settings.dart';
 import '../data/bookings_repository.dart';
 import '../domain/booking.dart';
@@ -46,8 +46,6 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
     final c = Theme.of(context).extension<AppColors>()!;
     final now = ref.watch(clockProvider)();
     final all = ref.watch(myBookingsProvider);
-    final settings =
-        ref.watch(bookingSettingsProvider).value ?? const BookingSettings();
 
     final bookings = all.value ?? const <Booking>[];
     final upcoming = bookings.where((b) => isUpcoming(b, now)).toList()
@@ -83,7 +81,6 @@ class _MyBookingsScreenState extends ConsumerState<MyBookingsScreen> {
                   for (final b in shown) ...[
                     _BookingCard(
                       booking: b,
-                      settings: settings,
                       now: now,
                       upcoming: !_past,
                     ),
@@ -207,20 +204,26 @@ class _Tabs extends StatelessWidget {
 class _BookingCard extends ConsumerWidget {
   const _BookingCard({
     required this.booking,
-    required this.settings,
     required this.now,
     required this.upcoming,
   });
 
   final Booking booking;
-  final BookingSettings settings;
   final DateTime now;
   final bool upcoming;
+
+  /// The booking's clinic and its rules: cancel window and WhatsApp are per clinic (004 FR-010).
+  (Clinic?, BookingSettings) _clinic(WidgetRef ref) {
+    final clinic = ref.watch(clinicOfProvider(booking.clinicId));
+    final settings = clinic == null ? null : ref.watch(bookingSettingsProvider(clinic.id)).value;
+    return (clinic, settings ?? const BookingSettings());
+  }
 
   Future<void> _cancel(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations l10n,
+    BookingSettings settings,
   ) async {
     final when = '${dayLabel(booking.date)} · ${hourRange(l10n, booking.hour)}';
     final ok = await showDialog<bool>(
@@ -266,6 +269,7 @@ class _BookingCard extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final c = Theme.of(context).extension<AppColors>()!;
     final dark = Theme.of(context).brightness == Brightness.dark;
+    final (clinic, settings) = _clinic(ref);
     final soon =
         booking.status == BookingStatus.confirmed &&
         insideCancelWindow(settings, booking.startsAt, now);
@@ -274,7 +278,7 @@ class _BookingCard extends ConsumerWidget {
       settings.cancelWindowHours,
       arabicDigits(settings.cancelWindowHours),
     );
-    final whatsapp = ref.watch(clinicSettingsProvider).value?.whatsappNumber;
+    final whatsapp = clinic?.whatsapp;
     final canChange =
         upcoming && booking.status == BookingStatus.confirmed && !soon;
 
@@ -357,6 +361,15 @@ class _BookingCard extends ConsumerWidget {
                             '${weekdayName(booking.date)} ${hourRange(l10n, booking.hour)}',
                             style: text.bodySmall,
                           ),
+                          if (clinic != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              key: Key('booking-clinic-${booking.id}'),
+                              clinic.name,
+                              style: text.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            Text(clinic.address, style: text.bodySmall?.copyWith(color: c.muted)),
+                          ],
                         ],
                       ),
                     ),
@@ -429,7 +442,7 @@ class _BookingCard extends ConsumerWidget {
                               backgroundColor: c.dangerBg,
                               foregroundColor: c.dangerText,
                             ),
-                            onPressed: () => _cancel(context, ref, l10n),
+                            onPressed: () => _cancel(context, ref, l10n, settings),
                             child: Text(l10n.cancelBooking),
                           ),
                         ),

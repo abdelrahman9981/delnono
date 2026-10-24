@@ -1,8 +1,6 @@
 import 'package:delnono/core/clock.dart';
 import 'package:delnono/core/launch/external_links.dart';
-import 'package:delnono/core/settings/settings_repository.dart';
 import 'package:delnono/features/booking/data/booking_api.dart';
-import 'package:delnono/features/booking/data/booking_settings.dart';
 import 'package:delnono/features/booking/data/bookings_repository.dart';
 import 'package:delnono/features/booking/domain/booking.dart';
 import 'package:delnono/features/booking/domain/price_preview.dart';
@@ -11,16 +9,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../helpers/clinic_fakes.dart';
 import '../../helpers/screen_harness.dart';
 import 'fakes.dart';
 
 // Sunday 15 Nov 2026, 12:00 Cairo (10:00 UTC).
 final now = DateTime.utc(2026, 11, 15, 10);
 
-Booking booking(String id, {required String date, required int hour, BookingStatus status = BookingStatus.confirmed, int total = 300, int number = 1}) {
+Booking booking(
+  String id, {
+  required String date,
+  required int hour,
+  BookingStatus status = BookingStatus.confirmed,
+  int total = 300,
+  int number = 1,
+  String? clinicId,
+}) {
   final p = date.split('-').map(int.parse).toList();
   return Booking(
     id: id,
+    clinicId: clinicId,
     number: number,
     visitType: VisitType.visit,
     children: const [BookedChild(childId: 'a', name: 'يوسف', vaccines: [])],
@@ -59,8 +67,7 @@ void main() {
       overrides: [
         clockProvider.overrideWithValue(() => now),
         myBookingsProvider.overrideWith((ref) => Stream.value(bookings)),
-        bookingSettingsProvider.overrideWith((ref) => Stream.value(const BookingSettings())),
-        clinicSettingsProvider.overrideWith((ref) => Stream.value(const ClinicSettings(whatsappNumber: '+201000000000'))),
+        ...clinicOverrides(clinics: const [clinic1, clinic2], settings: const {'clinic-2': clinic2Settings}),
         bookingApiProvider.overrideWithValue(api),
         externalLinksProvider.overrideWithValue(links),
       ],
@@ -155,5 +162,29 @@ void main() {
     expect(isUpcoming(booking('x', date: '2026-11-15', hour: 11), now), isFalse, reason: '11–12 has ended at 12:00');
     expect(isUpcoming(booking('x', date: '2026-11-15', hour: 9, status: BookingStatus.arrived), now), isTrue);
     expect(isUpcoming(booking('x', date: '2026-11-14', hour: 18, status: BookingStatus.arrived), now), isFalse);
+  });
+
+  group('004 two clinics', () {
+    testWidgets('each card shows its clinic\'s name and address; old bookings show the main clinic (FR-009, FR-018)', (tester) async {
+      await open(tester, [
+        booking('a', date: '2026-11-16', hour: 18, clinicId: 'clinic-2'),
+        booking('b', date: '2026-11-17', hour: 18),
+      ]);
+      expect(find.descendant(of: find.byKey(const Key('booking-a')), matching: find.text(clinic2.name)), findsOneWidget);
+      expect(find.descendant(of: find.byKey(const Key('booking-a')), matching: find.text(clinic2.address)), findsOneWidget);
+      expect(find.descendant(of: find.byKey(const Key('booking-b')), matching: find.text(clinic1.name)), findsOneWidget);
+    });
+
+    testWidgets('the cancel window and WhatsApp are the booking\'s clinic\'s (FR-010)', (tester) async {
+      // 5 h away: outside clinic 1's 3 h window, inside clinic 2's 6 h window.
+      await open(tester, [
+        booking('one', date: '2026-11-15', hour: 17),
+        booking('two', date: '2026-11-15', hour: 17, clinicId: 'clinic-2'),
+      ]);
+      expect(find.byKey(const Key('cancel-one')), findsOneWidget);
+      expect(find.byKey(const Key('cancel-two')), findsNothing);
+      await tapVisible(tester, find.byKey(const Key('call-clinic-two')));
+      expect(links.opened, [clinic2.whatsapp]);
+    });
   });
 }

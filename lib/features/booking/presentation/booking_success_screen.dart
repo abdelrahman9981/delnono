@@ -8,6 +8,7 @@ import '../../../app/theme.dart';
 import '../../../core/format/arabic_digits.dart';
 import '../../registration/data/guardian_repository.dart';
 import '../data/bookings_repository.dart';
+import '../../clinics/data/clinics_repository.dart';
 import '../domain/booking.dart';
 import 'booking_format.dart';
 
@@ -32,6 +33,7 @@ class BookingSuccessScreen extends ConsumerWidget {
     }
     final firstName = guardian?.fullName.split(' ').first ?? '';
     final names = joinNames(l10n, booking.children.map((ch) => ch.name));
+    final clinic = ref.watch(clinicOfProvider(booking.clinicId));
 
     Widget row(String label, String value) => Padding(
           padding: const EdgeInsets.only(bottom: 10),
@@ -119,6 +121,10 @@ class BookingSuccessScreen extends ConsumerWidget {
                       ],
                     ),
                     const Divider(height: 28),
+                    if (clinic != null) ...[
+                      row(l10n.labelClinic, clinic.name),
+                      row(l10n.labelAddress, clinic.address),
+                    ],
                     row(l10n.labelVisit, bookingTitle(l10n, booking)),
                     row(l10n.summaryChildren, names),
                     row(l10n.payAtClinic, amountDue(l10n, booking.price)),

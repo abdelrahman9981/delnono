@@ -39,11 +39,15 @@ void main() {
     await settle(tester, () => location(tester) == '/' && shows(find.text('حجز')));
     expect(location(tester), '/');
     expect(FirebaseAuth.instance.currentUser, isNull);
+    // Home shows both clinics to anyone (004 FR-013).
+    await settle(tester, () => shows(find.byKey(const Key('clinic-card-clinic-1'))));
+    expect(find.byKey(const Key('clinic-card-clinic-1')), findsOneWidget);
 
-    // Booking asks for sign-in, remembering where the visitor was going (FR-002, FR-003).
-    await tester.tap(find.text('حجز'));
+    // "احجزي هنا" on clinic 2 asks for sign-in, remembering the booking and the clinic (FR-002,
+    // FR-003; 004 FR-013).
+    await tapInList(tester, find.byKey(const Key('book-at-clinic-2')));
     await settle(tester, () => shows(find.byKey(const Key('phone-field'))));
-    expect(location(tester), '/sign-in?from=%2Fbooking');
+    expect(location(tester), '/sign-in?from=%2Fbooking%3Fclinic%3Dclinic-2');
 
     // Sign in and register; the visitor ends up on Booking.
     const phone = '+201000000096';
@@ -69,8 +73,10 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tapInList(tester, find.text('بنت'));
     await tapInList(tester, find.text('حفظ'));
-    await settle(tester, () => location(tester) == '/booking');
-    expect(location(tester), '/booking');
+    await settle(tester, () => location(tester) == '/booking?clinic=clinic-2');
+    expect(location(tester), '/booking?clinic=clinic-2');
+    await settle(tester, () => shows(find.byKey(const Key('chosen-clinic'))));
+    expect(find.descendant(of: find.byKey(const Key('chosen-clinic')), matching: find.textContaining('عيادة مدينة نصر')), findsOneWidget);
 
     // Restarting signed in skips Welcome and opens home.
     await startApp(tester);

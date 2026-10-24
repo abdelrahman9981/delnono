@@ -26,6 +26,7 @@ import '../features/registration/presentation/guardian_details_screen.dart';
 import '../features/registration/presentation/link_children_screen.dart';
 import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
+import '../features/home/home_screen.dart';
 import '../features/welcome/welcome_screen.dart';
 import 'route_guard.dart';
 import 'session_flags.dart';
@@ -72,10 +73,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         builder: (context, state, child) => ShellScaffold(location: state.uri.path, child: child),
         routes: [
-          GoRoute(path: Routes.home, builder: (_, _) => const HomePlaceholder()),
+          GoRoute(path: Routes.home, builder: (_, _) => const HomeScreen()),
           GoRoute(
             path: Routes.booking,
-            builder: (_, _) => const BookingScreen(),
+            // `?clinic=` from a Home clinic card preselects that clinic (004 FR-013).
+            builder: (_, state) {
+              final clinic = state.uri.queryParameters['clinic'];
+              return BookingScreen(key: ValueKey('booking-$clinic'), initialClinicId: clinic);
+            },
             routes: [
               GoRoute(path: 'done/:id', builder: (_, state) => BookingSuccessScreen(bookingId: state.pathParameters['id']!)),
               GoRoute(path: 'mine', builder: (_, _) => const MyBookingsScreen()),

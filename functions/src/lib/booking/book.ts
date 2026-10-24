@@ -5,11 +5,12 @@ import { priceSelection, type PriceSnapshot, type Vaccine } from "./pricing";
 import { stillActive, type QuotaEntry } from "./quota";
 import { slotProblem } from "./schedule";
 import type { Selection } from "./selection";
-import { bookingSettingsFrom, type BookingSettings } from "./settings";
+import { readBookingSettings, type BookingSettings } from "./settings";
 import { slotId, startsAt } from "./time";
 
 /** What every booking transaction reads first (Firestore requires reads before writes). */
 export interface BookingReads {
+  clinicId: string;
   settings: BookingSettings;
   children: Map<string, string>; // childId → name, linked to the caller
   vaccines: Map<string, Vaccine>;
@@ -21,11 +22,17 @@ export interface BookingReads {
   guardianPhone: string;
 }
 
-export async function readForSelection(tx: Transaction, uid: string, sel: Selection, now: Date): Promise<BookingReads> {
-  const [settingsSnap, guardian, slot, quotaSnap, packages] = await Promise.all([
-    tx.get(db.doc("settings/booking")),
+export async function readForSelection(
+  tx: Transaction,
+  uid: string,
+  clinicId: string,
+  sel: Selection,
+  now: Date,
+): Promise<BookingReads> {
+  const settings = await readBookingSettings(clinicId, tx);
+  const [guardian, slot, quotaSnap, packages] = await Promise.all([
     tx.get(db.doc(`guardians/${uid}`)),
-    tx.get(db.doc(`slots/${slotId(sel.date, sel.hour)}`)),
+    tx.get(db.doc(`slots/${slotId(clinicId, sel.date, sel.hour)}`)),
     tx.get(db.doc(`familyQuota/${uid}`)),
     tx.get(db.collection("packages").where("guardianUid", "==", uid).where("active", "==", true)),
   ]);
@@ -40,22 +47,19 @@ export async function readForSelection(tx: Transaction, uid: string, sel: Select
     }
     children.set(snap.id, snap.get("name") as string);
   }
+  // The doctor's list says which vaccines exist; the clinic says which it offers and at what price (004 R4).
   const vaccines = new Map<string, Vaccine>();
   for (const snap of vaccineSnaps) {
-    if (!snap.exists || snap.get("active") !== true) {
-      throw new HttpsError("invalid-argument", "vaccines: unknown or inactive", { field: "vaccines" });
+    const offer = settings.vaccinePrices[snap.id];
+    if (!snap.exists || snap.get("active") !== true || !offer?.offered) {
+      throw new HttpsError("invalid-argument", "vaccines: unknown, inactive or not offered at this clinic", { field: "vaccines" });
     }
-    vaccines.set(snap.id, {
-      id: snap.id,
-      name: snap.get("name"),
-      price: snap.get("price"),
-      showPrice: snap.get("showPrice") !== false,
-      active: true,
-    });
+    vaccines.set(snap.id, { id: snap.id, name: snap.get("name"), price: offer.price, showPrice: offer.shown !== false, active: true });
   }
   const pkg = packages.docs.find((p) => p.get("startsOn") <= sel.date && sel.date <= p.get("endsOn"));
   return {
-    settings: bookingSettingsFrom(settingsSnap.data()),
+    clinicId,
+    settings,
     children,
     vaccines,
     slotRef: slot.ref,
@@ -115,6 +119,7 @@ export function checkExpectedTotal(price: PriceSnapshot, expectedTotal: number):
 
 export function bookingFields(r: BookingReads, sel: Selection, price: PriceSnapshot) {
   return {
+    clinicId: r.clinicId,
     visitType: sel.visitType,
     children: sel.children.map((c) => ({ childId: c.childId, name: r.children.get(c.childId)!, vaccines: c.vaccines })),
     date: sel.date,

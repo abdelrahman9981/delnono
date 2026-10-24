@@ -1,4 +1,6 @@
 import 'package:delnono/core/clock.dart';
+import 'package:delnono/features/booking/data/booking_settings.dart';
+import 'package:delnono/features/booking/data/vaccines_repository.dart';
 import 'package:delnono/features/child_profile/application/selected_child.dart';
 import 'package:delnono/features/child_profile/data/doses_repository.dart';
 import 'package:delnono/features/child_profile/data/family_packages_repository.dart';
@@ -9,7 +11,10 @@ import 'package:delnono/features/child_profile/data/vaccine_schedule_repository.
 import 'package:delnono/features/child_profile/data/visits_repository.dart';
 import 'package:delnono/features/child_profile/domain/child_age.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
+import 'package:delnono/features/clinics/data/clinics_repository.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
+
+import '../../helpers/clinic_fakes.dart';
 
 /// Profile test data shaped like the seed (functions/scripts/seed.ts). Today is 24 Oct 2026, 12:00
 /// Cairo time.
@@ -47,14 +52,12 @@ const schedule = [
 ];
 
 const catalogue = {
-  'v1': VaccineInfo(id: 'v1', name: '[تطعيم مؤقت ١]', kind: VaccineKind.basic, price: 150, showPrice: true),
-  'v2': VaccineInfo(id: 'v2', name: '[تطعيم مؤقت ٢]', kind: VaccineKind.basic, price: 200, showPrice: true),
+  'v1': VaccineInfo(id: 'v1', name: '[تطعيم مؤقت ١]', kind: VaccineKind.basic),
+  'v2': VaccineInfo(id: 'v2', name: '[تطعيم مؤقت ٢]', kind: VaccineKind.basic),
   'v3': VaccineInfo(
     id: 'v3',
     name: '[تطعيم مؤقت ٣]',
     kind: VaccineKind.additional,
-    price: 450,
-    showPrice: false,
     suggestedAge: AgeSpan(months: 12),
     doses: 2,
     intervalWeeks: 4,
@@ -64,8 +67,6 @@ const catalogue = {
     id: 'v5',
     name: '[تطعيم مؤقت ٥]',
     kind: VaccineKind.additional,
-    price: 300,
-    showPrice: true,
     suggestedAge: AgeSpan(months: 24),
   ),
 };
@@ -118,8 +119,21 @@ List<Override> profileDataOverrides({
   bool anyChild = false,
   bool offline = false,
   List<({bool active, String startsOn, String endsOn})> packages = const [],
+  List<Vaccine> bookingVaccines = const [],
+  List<Clinic> clinics = const [clinic1],
 }) =>
     [
+      // Clinic 1 hides v3's price and shows v5's (FR-043, D-45).
+      ...clinicOverrides(
+        clinics: clinics,
+        settings: const {
+          'clinic-1': BookingSettings(vaccinePrices: {
+            'v3': ClinicVaccinePrice(offered: true, price: 450, shown: false),
+            'v5': ClinicVaccinePrice(offered: true, price: 300, shown: true),
+          }),
+        },
+        vaccines: {'clinic-1': bookingVaccines},
+      ),
       offlineProvider.overrideWith((ref) => Stream.value(offline)),
       familyPackagesProvider.overrideWith((ref) => Stream.value(packages)),
       selectedChildStoreProvider.overrideWithValue(store ?? MemorySelectedChildStore()),
@@ -142,9 +156,10 @@ List<Override> profileOverrides({
   MemorySelectedChildStore? store,
   bool offline = false,
   List<({bool active, String startsOn, String endsOn})> packages = const [],
+  List<Clinic> clinics = const [clinic1],
 }) =>
     [
       clockProvider.overrideWithValue(() => today),
       childrenProvider.overrideWith((ref) => Stream.value(children)),
-      ...profileDataOverrides(measurements: measurements, store: store, offline: offline, packages: packages),
+      ...profileDataOverrides(measurements: measurements, store: store, offline: offline, packages: packages, clinics: clinics),
     ];

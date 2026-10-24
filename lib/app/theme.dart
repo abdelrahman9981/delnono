@@ -23,6 +23,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.border,
     required this.dangerBg,
     required this.dangerText,
+    required this.emergency,
   });
 
   final Color blue;
@@ -42,6 +43,9 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color dangerBg;
   final Color dangerText;
 
+  /// Background of the emergency call button (ambulance 123), with white text in both modes.
+  final Color emergency;
+
   /// `:root` in tokens.css.
   static const light = AppColors(
     blue: Color(0xFF3A9AD9),
@@ -60,6 +64,7 @@ class AppColors extends ThemeExtension<AppColors> {
     border: Color(0xFFE8E6E1),
     dangerBg: Color(0xFFFDECEA),
     dangerText: Color(0xFF8A2F20),
+    emergency: Color(0xFF8A2F20),
   );
 
   /// `.dark` in tokens.css (Figma Make prototype). Accent colours are not overridden there, so they
@@ -81,6 +86,8 @@ class AppColors extends ThemeExtension<AppColors> {
     border: Color(0xFF294050),
     dangerBg: Color(0xFF432723),
     dangerText: Color(0xFFFFC3B9),
+    // Deeper red than --danger-text, so white text stays readable (owner request, 2026-10-24).
+    emergency: Color(0xFFB3412F),
   );
 
   @override

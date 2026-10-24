@@ -17,6 +17,8 @@ const db = getFirestore(initializeApp({ projectId: "demo-delnono" }));
 
 const PLACEHOLDER = "[نص مؤقت · يراجعه المحامي قبل الإطلاق]";
 const CLINIC_PHONE = "+201000000001";
+const CLINIC_1 = "clinic-1";
+const CLINIC_2 = "clinic-2";
 
 async function main() {
   const batch = db.batch();
@@ -35,36 +37,75 @@ async function main() {
     termsText: `${PLACEHOLDER}\nشروط الاستخدام`,
     updatedAt: new Date(),
   });
-  // Placeholder number until the clinic supplies its WhatsApp number (D-36).
-  // The call number is a placeholder too (003, "اتصلي بالعيادة").
-  batch.set(db.doc("settings/clinic"), { whatsappNumber: "+201000000000", phoneNumber: "+201000000000" });
+  // Contact numbers live on each clinic since 004 (D-44).
+  batch.set(db.doc("settings/clinic"), {});
 
-  // Booking settings (002). Placeholder values until the doctor sets them in the dashboard (004, D-36).
-  // Weekdays are ISO numbers: 1 = Monday … 7 = Sunday. Friday (5) is closed.
+  // Family-wide booking limits (002, D-49). Clinic schedules and prices are on each clinic (004).
+  batch.set(db.doc("settings/booking"), { bookingHorizonDays: 14, maxUpcomingPerFamily: 2, placeholder: true });
+
+  // Two clinics (004, D-44, D-45). Placeholder details until the doctor sets them in the dashboard (005,
+  // D-36). Weekdays are ISO numbers: 1 = Monday … 7 = Sunday. Clinic 1 is the main clinic (order 0).
   const evening = [{ from: 17, to: 21 }];
-  batch.set(db.doc("settings/booking"), {
-    capacityPerHour: 6,
-    workingHours: { "1": evening, "2": evening, "3": evening, "4": evening, "5": [], "6": evening, "7": evening },
-    holidays: [],
-    vaccineWeekdays: [1, 3],
-    visitPrice: 300,
-    cancelWindowHours: 3,
-    bookingHorizonDays: 14,
-    maxUpcomingPerFamily: 2,
-    placeholder: true,
-  });
+  const morning = [{ from: 10, to: 14 }];
+  const clinics = [
+    {
+      id: CLINIC_1,
+      name: "[عيادة المقطم · بيانات مؤقتة]",
+      area: "المقطم",
+      address: "[عنوان مؤقت · شارع ٩، المقطم، القاهرة]",
+      phone: "+201000000000",
+      whatsapp: "+201000000000",
+      order: 0,
+      capacityPerHour: 6,
+      workingHours: { "1": evening, "2": evening, "3": evening, "4": evening, "5": [], "6": evening, "7": evening },
+      vaccineWeekdays: [1, 3],
+      cancelWindowHours: 3,
+      visitPrice: 300,
+      packagePrice: 1500,
+      vaccinePrices: {
+        v1: { offered: true, price: 150, shown: true },
+        v2: { offered: true, price: 200, shown: true },
+        v3: { offered: true, price: 450, shown: false },
+        v4: { offered: true, price: 300, shown: true },
+      },
+    },
+    {
+      id: CLINIC_2,
+      name: "[عيادة مدينة نصر · بيانات مؤقتة]",
+      area: "مدينة نصر",
+      address: "[عنوان مؤقت · شارع عباس العقاد، مدينة نصر، القاهرة]",
+      phone: "+201000000002",
+      whatsapp: "+201000000002",
+      order: 1,
+      capacityPerHour: 5,
+      workingHours: { "1": morning, "2": morning, "3": morning, "4": morning, "5": [], "6": [], "7": morning },
+      vaccineWeekdays: [7, 2],
+      cancelWindowHours: 6,
+      visitPrice: 350,
+      packagePrice: 1700,
+      vaccinePrices: {
+        v1: { offered: true, price: 170, shown: true },
+        v2: { offered: false, price: 0, shown: true },
+        v3: { offered: true, price: 500, shown: true },
+        v4: { offered: true, price: 320, shown: true },
+      },
+    },
+  ];
+  for (const { id, ...c } of clinics) {
+    batch.set(db.doc(`clinics/${id}`), { ...c, holidays: [], active: true, placeholder: true });
+  }
 
   // Vaccine list (002). Names are placeholders in brackets until the doctor's list arrives
-  // (constitution Principle II); the schedule itself comes in feature 003.
+  // (constitution Principle II); the schedule comes in 003; prices are per clinic (004).
   const vaccines = [
-    { id: "v1", name: "[تطعيم مؤقت ١]", price: 150, showPrice: true, kind: "basic", active: true },
-    { id: "v2", name: "[تطعيم مؤقت ٢]", price: 200, showPrice: true, kind: "basic", active: true },
+    { id: "v1", name: "[تطعيم مؤقت ١]", kind: "basic", active: true },
+    { id: "v2", name: "[تطعيم مؤقت ٢]", kind: "basic", active: true },
     {
-      id: "v3", name: "[تطعيم مؤقت ٣]", price: 450, showPrice: false, kind: "additional", active: true,
+      id: "v3", name: "[تطعيم مؤقت ٣]", kind: "additional", active: true,
       suggestedAge: { months: 12, days: 0 }, doses: 2, intervalWeeks: 4, note: "[ملاحظة الدكتور · مؤقتة]",
     },
     {
-      id: "v4", name: "[تطعيم مؤقت ٤]", price: 300, showPrice: true, kind: "additional", active: false,
+      id: "v4", name: "[تطعيم مؤقت ٤]", kind: "additional", active: false,
       suggestedAge: { months: 24, days: 0 }, doses: 1, intervalWeeks: 0, note: "[ملاحظة الدكتور · مؤقتة]",
     },
   ];
@@ -97,7 +138,7 @@ async function main() {
   seedChildProfile(batch);
   await batch.commit();
   console.log(
-    "Seeded settings (auth, policy, clinic, booking, vaccines, followUp), 4 placeholder vaccines, the placeholder",
+    "Seeded settings (auth, policy, booking, vaccines, followUp), 2 placeholder clinics, 4 placeholder vaccines, the placeholder",
     "schedule and follow-up lists, 1 clinic guardian and 3 unlinked clinic children with sample records on",
     CLINIC_PHONE,
   );
@@ -187,10 +228,13 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
     const n = (visitOf.get(childId) ?? 0) + 1;
     visitOf.set(childId, n);
     const visitId = `${childId}-v${n}`;
+    // Visits alternate between the two clinics so the clinic shows on the history (D-48).
+    const clinicId = n % 2 === 0 ? CLINIC_2 : CLINIC_1;
     const child = db.doc(`children/${childId}`);
     batch.set(child.collection("visits").doc(visitId), {
       date,
       type: "clinic",
+      clinicId,
       bookingId: null,
       createdAt: new Date(`${date}T18:00:00+02:00`),
     });
@@ -200,6 +244,7 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
       lengthCm,
       ...(headCm ? { headCm } : {}),
       visitId,
+      clinicId,
       recordedBy: SEED_STAFF,
       recordedAt: new Date(`${date}T18:10:00+02:00`),
     });
@@ -231,6 +276,7 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
       givenOn,
       ...(lot ? { lot } : {}),
       visitId: null,
+      clinicId: i % 3 === 2 ? CLINIC_2 : CLINIC_1,
       recordedBy: SEED_STAFF,
       recordedAt: new Date(`${givenOn}T18:20:00+02:00`),
     });

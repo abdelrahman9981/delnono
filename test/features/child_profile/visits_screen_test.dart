@@ -39,4 +39,10 @@ void main() {
     await open(tester, '/children/c2/visits');
     expect(find.text('لسه مفيش زيارات متسجلة.'), findsOneWidget);
   });
+
+  testWidgets('each visit shows its clinic; a visit without one shows the main clinic (004 FR-017, FR-018)', (tester) async {
+    await open(tester, '/children/c1/visits');
+    await scrollTo(tester, find.byKey(const Key('visit-clinic-v1')));
+    expect(tester.widget<Text>(find.byKey(const Key('visit-clinic-v1'))).data, 'في [عيادة المقطم · بيانات مؤقتة]');
+  });
 }

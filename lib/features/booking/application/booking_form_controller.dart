@@ -10,6 +10,7 @@ import '../domain/schedule.dart';
 @immutable
 class BookingForm {
   const BookingForm({
+    this.clinicId,
     this.visitType = VisitType.visit,
     this.date,
     this.hour,
@@ -20,6 +21,8 @@ class BookingForm {
     this.editing,
   });
 
+  /// The clinic chosen first (004 FR-006); fixed when changing a booking.
+  final String? clinicId;
   final VisitType visitType;
   final String? date;
   final int? hour;
@@ -37,9 +40,10 @@ class BookingForm {
 
   bool get anyVaccine => vaccines.values.any((v) => v.isNotEmpty);
 
-  BookingSelection? get selection => date == null || hour == null || children.isEmpty
+  BookingSelection? get selection => clinicId == null || date == null || hour == null || children.isEmpty
       ? null
       : BookingSelection(
+          clinicId: clinicId!,
           visitType: visitType,
           date: date!,
           hour: hour!,
@@ -49,6 +53,7 @@ class BookingForm {
   bool get complete => selection != null && (visitType == VisitType.visit || anyVaccine);
 
   BookingForm copyWith({
+    String? clinicId,
     VisitType? visitType,
     String? date,
     int? hour,
@@ -61,6 +66,7 @@ class BookingForm {
     bool clearError = false,
   }) =>
       BookingForm(
+        clinicId: clinicId ?? this.clinicId,
         visitType: visitType ?? this.visitType,
         date: clearDate ? null : (date ?? this.date),
         hour: clearHour || clearDate ? null : (hour ?? this.hour),
@@ -78,10 +84,12 @@ class BookingFormController extends Notifier<BookingForm> {
   BookingForm build() => const BookingForm();
 
   /// Starts a new booking, or a change of [editing] pre-filled with its selection.
-  void start({Booking? editing}) {
+  /// [clinicId] is the clinic of the booking being changed (its own, or the main clinic).
+  void start({Booking? editing, String? clinicId}) {
     state = editing == null
-        ? const BookingForm()
+        ? BookingForm(clinicId: clinicId)
         : BookingForm(
+            clinicId: clinicId,
             visitType: editing.visitType,
             date: editing.date,
             hour: editing.hour,
@@ -89,6 +97,12 @@ class BookingFormController extends Notifier<BookingForm> {
             vaccines: {for (final c in editing.children) c.childId: c.vaccines},
             editing: editing,
           );
+  }
+
+  /// Picking a clinic starts the choice of day and hour again: they are that clinic's (004 FR-007).
+  void setClinic(String? clinicId) {
+    if (clinicId == state.clinicId || state.editing != null) return;
+    state = BookingForm(clinicId: clinicId, visitType: state.visitType, children: state.children);
   }
 
   void setVisitType(VisitType type) {

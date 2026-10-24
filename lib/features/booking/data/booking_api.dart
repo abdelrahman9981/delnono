@@ -8,12 +8,15 @@ import '../domain/price_preview.dart';
 /// What the guardian chose (contracts/callables.md, `selection`).
 class BookingSelection {
   const BookingSelection({
+    required this.clinicId,
     required this.visitType,
     required this.date,
     required this.hour,
     required this.children,
   });
 
+  /// The clinic booked at (004). A change keeps the booking's clinic; the server ignores this there.
+  final String clinicId;
   final VisitType visitType;
   final String date;
   final int hour;
@@ -22,6 +25,7 @@ class BookingSelection {
   final Map<String, List<String>> children;
 
   Map<String, Object> toMap(int expectedTotal) => {
+        'clinicId': clinicId,
         'visitType': visitType == VisitType.visit ? 'visit' : 'vaccine_only',
         'date': date,
         'hour': hour,

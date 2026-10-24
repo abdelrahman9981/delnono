@@ -2,8 +2,6 @@ import 'package:delnono/app/app.dart';
 import 'package:delnono/app/route_guard.dart';
 import 'package:delnono/app/router.dart';
 import 'package:delnono/core/settings/settings_repository.dart';
-import 'package:delnono/features/booking/data/booking_settings.dart';
-import 'package:delnono/features/booking/data/vaccines_repository.dart';
 import 'package:delnono/features/auth/data/auth_repository.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
@@ -14,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+
+import '../helpers/clinic_fakes.dart';
 
 /// A registered guardian with current consent and nothing pending.
 const ready = GuardState(signedIn: true, hasGuardian: true, consentCurrent: true, hasChildren: true);
@@ -187,9 +187,8 @@ void main() {
         overrides: [
           guardStateProvider.overrideWithValue(state),
           // The Booking tab needs booking data; none of these tests books.
-          bookingSettingsProvider.overrideWith((ref) => Stream.value(const BookingSettings())),
+          ...clinicOverrides(),
           childrenProvider.overrideWith((ref) => Stream.value(const [])),
-          vaccinesProvider.overrideWith((ref) => Stream.value(const [])),
         ],
         child: const App(),
       ));

@@ -8,13 +8,14 @@ enum VisitType { clinic, vaccine, walkIn }
 /// `children/{id}/visits/{v}` (data-model.md). Created by staff (004). The doctor's notes are in a
 /// staff-only document and never reach the app (clarification Q1). Prescription photos are Phase 2 (D-39).
 class Visit {
-  const Visit({required this.id, required this.date, required this.type});
+  const Visit({required this.id, required this.date, required this.type, this.clinicId});
 
   factory Visit.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> s) {
     final d = s.data()!;
     return Visit(
       id: s.id,
       date: d['date'] as String,
+      clinicId: d['clinicId'] as String?,
       type: switch (d['type']) {
         'vaccine' => VisitType.vaccine,
         'walkIn' => VisitType.walkIn,
@@ -28,6 +29,9 @@ class Visit {
   /// `YYYY-MM-DD`.
   final String date;
   final VisitType type;
+
+  /// Where the visit happened (D-48); null for records before 004 = the main clinic.
+  final String? clinicId;
 }
 
 /// A child's visits, newest first.

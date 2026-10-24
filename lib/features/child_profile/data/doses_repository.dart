@@ -13,6 +13,7 @@ class DoseRecord {
     this.scheduleId,
     this.lot,
     this.visitId,
+    this.clinicId,
   });
 
   factory DoseRecord.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> s) {
@@ -26,6 +27,7 @@ class DoseRecord {
       givenOn: d['givenOn'] as String,
       lot: lot == null || lot.isEmpty ? null : lot,
       visitId: d['visitId'] as String?,
+      clinicId: d['clinicId'] as String?,
     );
   }
 
@@ -40,6 +42,9 @@ class DoseRecord {
   final String givenOn;
   final String? lot;
   final String? visitId;
+
+  /// Where it was given (D-48); null = the main clinic.
+  final String? clinicId;
 }
 
 /// A child's recorded doses, oldest first.

@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../helpers/clinic_fakes.dart';
 import '../../helpers/screen_harness.dart';
 
 final booking = Booking(
   id: 'b1',
+  clinicId: 'clinic-2',
   number: 248,
   visitType: VisitType.visit,
   children: const [BookedChild(childId: 'a', name: 'يوسف', vaccines: [])],
@@ -28,6 +30,7 @@ void main() {
       routes: [GoRoute(path: '/booking/done/:id', builder: (_, s) => BookingSuccessScreen(bookingId: s.pathParameters['id']!))],
       overrides: [
         myBookingsProvider.overrideWith((ref) => Stream.value([booking])),
+        ...clinicOverrides(clinics: const [clinic1, clinic2]),
         guardianProvider.overrideWith((ref) => Stream.value(const Guardian(
               uid: 'u1', phone: '+201000000099', fullName: 'سارة محمود', relation: Relation.mother, consentVersion: 1))),
       ],
@@ -54,5 +57,11 @@ void main() {
     final h = await open(tester);
     await tapVisible(tester, find.byKey(const Key('view-my-bookings')));
     expect(h.location, '/booking/mine');
+  });
+
+  testWidgets("shows the booking's clinic name and address (004 FR-009)", (tester) async {
+    await open(tester);
+    expect(find.text(clinic2.name), findsOneWidget);
+    expect(find.text(clinic2.address), findsOneWidget);
   });
 }

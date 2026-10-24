@@ -1088,11 +1088,6 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String additionalPrice(String price) {
-    return 'السعر: $price جنيه';
-  }
-
-  @override
   String get vaccinesEmpty => 'جدول التطعيمات لسه مش متاح.';
 
   @override
@@ -1180,4 +1175,74 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get needsConnectionFirstTime =>
       'محتاجين إنترنت أول مرة عشان نحمّل البيانات.';
+
+  @override
+  String get chooseClinic => 'اختاري العيادة';
+
+  @override
+  String get noClinics => 'مفيش عيادات متاحة للحجز دلوقتي.';
+
+  @override
+  String get changeClinic => 'تغيير';
+
+  @override
+  String get bookingClinicInactive =>
+      'العيادة دي مش بتستقبل حجوزات دلوقتي. اختاري عيادة تانية.';
+
+  @override
+  String get labelClinic => 'العيادة';
+
+  @override
+  String get labelAddress => 'العنوان';
+
+  @override
+  String get listSeparator => '، ';
+
+  @override
+  String get homeWelcome => 'أهلًا بيكي';
+
+  @override
+  String homeGreeting(String name) {
+    return 'أهلًا يا $name';
+  }
+
+  @override
+  String get homeClinics => 'عياداتنا';
+
+  @override
+  String get doctorName => 'د. أحمد العبد';
+
+  @override
+  String get doctorTitle => 'استشاري طب الأطفال وحديثي الولادة';
+
+  @override
+  String get doctorTagline => 'موجودين عشان نطمنك';
+
+  @override
+  String get doctorPhotoPlaceholder =>
+      '[صورة د. أحمد · هنضيف الصورة الحقيقية قريب]';
+
+  @override
+  String get bookHere => 'احجزي هنا';
+
+  @override
+  String get callClinicShort => 'اتصلي';
+
+  @override
+  String get whatsapp => 'واتساب';
+
+  @override
+  String callClinicAt(String area) {
+    return 'اتصلي بعيادة $area';
+  }
+
+  @override
+  String additionalPriceAt(String area, String price) {
+    return 'السعر في $area: $price جنيه';
+  }
+
+  @override
+  String visitAtClinic(String clinic) {
+    return 'في $clinic';
+  }
 }

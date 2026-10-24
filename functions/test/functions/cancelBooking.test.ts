@@ -1,7 +1,7 @@
 import { strict as assert } from "node:assert";
 import { Timestamp } from "firebase-admin/firestore";
 import { adminDb, callFunction, clearEmulators, seedSettings } from "../helpers/env";
-import { guardianWithChildren, openNonVaccineDay, seedBookingSettings, visit } from "../helpers/booking";
+import { CLINIC_2, guardianWithChildren, openNonVaccineDay, seedBookingSettings, seedClinic, slotPath, visit } from "../helpers/booking";
 
 type Created = { bookingId: string };
 
@@ -12,7 +12,7 @@ describe("cancelBooking (FR-020, FR-021)", () => {
     await seedBookingSettings();
   });
 
-  const slot = async (date: string) => (await adminDb().doc(`slots/${date}_18`).get()).get("taken");
+  const slot = async (date: string) => (await adminDb().doc(`slots/clinic-1_${date}_18`).get()).get("taken");
 
   it("before the window: cancelled, place freed at once, event written", async () => {
     const g = await guardianWithChildren("+201000000099");
@@ -61,5 +61,28 @@ describe("cancelBooking (FR-020, FR-021)", () => {
     const { result } = await callFunction<Created>("createBooking", visit(openNonVaccineDay(), 18, a.childIds), a);
     const res = await callFunction("cancelBooking", { bookingId: result!.bookingId }, b);
     assert.equal(res.error?.status, "NOT_FOUND");
+  });
+
+  describe("004 two clinics", () => {
+    it("uses the booking's clinic's cancel window (FR-010)", async () => {
+      await seedClinic(CLINIC_2, { cancelWindowHours: 6, visitPrice: 350 });
+      const g = await guardianWithChildren("+201000000099");
+      const day = openNonVaccineDay();
+      const { result } = await callFunction<Created>("createBooking", visit(day, 18, g.childIds, 350, CLINIC_2), g);
+      assert.ok(result);
+      await adminDb().doc(`bookings/${result.bookingId}`).update({ startsAt: Timestamp.fromMillis(Date.now() + 5 * 3600_000) });
+      const res = await callFunction("cancelBooking", { bookingId: result.bookingId }, g);
+      assert.equal(res.error?.details?.reason, "inside_window", "5 h is inside clinic 2's 6-hour window");
+    });
+
+    it("frees the place at the booking's clinic", async () => {
+      await seedClinic(CLINIC_2, { visitPrice: 350 });
+      const g = await guardianWithChildren("+201000000099");
+      const day = openNonVaccineDay();
+      const { result } = await callFunction<Created>("createBooking", visit(day, 18, g.childIds, 350, CLINIC_2), g);
+      assert.equal((await adminDb().doc(slotPath(day, 18, CLINIC_2)).get()).get("taken"), 1);
+      await callFunction("cancelBooking", { bookingId: result!.bookingId }, g);
+      assert.equal((await adminDb().doc(slotPath(day, 18, CLINIC_2)).get()).get("taken"), 0);
+    });
   });
 });

@@ -1,10 +1,11 @@
 import 'package:delnono/core/launch/external_links.dart';
-import 'package:delnono/core/settings/settings_repository.dart';
+import 'package:delnono/features/clinics/data/clinics_repository.dart';
 import 'package:delnono/features/child_profile/presentation/follow_up_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../helpers/clinic_fakes.dart';
 import '../../helpers/screen_harness.dart';
 import 'fakes.dart';
 
@@ -24,15 +25,14 @@ class _Links implements ExternalLinks {
 void main() {
   late _Links links;
 
-  Future<void> open(WidgetTester tester, String childId, {String? clinicPhone = '+201000000000'}) async {
+  Future<void> open(WidgetTester tester, String childId, {List<Clinic> clinics = const [clinic1]}) async {
     links = _Links();
     final h = ScreenHarness(
       initial: '/children/$childId/follow-up',
       routes: [GoRoute(path: '/children/:id/follow-up', builder: (_, s) => FollowUpScreen(childId: s.pathParameters['id']!))],
       overrides: [
-        ...profileOverrides(children: const [youssef, salma, mariam]),
+        ...profileOverrides(children: const [youssef, salma, mariam], clinics: clinics),
         externalLinksProvider.overrideWithValue(links),
-        clinicSettingsProvider.overrideWith((ref) => Stream.value(ClinicSettings(phoneNumber: clinicPhone))),
       ],
     );
     await h.pump(tester);
@@ -50,14 +50,22 @@ void main() {
 
   testWidgets('call buttons open the dialer with the clinic number and 123 (FR-017, D-33)', (tester) async {
     await open(tester, 'c2');
-    await tapVisible(tester, find.byKey(const Key('call-clinic')));
+    await tapVisible(tester, find.byKey(const Key('call-clinic-clinic-1')));
     await tapVisible(tester, find.byKey(const Key('call-ambulance')));
     expect(links.called, ['+201000000000', '123']);
   });
 
+  testWidgets('one call button per clinic with a phone, named by area (004 FR-019)', (tester) async {
+    await open(tester, 'c2', clinics: const [clinic1, clinic2]);
+    expect(find.text('اتصلي بعيادة المقطم'), findsOneWidget);
+    expect(find.text('اتصلي بعيادة مدينة نصر'), findsOneWidget);
+    await tapVisible(tester, find.byKey(const Key('call-clinic-clinic-2')));
+    expect(links.called, ['+201000000002']);
+  });
+
   testWidgets('without a clinic number only the 123 button shows', (tester) async {
-    await open(tester, 'c2', clinicPhone: null);
-    expect(find.byKey(const Key('call-clinic')), findsNothing);
+    await open(tester, 'c2', clinics: const [Clinic(id: 'x', name: '[عيادة]', area: 'س', address: '[عنوان]')]);
+    expect(find.byKey(const Key('call-clinic-x')), findsNothing);
     expect(find.byKey(const Key('call-ambulance')), findsOneWidget);
   });
 

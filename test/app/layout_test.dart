@@ -40,6 +40,7 @@ import 'package:delnono/features/registration/presentation/consent_screen.dart';
 import 'package:delnono/features/registration/presentation/guardian_details_screen.dart';
 import 'package:delnono/features/registration/presentation/link_children_screen.dart';
 import 'package:delnono/features/shell/shell_scaffold.dart';
+import 'package:delnono/features/home/home_screen.dart';
 import 'package:delnono/features/welcome/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -51,6 +52,7 @@ import 'package:mocktail/mocktail.dart';
 
 import '../features/auth/fakes.dart';
 import '../features/child_profile/fakes.dart' show profileDataOverrides;
+import '../helpers/clinic_fakes.dart';
 import '../helpers/rtl_icons.dart';
 import '../features/registration/fakes.dart';
 
@@ -101,7 +103,9 @@ final sampleBooking = Booking(
 );
 
 final screens = <String, Widget Function()>{
-  'booking': () => const ShellScaffold(location: '/booking', child: BookingScreen()),
+  'home': () => const ShellScaffold(location: '/', child: HomeScreen()),
+  'booking: clinic step': () => const ShellScaffold(location: '/booking', child: BookingScreen()),
+  'booking': () => const ShellScaffold(location: '/booking', child: BookingScreen(initialClinicId: 'clinic-1')),
   'booking success': () => const BookingSuccessScreen(bookingId: 'bk'),
   'my bookings': () => const MyBookingsScreen(),
   'change booking': () => const BookingScreen(changeBookingId: 'bk'),
@@ -141,22 +145,21 @@ void main() {
             policySettingsProvider.overrideWith(
               (ref) => Stream.value(PolicySettings(privacyPolicyText: '[نص مؤقت]', updatedAt: DateTime(2026, 10, 22))),
             ),
-            clinicSettingsProvider.overrideWith(
-              (ref) => Stream.value(const ClinicSettings(whatsappNumber: '+201000000000', phoneNumber: '+201000000000')),
-            ),
             phoneAuthServiceProvider.overrideWithValue(FakePhoneAuthService()),
             registrationApiProvider.overrideWithValue(FakeRegistrationApi()),
             externalLinksProvider.overrideWithValue(_Links()),
             clockProvider.overrideWithValue(clock.call),
-            bookingSettingsProvider.overrideWith((ref) => Stream.value(const BookingSettings())),
-            vaccinesProvider.overrideWith((ref) => Stream.value(const [
-                  Vaccine(id: 'v1', name: '[تطعيم مؤقت ١]', price: 150, showPrice: true),
-                  Vaccine(id: 'v3', name: '[تطعيم مؤقت ٣]', price: 450, showPrice: false),
-                ])),
-            slotsTakenProvider.overrideWith((ref, date) => Stream.value(const {17: 6, 18: 2})),
+            slotsTakenProvider.overrideWith((ref, key) => Stream.value(const {17: 6, 18: 2})),
             myBookingsProvider.overrideWith((ref) => Stream.value([sampleBooking])),
             activePackageProvider.overrideWith((ref, date) => Stream.value(null)),
-            ...profileDataOverrides(anyChild: true),
+            ...profileDataOverrides(
+              anyChild: true,
+              clinics: const [clinic1, clinic2],
+              bookingVaccines: const [
+                Vaccine(id: 'v1', name: '[تطعيم مؤقت ١]', price: 150, showPrice: true),
+                Vaccine(id: 'v3', name: '[تطعيم مؤقت ٣]', price: 450, showPrice: false),
+              ],
+            ),
           ]);
           addTearDown(container.dispose);
           container.read(registrationControllerProvider.notifier).setDetails(
@@ -166,6 +169,8 @@ void main() {
           // A full booking selection, so the booking summary is laid out too (Mon 26 Oct is a vaccine day).
           container.listen(bookingFormProvider, (_, _) {});
           container.read(bookingFormProvider.notifier)
+            // The clinic step shows only while no clinic is chosen.
+            ..setClinic(name == 'booking: clinic step' ? null : 'clinic-1')
             ..setDate('2026-10-26', const BookingSettings())
             ..setHour(18)
             ..toggleChild('a')

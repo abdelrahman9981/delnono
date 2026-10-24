@@ -16,6 +16,7 @@ class BookedChild {
 class Booking {
   const Booking({
     required this.id,
+    this.clinicId,
     required this.number,
     required this.visitType,
     required this.children,
@@ -30,6 +31,7 @@ class Booking {
     final d = snap.data()!;
     return Booking(
       id: snap.id,
+      clinicId: d['clinicId'] as String?,
       number: (d['number'] as num).toInt(),
       visitType: d['visitType'] == 'vaccine_only' ? VisitType.vaccineOnly : VisitType.visit,
       children: [
@@ -55,6 +57,9 @@ class Booking {
   }
 
   final String id;
+
+  /// Null for bookings made before 004: they belong to the main clinic (004 research R5).
+  final String? clinicId;
   final int number;
   final VisitType visitType;
   final List<BookedChild> children;

@@ -44,9 +44,21 @@ describe("booking schedule", () => {
   });
 
   it("settings fall back to defaults field by field", () => {
-    const r = bookingSettingsFrom({ capacityPerHour: 4, holidays: ["2026-12-25"] });
+    const r = bookingSettingsFrom({ capacityPerHour: 4, holidays: ["2026-12-25"] }, undefined);
     assert.equal(r.capacityPerHour, 4);
     assert.deepEqual(r.holidays, ["2026-12-25"]);
     assert.equal(r.visitPrice, 300);
+  });
+
+  it("clinic values come from the clinic, family limits from settings/booking (004, D-49)", () => {
+    const r = bookingSettingsFrom(
+      { visitPrice: 350, cancelWindowHours: 6, maxUpcomingPerFamily: 9, vaccinePrices: { v1: { offered: true, price: 170, shown: true } } },
+      { maxUpcomingPerFamily: 3, bookingHorizonDays: 7, visitPrice: 1 },
+    );
+    assert.equal(r.visitPrice, 350);
+    assert.equal(r.cancelWindowHours, 6);
+    assert.equal(r.maxUpcomingPerFamily, 3, "the family maximum is not a clinic setting");
+    assert.equal(r.bookingHorizonDays, 7);
+    assert.deepEqual(r.vaccinePrices.v1, { offered: true, price: 170, shown: true });
   });
 });

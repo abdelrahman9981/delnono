@@ -35,6 +35,13 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // The doctor's clinics (004): details, schedule and prices, no personal data. Public for Home
+    // (D-09); edited by staff in 005.
+    match /clinics/{clinicId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     function validGuardianDetails(d) {
       return d.fullName is string && d.fullName.size() >= 2 && d.fullName.size() <= 80
         && d.relation in ['mother', 'father', 'other']

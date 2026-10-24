@@ -1,10 +1,14 @@
 import { strict as assert } from "node:assert";
 import { adminDb, callFunction, clearEmulators, seedSettings } from "../helpers/env";
 import {
+  CLINIC,
+  CLINIC_2,
   closedDay,
   guardianWithChildren,
   openNonVaccineDay,
   seedBookingSettings,
+  seedClinic,
+  slotPath,
   vaccineDay,
   visit,
 } from "../helpers/booking";
@@ -19,7 +23,7 @@ function threeOpenDays(): string[] {
 }
 
 const slot = async (date: string, hour: number) =>
-  (await adminDb().doc(`slots/${date}_${String(hour).padStart(2, "0")}`).get()).get("taken");
+  (await adminDb().doc(`slots/clinic-1_${date}_${String(hour).padStart(2, "0")}`).get()).get("taken");
 
 describe("createBooking", () => {
   beforeEach(async () => {
@@ -149,7 +153,7 @@ describe("createBooking", () => {
   describe("US2 no double booking of the last place (FR-009, SC-002)", () => {
     it("five guardians race for the last place: exactly one wins, the rest see full", async () => {
       const day = openNonVaccineDay();
-      await adminDb().doc(`slots/${day}_18`).set({ date: day, hour: 18, taken: 5 });
+      await adminDb().doc(`slots/clinic-1_${day}_18`).set({ date: day, hour: 18, taken: 5 });
       const guardians = await Promise.all(
         [1, 2, 3, 4, 5].map((i) => guardianWithChildren(`+20100000007${i}`)),
       );
@@ -166,7 +170,7 @@ describe("createBooking", () => {
     it("a full hour refuses at once", async () => {
       const g = await guardianWithChildren("+201000000099");
       const day = openNonVaccineDay();
-      await adminDb().doc(`slots/${day}_18`).set({ date: day, hour: 18, taken: 6 });
+      await adminDb().doc(`slots/clinic-1_${day}_18`).set({ date: day, hour: 18, taken: 6 });
       const res = await callFunction("createBooking", visit(day, 18, g.childIds), g);
       assert.equal(res.error?.details?.reason, "full");
     });
@@ -180,7 +184,7 @@ describe("createBooking", () => {
       const g = await guardianWithChildren("+201000000099");
       const day = vaccineDay();
       const ref = await pkg(g.uid, "2020-01-01", "2099-12-31");
-      const sel = { visitType: "visit", date: day, hour: 18, children: [{ childId: g.childIds[0], vaccines: ["v1"] }], expectedTotal: 150 };
+      const sel = { clinicId: CLINIC, visitType: "visit", date: day, hour: 18, children: [{ childId: g.childIds[0], vaccines: ["v1"] }], expectedTotal: 150 };
       const res = await callFunction<Result & { price: { packageId: string } }>("createBooking", sel, g);
       assert.ok(res.result, JSON.stringify(res.error));
       assert.deepEqual(res.result.price.visit, { amount: 0, covered: true });
@@ -201,7 +205,7 @@ describe("createBooking", () => {
 
   describe("US3 vaccines (FR-008, FR-014, D-31)", () => {
     const withVaccines = (date: string, children: { childId: string; vaccines: string[] }[], visitType: string, expectedTotal: number) =>
-      ({ visitType, date, hour: 18, children, expectedTotal });
+      ({ clinicId: CLINIC, visitType, date, hour: 18, children, expectedTotal });
 
     it("vaccine only on a vaccine day: no visit price, vaccine price only, one place", async () => {
       const g = await guardianWithChildren("+201000000099");
@@ -242,6 +246,121 @@ describe("createBooking", () => {
       assert.equal(res.result?.price.total, 300);
       assert.equal(res.result?.price.hasHiddenPrices, true);
       assert.deepEqual(res.result?.price.vaccines[0], { childId: g.childIds[0], vaccineId: "v3", name: "[تطعيم ٣]", amount: 450, shown: false });
+    });
+  });
+
+  describe("004 two clinics", () => {
+    /** Clinic 2: mornings Sun–Thu, 5 places, visit 350, v1 at 170, v2 not offered, 6-hour window. */
+    const morning = [{ from: 10, to: 14 }];
+    async function seedSecondClinic(fields: Record<string, unknown> = {}) {
+      await seedClinic(CLINIC_2, {
+        order: 1,
+        capacityPerHour: 5,
+        workingHours: { "1": morning, "2": morning, "3": morning, "4": morning, "5": [], "6": [], "7": morning },
+        vaccineWeekdays: [1, 3],
+        visitPrice: 350,
+        cancelWindowHours: 6,
+        vaccinePrices: { v1: { offered: true, price: 170, shown: true }, v2: { offered: false, price: 0, shown: true } },
+        ...fields,
+      });
+    }
+    const clinic2Day = (from = 1) => openNonVaccineDay(from); // clinic 2 is open on the same weekdays except Saturday
+    const mondayOrWednesday = () => vaccineDay();
+
+    it("uses the chosen clinic's hours, capacity and prices; booking and slot carry the clinic (FR-007 to FR-009)", async () => {
+      await seedSecondClinic();
+      const g = await guardianWithChildren("+201000000099");
+      const day = mondayOrWednesday();
+      const evening = await callFunction("createBooking", visit(day, 18, g.childIds, 350, CLINIC_2), g);
+      assert.equal(evening.error?.details?.reason, "outside_hours", "18:00 is clinic 1's hours, not clinic 2's");
+      const res = await callFunction<Result>("createBooking", visit(day, 11, g.childIds, 350, CLINIC_2), g);
+      assert.ok(res.result, JSON.stringify(res.error));
+      assert.equal(res.result.price.total, 350);
+      const booking = await adminDb().doc(`bookings/${res.result.bookingId}`).get();
+      assert.equal(booking.get("clinicId"), CLINIC_2);
+      assert.equal((await adminDb().doc(slotPath(day, 11, CLINIC_2)).get()).get("taken"), 1);
+      assert.equal((await adminDb().doc(slotPath(day, 11, CLINIC_2)).get()).get("clinicId"), CLINIC_2);
+    });
+
+    it("a full hour at one clinic does not affect the other (FR-008)", async () => {
+      await seedSecondClinic({ workingHours: { "1": [{ from: 17, to: 21 }], "2": [{ from: 17, to: 21 }], "3": [{ from: 17, to: 21 }], "4": [{ from: 17, to: 21 }], "6": [{ from: 17, to: 21 }], "7": [{ from: 17, to: 21 }] } });
+      const g = await guardianWithChildren("+201000000099");
+      const day = openNonVaccineDay();
+      await adminDb().doc(slotPath(day, 18)).set({ clinicId: CLINIC, date: day, hour: 18, taken: 6 });
+      const full = await callFunction("createBooking", visit(day, 18, g.childIds), g);
+      assert.equal(full.error?.details?.reason, "full");
+      const other = await callFunction<Result>("createBooking", visit(day, 18, g.childIds, 350, CLINIC_2), g);
+      assert.ok(other.result, JSON.stringify(other.error));
+    });
+
+    it("vaccine prices are the clinic's; a vaccine not offered there is refused (FR-002)", async () => {
+      await seedSecondClinic();
+      const g = await guardianWithChildren("+201000000099");
+      const day = mondayOrWednesday();
+      const sel = (vaccines: string[], expectedTotal: number) => ({
+        clinicId: CLINIC_2, visitType: "vaccine_only", date: day, hour: 11, children: [{ childId: g.childIds[0], vaccines }], expectedTotal,
+      });
+      const notOffered = await callFunction("createBooking", sel(["v2"], 200), g);
+      assert.equal(notOffered.error?.details?.field, "vaccines");
+      const ok = await callFunction<Result>("createBooking", sel(["v1"], 170), g);
+      assert.ok(ok.result, JSON.stringify(ok.error));
+      assert.equal(ok.result.price.total, 170);
+    });
+
+    it("an inactive or unknown clinic is refused; the clinic id is required", async () => {
+      await seedSecondClinic({ active: false });
+      const g = await guardianWithChildren("+201000000099");
+      const day = mondayOrWednesday();
+      const inactive = await callFunction("createBooking", visit(day, 11, g.childIds, 350, CLINIC_2), g);
+      assert.equal(inactive.error?.details?.reason, "clinic_inactive");
+      const unknown = await callFunction("createBooking", visit(day, 11, g.childIds, 350, "nope"), g);
+      assert.equal(unknown.error?.details?.reason, "clinic_inactive");
+      const { clinicId: _, ...missing } = visit(day, 18, g.childIds);
+      const noClinic = await callFunction("createBooking", missing, g);
+      assert.equal(noClinic.error?.details?.field, "clinicId");
+    });
+
+    it("one booking per day across clinics (D-49)", async () => {
+      await seedSecondClinic();
+      const g = await guardianWithChildren("+201000000099");
+      const day = mondayOrWednesday();
+      assert.ok((await callFunction("createBooking", visit(day, 18, g.childIds), g)).result);
+      const same = await callFunction("createBooking", visit(day, 11, g.childIds, 350, CLINIC_2), g);
+      assert.equal(same.error?.status, "ALREADY_EXISTS");
+    });
+
+    it("the upcoming maximum counts both clinics (D-49)", async () => {
+      await seedSecondClinic();
+      const g = await guardianWithChildren("+201000000099");
+      const [d1, d2, d3] = threeOpenDays();
+      assert.ok((await callFunction("createBooking", visit(d1, 18, g.childIds), g)).result);
+      assert.ok((await callFunction("createBooking", visit(d2, 11, g.childIds, 350, CLINIC_2), g)).result);
+      const third = await callFunction("createBooking", visit(d3, 11, g.childIds, 350, CLINIC_2), g);
+      assert.equal(third.error?.status, "OUT_OF_RANGE");
+    });
+
+    it("the last place at a clinic goes to exactly one of two simultaneous families", async () => {
+      await seedSecondClinic();
+      const a = await guardianWithChildren("+201000000099");
+      const b = await guardianWithChildren("+201000000088");
+      const day = clinic2Day();
+      await adminDb().doc(slotPath(day, 11, CLINIC_2)).set({ clinicId: CLINIC_2, date: day, hour: 11, taken: 4 });
+      const results = await Promise.all([a, b].map((g) => callFunction("createBooking", visit(day, 11, g.childIds, 350, CLINIC_2), g)));
+      assert.equal(results.filter((r) => r.result).length, 1);
+      assert.equal((await adminDb().doc(slotPath(day, 11, CLINIC_2)).get()).get("taken"), 5);
+    });
+
+    it("a package sold at clinic 1 covers a visit at clinic 2; vaccines at clinic 2's price (D-46)", async () => {
+      await seedSecondClinic();
+      const g = await guardianWithChildren("+201000000099");
+      await adminDb().collection("packages").add({ guardianUid: g.uid, startsOn: "2020-01-01", endsOn: "2099-12-31", active: true, soldAtClinicId: CLINIC });
+      const day = mondayOrWednesday();
+      const sel = { clinicId: CLINIC_2, visitType: "visit", date: day, hour: 11, children: [{ childId: g.childIds[0], vaccines: ["v1"] }], expectedTotal: 170 };
+      const res = await callFunction<Result>("createBooking", sel, g);
+      assert.ok(res.result, JSON.stringify(res.error));
+      assert.deepEqual(res.result.price.visit, { amount: 0, covered: true });
+      assert.equal(res.result.price.total, 170);
+      assert.equal((await adminDb().doc(`bookings/${res.result.bookingId}`).get()).get("clinicId"), CLINIC_2);
     });
   });
 });
