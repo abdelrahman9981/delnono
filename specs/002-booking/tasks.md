@@ -80,9 +80,9 @@ All user-facing text goes in `l10n/app_ar.arb`.
 
 **Independent Test**: quickstart scenario 3.
 
-- [ ] T026 [P] [US2] Add a race test to `functions/test/functions/createBooking.test.ts`: an hour with one place left, N guardians call `createBooking` with `Promise.all`; exactly one succeeds, the rest get `resource-exhausted` with `reason: full`, and `taken` equals capacity.
-- [ ] T027 [P] [US2] Add to `test/features/booking/booking_screen_test.dart`: "الميعاد اتحجز" on `full`, returning to the hour choice with the hour now shown full.
-- [ ] T028 [US2] Handle `full` in the controller and screen (message, refresh, keep the rest of the selection).
+- [X] T026 [P] [US2] Add a race test to `functions/test/functions/createBooking.test.ts`: an hour with one place left, N guardians call `createBooking` with `Promise.all`; exactly one succeeds, the rest get `resource-exhausted` with `reason: full`, and `taken` equals capacity.
+- [X] T027 [P] [US2] Add to `test/features/booking/booking_screen_test.dart`: "الميعاد اتحجز" on `full`, returning to the hour choice with the hour now shown full.
+- [X] T028 [US2] Handle `full` in the controller and screen (message, refresh, keep the rest of the selection).
 
 ---
 
@@ -90,9 +90,9 @@ All user-facing text goes in `l10n/app_ar.arb`.
 
 **Independent Test**: quickstart scenarios 4–5.
 
-- [ ] T029 [P] [US3] Add to `createBooking.test.ts`: vaccine-only on a vaccine day (no visit price, one place), vaccines per child, `not_vaccine_day`, vaccine-only without vaccines, inactive vaccine, hidden-price vaccine (`amount: null`, `hasHiddenPrices`).
-- [ ] T030 [P] [US3] Add to `booking_screen_test.dart`: only vaccine days selectable when vaccines are involved, vaccine picker per child, totals, hidden price shown as "بالسعر في العيادة".
-- [ ] T031 [US3] Add the vaccine picker per child and vaccine-only flow to `booking_screen.dart` and the controller.
+- [X] T029 [P] [US3] Add to `createBooking.test.ts`: vaccine-only on a vaccine day (no visit price, one place), vaccines per child, `not_vaccine_day`, vaccine-only without vaccines, inactive vaccine, hidden-price vaccine (`amount: null`, `hasHiddenPrices`).
+- [X] T030 [P] [US3] Add to `booking_screen_test.dart`: only vaccine days selectable when vaccines are involved, vaccine picker per child, totals, hidden price shown as "بالسعر في العيادة".
+- [X] T031 [US3] Add the vaccine picker per child and vaccine-only flow to `booking_screen.dart` and the controller.
 
 ---
 

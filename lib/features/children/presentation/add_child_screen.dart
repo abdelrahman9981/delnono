@@ -84,10 +84,11 @@ class _AddChildScreenState extends ConsumerState<AddChildScreen> {
         context.go(Routes.children);
       }
     } on DuplicateChildException catch (e) {
+      if (!mounted) return;
       setState(() => _duplicateMessage =
           e.existingLinked ? l10n.childDuplicateLinked(name) : l10n.childDuplicateClinic(name));
     } catch (e) {
-      setState(() => _error = e);
+      if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _saving = false);
     }

@@ -45,16 +45,19 @@ class _ReverifyScreenState extends ConsumerState<ReverifyScreen> {
       _submitting = true;
       _error = null;
     });
+    // Read before awaiting: once re-verified the guard moves on and this screen is disposed.
+    final api = ref.read(sessionApiProvider);
+    final session = ref.read(sessionControllerProvider.notifier);
     try {
-      await ref.read(sessionApiProvider).reverifyGuardian(isoDate(_date!));
+      await api.reverifyGuardian(isoDate(_date!));
       // Lifting the flag lets the guard continue to `from`.
-      ref.read(sessionControllerProvider.notifier).reverified();
+      session.reverified();
     } on ReverifyWrongBirthDate catch (e) {
-      setState(() => _remaining = e.remaining);
+      if (mounted) setState(() => _remaining = e.remaining);
     } on ReverifyLocked {
-      setState(() => _locked = true);
+      if (mounted) setState(() => _locked = true);
     } catch (e) {
-      setState(() => _error = e);
+      if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

@@ -126,4 +126,50 @@ void main() {
     await open(tester, children: const []);
     expect(find.text('ضيفي طفل الأول عشان تحجزي.'), findsOneWidget);
   });
+
+  group('US3 vaccines', () {
+    testWidgets('vaccine only offers only vaccine days (Mon 16, Wed 18)', (tester) async {
+      await open(tester);
+      await pick(tester, const Key('type-vaccine'));
+      expect(find.byKey(const Key('day-2026-11-15')), findsNothing);
+      expect(find.byKey(const Key('day-2026-11-16')), findsOneWidget);
+      expect(find.byKey(const Key('day-2026-11-18')), findsOneWidget);
+    });
+
+    testWidgets('vaccines are picked per child; vaccine only totals vaccine prices', (tester) async {
+      await open(tester);
+      await pick(tester, const Key('type-vaccine'));
+      await pick(tester, const Key('day-2026-11-16'));
+      await pick(tester, const Key('hour-18'));
+      await pick(tester, const Key('child-a'));
+      await pick(tester, const Key('child-b'));
+      expect(find.text('اختاري تطعيم واحد على الأقل.'), findsOneWidget);
+      await pick(tester, const Key('vaccine-a-v1'));
+      expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, '١٥٠ جنيه');
+      await pick(tester, const Key('confirm-booking'));
+      final (sel, total) = api.created.single;
+      expect(sel.visitType, VisitType.vaccineOnly);
+      expect(sel.children, {'a': ['v1'], 'b': <String>[]});
+      expect(total, 150);
+    });
+
+    testWidgets('a visit on a vaccine day can add vaccines; hidden prices say "بالسعر في العيادة"', (tester) async {
+      await open(tester);
+      await pick(tester, const Key('day-2026-11-16'));
+      await pick(tester, const Key('hour-18'));
+      await pick(tester, const Key('child-a'));
+      await pick(tester, const Key('vaccine-a-v3'));
+      expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, '٣٠٠ جنيه');
+      expect(find.text('بالسعر في العيادة'), findsOneWidget);
+      expect(find.text('الإجمالي من غير التطعيمات اللي سعرها في العيادة.'), findsOneWidget);
+    });
+
+    testWidgets('no vaccine picker on a day that is not a vaccine day', (tester) async {
+      await open(tester);
+      await pick(tester, const Key('day-2026-11-15'));
+      await pick(tester, const Key('hour-18'));
+      await pick(tester, const Key('child-a'));
+      expect(find.byKey(const Key('vaccine-a-v1')), findsNothing);
+    });
+  });
 }
