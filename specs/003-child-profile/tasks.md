@@ -56,7 +56,7 @@ back ›. All user-facing text goes in `l10n/app_ar.arb`. No screen may show a m
 
 - [ ] T014 [P] [US1] Tests first: `test/features/child_profile/latest_measurements_test.dart` (latest per value with its own date; missing head shows "لسه متسجلش"; birth weight as the birth point) and `test/features/child_profile/chart_scale_test.dart` (round ticks, single point, age axis).
 - [ ] T015 [US1] Create `lib/features/child_profile/domain/latest_measurements.dart` and `domain/chart_scale.dart` to pass T014.
-- [ ] T016 [US1] Create `lib/features/child_profile/presentation/growth_chart.dart` (CustomPainter, research R5: points, line, area fill, weight/length/head tabs, no reference curves or ranges) and the measurement cards on `my_child_screen.dart` per the design ("آخر قياسات …", "اتحدثت …").
+- [ ] T016 [US1] Create `lib/features/child_profile/presentation/growth_chart.dart` (CustomPainter, research R5: points, line, area fill, weight/length/head tabs, no reference curves or ranges) and, on `my_child_screen.dart`, the child's age and allergies line (FR-002) and the measurement cards per the design ("آخر قياسات …", "اتحدثت …").
 - [ ] T017 [US1] Widget test `test/features/child_profile/my_child_screen_test.dart`: switcher changes all sections, latest values and dates, empty state without measurements, chart tabs.
 
 ---
@@ -81,7 +81,7 @@ back ›. All user-facing text goes in `l10n/app_ar.arb`. No screen may show a m
 **Independent Test**: open a seeded visit's two-page prescription; another family cannot read it.
 
 - [ ] T022 [P] [US3] Tests first: `test/features/child_profile/prescription_store_test.dart` (bytes cached after the first read, served from cache when the read fails, cache cleared on request).
-- [ ] T023 [US3] Create `lib/features/child_profile/data/prescription_store.dart`: `getData` with the SDK (never download URLs), cache in the app cache folder under `prescriptions/` (research R4), and a `clear()` called from `AuthRepository.signOut` (with the Firestore cache).
+- [ ] T023 [US3] Create `lib/features/child_profile/data/prescription_store.dart`: `getData` with the SDK (never download URLs), cache in the app support folder under `prescriptions/` (research R4), and a `clear()` called from `AuthRepository.signOut` (with the Firestore cache).
 - [ ] T024 [US3] Create `presentation/visits_screen.dart` (`/children/:id/visits`: date, visit type, measurements and doses of the visit, "الروشتة" entry when pages exist) and `presentation/prescription_screen.dart` (pages in order, `InteractiveViewer` zoom, offline message for a page never opened).
 - [ ] T025 [US3] Widget tests `test/features/child_profile/visits_screen_test.dart` and `prescription_screen_test.dart` (order, no entry without pages, error state).
 

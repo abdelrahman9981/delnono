@@ -60,7 +60,7 @@ Measurements and doses of a visit are found by their `visitId`.
 
 ## vaccines/{vaccineId} (002, extended)
 
-Adds for `kind: additional`: `suggestedAge {months, days}`, `doses` (number), `intervalWeeks` (number),
+The spec's "extra" vaccines ("إضافي") are `kind: additional`, the 002 term. Adds for `kind: additional`: `suggestedAge {months, days}`, `doses` (number), `intervalWeeks` (number),
 `note` (string). Basic vaccines may also have a `note`. `price`/`showPrice` as in 002 (FR-043: price shown
 only when `showPrice`).
 

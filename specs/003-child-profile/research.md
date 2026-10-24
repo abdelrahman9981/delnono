@@ -55,12 +55,12 @@ Display-only; nothing on the server depends on them. Reminders (007) use the sam
 guardian (cross-service `firestore.get` of the child and guardian documents, same checks as
 `linkedGuardian`) or has the custom claim `role == 'doctor'` (staff claims arrive in 004); never the
 secretary; writes are denied until 004. The app downloads bytes with the SDK (`getData`), which applies
-the rules, and keeps them in an app cache folder so opened photos stay readable offline. The cache is
+the rules, and keeps them in the app's support folder (not the OS cache folder, which iOS may purge) so opened photos stay readable offline. The cache is
 deleted on sign-out together with the Firestore cache. Local development uses the Storage emulator
 (port 9199). Deploying Storage is **blocked: Blaze** (D-38).
 
 **Rationale**: download URLs carry a bearer token that bypasses the rules and could be forwarded; SDK
-reads are checked every time. Bytes in the app's own cache folder meet the offline requirement without a
+reads are checked every time. Bytes in the app's own support folder meet the offline requirement without a
 caching library.
 
 **Alternatives considered**: download URLs plus an image-cache package (URL works for anyone who has it);
