@@ -8,8 +8,9 @@
 		<string>whatsapp</string>
 	</array>
 	<!-- Firebase phone auth: iOS requires the reCAPTCHA callback scheme "app-" + GOOGLE_APP_ID with
-	     ":" replaced by "-". This one matches the emulator-only demo app ID in
-	     lib/core/firebase/firebase_options.dart; replace it after `flutterfire configure`. -->
+	     ":" replaced by "-". One per Firebase config: the emulator-only demo app
+	     (lib/core/firebase/firebase_options.dart) and the real dr-elnono-clinic iOS app
+	     (lib/core/firebase/firebase_options_prod.dart). -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -18,6 +19,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>app-1-000000000000-ios-0000000000000000</string>
+				<string>app-1-689130598694-ios-8479a72b2f171b3a7d11e7</string>
 			</array>
 		</dict>
 	</array>

@@ -5,13 +5,26 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 
 import 'firebase_options.dart';
+import 'firebase_options_prod.dart';
 import 'functions_region.dart';
 
 /// Set with `--dart-define=USE_EMULATOR=true` to use the local Firebase Emulator Suite.
 const useEmulator = bool.fromEnvironment('USE_EMULATOR');
 
+/// `--dart-define=FIREBASE_ENV=prod` selects the real project `dr-elnono-clinic`. Anything else
+/// (the default) uses the emulator-only `demo-delnono` project, so development and tests can never
+/// reach real data.
+const firebaseEnv = String.fromEnvironment('FIREBASE_ENV', defaultValue: 'demo');
+const useProdFirebase = firebaseEnv == 'prod';
+
+FirebaseOptions get firebaseOptions =>
+    useProdFirebase ? ProdFirebaseOptions.currentPlatform : DefaultFirebaseOptions.currentPlatform;
+
 Future<void> initFirebase() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (useProdFirebase && useEmulator) {
+    throw StateError('FIREBASE_ENV=prod cannot be combined with USE_EMULATOR=true.');
+  }
+  await Firebase.initializeApp(options: firebaseOptions);
 
   // Child profile and loaded content stay readable offline (constitution Principle VII).
   FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);

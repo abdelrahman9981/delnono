@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "demo-delnono"
+    "default": "demo-delnono",
+    "prod": "dr-elnono-clinic"
   }
 }
