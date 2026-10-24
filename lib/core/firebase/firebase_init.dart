@@ -20,14 +20,16 @@ const useProdFirebase = firebaseEnv == 'prod';
 FirebaseOptions get firebaseOptions =>
     useProdFirebase ? ProdFirebaseOptions.currentPlatform : DefaultFirebaseOptions.currentPlatform;
 
-Future<void> initFirebase() async {
+/// [persistence] keeps loaded data for offline reading (the guardian app, Principle VII). The
+/// dashboard turns it off: staff browsers may be shared, and staff never work offline (005).
+Future<void> initFirebase({bool persistence = true}) async {
   if (useProdFirebase && useEmulator) {
     throw StateError('FIREBASE_ENV=prod cannot be combined with USE_EMULATOR=true.');
   }
   await Firebase.initializeApp(options: firebaseOptions);
 
   // Child profile and loaded content stay readable offline (constitution Principle VII).
-  FirebaseFirestore.instance.settings = const Settings(persistenceEnabled: true);
+  FirebaseFirestore.instance.settings = Settings(persistenceEnabled: persistence);
 
   if (useEmulator) {
     // The Android emulator reaches the host machine through 10.0.2.2.
@@ -37,7 +39,7 @@ Future<void> initFirebase() async {
     await FirebaseAuth.instance.useAuthEmulator(host, 9099);
     // The emulator issues codes itself; skip APNs/reCAPTCHA app checks, which a demo project cannot
     // pass. Never set outside the emulator.
-    await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    if (!kIsWeb) await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
     FirebaseFunctions.instanceFor(region: functionsRegion).useFunctionsEmulator(host, 5001);
   }

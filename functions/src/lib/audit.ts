@@ -12,12 +12,30 @@ export type AuditAction =
   | "child.allergies_changed"
   | "account.reverified"
   | "account.reverify_failed"
-  | "account.reverify_locked";
+  | "account.reverify_locked"
+  // Staff (005, D-13).
+  | "staff.created"
+  | "staff.updated"
+  | "child.opened"
+  | "child.basics_changed"
+  | "medical.recorded"
+  | "medical.corrected"
+  | "note.saved"
+  | "clinic.updated"
+  | "catalogue.updated"
+  | "settings.updated"
+  | "content.published"
+  | "followup.published"
+  | "status.undone"
+  | "booking.staff_cancelled"
+  | "booking.staff_changed"
+  | "package.sold";
 
 export interface AuditEntry {
   action: AuditAction;
   actorUid: string;
-  subjectPhone: string;
+  /** The family concerned, when there is one. */
+  subjectPhone?: string;
   childIds?: string[];
   details?: Record<string, unknown>;
 }
@@ -31,7 +49,7 @@ export async function writeAudit(entry: AuditEntry, tx?: Transaction): Promise<v
   const doc = {
     action: entry.action,
     actorUid: entry.actorUid,
-    subjectPhone: entry.subjectPhone,
+    ...(entry.subjectPhone ? { subjectPhone: entry.subjectPhone } : {}),
     ...(entry.childIds ? { childIds: entry.childIds } : {}),
     ...(entry.details ? { details: entry.details } : {}),
     at: FieldValue.serverTimestamp(),

@@ -1245,4 +1245,526 @@ class AppLocalizationsAr extends AppLocalizations {
   String visitAtClinic(String clinic) {
     return 'في $clinic';
   }
+
+  @override
+  String get dashTitle => 'لوحة العيادة';
+
+  @override
+  String get dashNavToday => 'اليوم';
+
+  @override
+  String get dashNavChildren => 'ملفات الأطفال';
+
+  @override
+  String get dashNavClinic => 'العيادة';
+
+  @override
+  String get dashNavContent => 'المحتوى';
+
+  @override
+  String get dashNavFollowUp => 'قوائم المتابعة';
+
+  @override
+  String get dashNavReports => 'التقارير';
+
+  @override
+  String get dashNavVaccines => 'التطعيمات';
+
+  @override
+  String get dashNavSettings => 'الإعدادات';
+
+  @override
+  String get dashNavStaff => 'الموظفين';
+
+  @override
+  String get dashNavAudit => 'سجل التدقيق';
+
+  @override
+  String get dashSwitchClinic => 'تغيير العيادة';
+
+  @override
+  String get dashSignInTitle => 'دخول الموظفين';
+
+  @override
+  String get dashEmail => 'الإيميل';
+
+  @override
+  String get dashPassword => 'كلمة السر';
+
+  @override
+  String get dashSignIn => 'دخول';
+
+  @override
+  String get dashErrSignIn => 'الإيميل أو كلمة السر مش صح.';
+
+  @override
+  String get dashErrDisabled => 'الحساب ده متوقف. كلمي الدكتور.';
+
+  @override
+  String get dashNotStaff =>
+      'الحساب ده مش حساب موظف شغال. اخرجي وادخلي بحساب الموظف.';
+
+  @override
+  String get dashPasswordTitle => 'غيّري كلمة السر';
+
+  @override
+  String get dashPasswordIntro =>
+      'دي أول مرة تدخلي. اختاري كلمة سر خاصة بيكي بدل المؤقتة.';
+
+  @override
+  String get dashNewPassword => 'كلمة السر الجديدة';
+
+  @override
+  String get dashNewPasswordAgain => 'اكتبيها تاني';
+
+  @override
+  String get dashPasswordRule => 'كلمة السر لازم ٨ حروف على الأقل.';
+
+  @override
+  String get dashPasswordMismatch => 'الكلمتين مش زي بعض.';
+
+  @override
+  String dashTodayTitle(String date) {
+    return 'اليوم · $date';
+  }
+
+  @override
+  String get dashCalendar => 'مواعيد اليوم';
+
+  @override
+  String get dashClosedToday => 'العيادة مقفولة النهارده.';
+
+  @override
+  String get dashQueue => 'طابور الحضور';
+
+  @override
+  String get dashQueueOrder => 'بالترتيب حسب وقت الوصول، من غير أولوية.';
+
+  @override
+  String get dashQueueEmpty => 'مفيش حد وصل لسه.';
+
+  @override
+  String get dashWaiting => 'مستني';
+
+  @override
+  String get dashDoneUnpaid => 'تم · الدفع لسه متسجلش';
+
+  @override
+  String dashPaid(String amount) {
+    return 'تم · اتدفع $amount جنيه';
+  }
+
+  @override
+  String get dashMarkArrived => 'وصل';
+
+  @override
+  String get dashMarkDone => 'تم';
+
+  @override
+  String get dashUndo => 'تراجع';
+
+  @override
+  String get dashWalkIn => 'بدون حجز';
+
+  @override
+  String get dashStopWalkIns => 'إيقاف الحالات بدون حجز';
+
+  @override
+  String get dashAddWalkIn => 'إضافة حالة بدون حجز';
+
+  @override
+  String get dashNoHoursLeft => 'مفيش ساعات فاضلة النهارده.';
+
+  @override
+  String get dashFamilyName => 'اسم ولي الأمر';
+
+  @override
+  String get dashPhone => 'رقم الموبايل';
+
+  @override
+  String get dashChildrenNames => 'أسماء الأطفال';
+
+  @override
+  String get dashChildrenNamesHelp => 'افصلي بين الأسماء بفاصلة.';
+
+  @override
+  String get dashWalkInAdded => 'اتضافت الحالة للطابور.';
+
+  @override
+  String get dashCancelForFamily => 'إلغاء الحجز للأسرة';
+
+  @override
+  String get dashRecordPayment => 'تسجيل الدفع';
+
+  @override
+  String get dashCashAmount => 'المبلغ كاش (جنيه)';
+
+  @override
+  String get dashCoveredByPackage => 'الكشف مغطّى بالباقة';
+
+  @override
+  String get dashPaymentSaved => 'اتسجل الدفع.';
+
+  @override
+  String get dashClose => 'إغلاق';
+
+  @override
+  String get dashSaved => 'اتحفظ.';
+
+  @override
+  String get dashAdd => 'إضافة';
+
+  @override
+  String get dashEdit => 'تعديل';
+
+  @override
+  String get dashRemove => 'حذف';
+
+  @override
+  String get dashSearchHint => 'اسم الطفل أو رقم ولي الأمر';
+
+  @override
+  String get dashSearch => 'بحث';
+
+  @override
+  String get dashNoResults => 'مفيش نتايج.';
+
+  @override
+  String get dashBasics => 'البيانات الأساسية';
+
+  @override
+  String get dashEditBasics => 'تعديل البيانات';
+
+  @override
+  String dashGuardianPhone(String phone) {
+    return 'رقم ولي الأمر: $phone';
+  }
+
+  @override
+  String get dashSellPackage => 'بيع الباقة السنوية';
+
+  @override
+  String get dashPackageSold => 'اتباعت الباقة.';
+
+  @override
+  String get dashMeasurements => 'القياسات';
+
+  @override
+  String get dashDoses => 'التطعيمات المتسجلة';
+
+  @override
+  String get dashAddMeasurement => 'إضافة قياس';
+
+  @override
+  String get dashAddDose => 'إضافة جرعة';
+
+  @override
+  String get dashCorrect => 'تصحيح (الدكتور)';
+
+  @override
+  String get dashDate => 'التاريخ';
+
+  @override
+  String get dashDoseNumber => 'رقم الجرعة';
+
+  @override
+  String get dashLot => 'رقم التشغيلة';
+
+  @override
+  String get dashNote => 'ملاحظة الدكتور';
+
+  @override
+  String get dashNoNote => 'مفيش ملاحظة.';
+
+  @override
+  String get dashNoteHelp => 'بيشوفها الدكتور بس.';
+
+  @override
+  String get dashContact => 'العنوان والتواصل';
+
+  @override
+  String get dashPrices => 'الأسعار';
+
+  @override
+  String get dashVisitPrice => 'سعر الكشف';
+
+  @override
+  String get dashPackagePrice => 'سعر الباقة السنوية';
+
+  @override
+  String get dashPackageMonths => 'مدة الباقة (شهور)';
+
+  @override
+  String get dashSchedule => 'المواعيد';
+
+  @override
+  String get dashCapacity => 'السعة في الساعة';
+
+  @override
+  String get dashCancelWindow => 'مهلة الإلغاء (ساعات)';
+
+  @override
+  String get dashHolidays => 'الإجازات';
+
+  @override
+  String get dashHolidaysHelp => 'تواريخ YYYY-MM-DD بينها فاصلة.';
+
+  @override
+  String get dashWorkingHoursHelp =>
+      'ساعات كل يوم بنظام ٢٤ ساعة، مثلًا 17-21 أو 10-14, 17-21. فاضي = مقفول.';
+
+  @override
+  String get dashVaccineDay => 'يوم تطعيم';
+
+  @override
+  String get dashVaccineOffers => 'التطعيمات المتاحة في العيادة وأسعارها';
+
+  @override
+  String get dashPrice => 'السعر';
+
+  @override
+  String get dashPriceShown => 'السعر ظاهر للأم';
+
+  @override
+  String get dashVaccineList => 'قائمة التطعيمات';
+
+  @override
+  String get dashScheduleSource => 'مصدر الجدول';
+
+  @override
+  String get dashApprove => 'اعتماد';
+
+  @override
+  String get dashApproved => 'اتعمد الجدول.';
+
+  @override
+  String dashDueMonths(String months) {
+    return 'عند $months شهور';
+  }
+
+  @override
+  String get dashNewItem => 'إضافة نصيحة أو فيديو';
+
+  @override
+  String get dashItemTitle => 'العنوان';
+
+  @override
+  String get dashCategory => 'التصنيف';
+
+  @override
+  String get dashAgeFrom => 'من سن (شهور)';
+
+  @override
+  String get dashAgeTo => 'لحد سن (شهور)';
+
+  @override
+  String get dashLink => 'الرابط';
+
+  @override
+  String get dashBody => 'النص';
+
+  @override
+  String get dashDraftNote => 'المسودة مش بتظهر للأمهات لحد ما الدكتور ينشرها.';
+
+  @override
+  String get dashCatFever => 'الحرارة';
+
+  @override
+  String get dashCatFeeding => 'الرضاعة والهضم';
+
+  @override
+  String get dashCatSleep => 'النوم';
+
+  @override
+  String get dashCatAllergy => 'الحساسية';
+
+  @override
+  String get dashDraft => 'مسودة';
+
+  @override
+  String get dashPublished => 'منشور';
+
+  @override
+  String get dashArchived => 'مؤرشف';
+
+  @override
+  String get dashPublish => 'نشر';
+
+  @override
+  String get dashArchive => 'أرشفة';
+
+  @override
+  String get dashNothingYet => 'مفيش حاجة لسه.';
+
+  @override
+  String get dashSaveDraft => 'حفظ كمسودة';
+
+  @override
+  String get dashDraftSaved => 'اتحفظت المسودة.';
+
+  @override
+  String get dashOnePerLine => 'كل بند في سطر.';
+
+  @override
+  String get dashAddBand => 'إضافة قائمة سن';
+
+  @override
+  String get dashFrom => 'من';
+
+  @override
+  String get dashTo => 'لحد';
+
+  @override
+  String get dashDaily => 'يومي';
+
+  @override
+  String get dashMonthly => 'شهري';
+
+  @override
+  String get dashAllClinics => 'العيادتين';
+
+  @override
+  String get dashShowReport => 'عرض';
+
+  @override
+  String get dashExportCsv => 'تصدير CSV';
+
+  @override
+  String get dashTotal => 'الإجمالي';
+
+  @override
+  String get dashRepBookings => 'الحجوزات';
+
+  @override
+  String get dashRepArrivals => 'الحضور';
+
+  @override
+  String get dashRepNoShows => 'لم يحضر';
+
+  @override
+  String get dashRepWalkIns => 'بدون حجز';
+
+  @override
+  String get dashRepCash => 'المدفوع كاش';
+
+  @override
+  String get dashRepPackages => 'الباقات المباعة';
+
+  @override
+  String get dashSetPolicy => 'سياسة الخصوصية والشروط';
+
+  @override
+  String get dashSetPolicyVersion => 'رقم النسخة (زيادته بتطلب موافقة جديدة)';
+
+  @override
+  String get dashSetPrivacyText => 'نص سياسة الخصوصية';
+
+  @override
+  String get dashSetTermsText => 'نص الشروط';
+
+  @override
+  String get dashSetSignIn => 'الدخول';
+
+  @override
+  String get dashSetMaxCodeAttempts => 'عدد محاولات الكود';
+
+  @override
+  String get dashSetResendWait => 'انتظار إعادة الإرسال (ثواني)';
+
+  @override
+  String get dashSetReverifyDays => 'إعادة التحقق بعد (أيام)';
+
+  @override
+  String get dashSetBooking => 'الحجز';
+
+  @override
+  String get dashSetHorizon => 'الحجز لحد كام يوم قدام';
+
+  @override
+  String get dashSetMaxUpcoming => 'أقصى حجوزات قادمة للعيلة';
+
+  @override
+  String get dashSetChild => 'ملف الطفل';
+
+  @override
+  String get dashSetFollowUpAge => 'المتابعة لحد سن (شهور)';
+
+  @override
+  String get dashSetLateDays => 'الجرعة متأخرة بعد (أيام)';
+
+  @override
+  String get dashNewStaff => 'إضافة موظف';
+
+  @override
+  String get dashTempPassword => 'كلمة سر مؤقتة';
+
+  @override
+  String get dashRoleDoctor => 'دكتور';
+
+  @override
+  String get dashRoleSecretary => 'سكرتيرة';
+
+  @override
+  String get dashDisabled => 'متوقف';
+
+  @override
+  String get dashDisable => 'إيقاف';
+
+  @override
+  String get dashEnable => 'تشغيل';
+
+  @override
+  String get dashAction => 'النوع';
+
+  @override
+  String get dashAllActions => 'كل الأنواع';
+
+  @override
+  String dashAuditCount(String count) {
+    return '$count سجل';
+  }
+
+  @override
+  String get dashErrFull => 'الساعة دي مليانة.';
+
+  @override
+  String get dashErrWalkInsStopped => 'الحالات بدون حجز متوقفة النهارده.';
+
+  @override
+  String get dashErrHourNotOver => 'الساعة لسه مخلصتش.';
+
+  @override
+  String get dashErrWrongStatus => 'الحالة دي مش مناسبة للخطوة دي.';
+
+  @override
+  String get dashErrNotToday => 'دي مش حجوزات النهارده.';
+
+  @override
+  String get dashErrNoPackage => 'الأسرة مالهاش باقة سارية.';
+
+  @override
+  String get dashErrHasPackage => 'الأسرة عندها باقة سارية بالفعل.';
+
+  @override
+  String get dashErrDoctorOnly => 'الخطوة دي للدكتور بس.';
+
+  @override
+  String get dashErrLastDoctor => 'لازم يفضل حساب دكتور واحد شغال على الأقل.';
+
+  @override
+  String dashErrBookingsOutsideHours(int count) {
+    return 'فيه $count حجوزات مؤكدة هتبقى برة المواعيد الجديدة. انقليها أو الغيها الأول.';
+  }
+
+  @override
+  String get dashErrOtherClinic => 'دي بيانات عيادة تانية.';
+
+  @override
+  String get dashErrHourClosed => 'الساعة دي مش متاحة.';
+
+  @override
+  String get dashErrNotAllowed => 'مش مسموح.';
+
+  @override
+  String get dashErrAlreadyExists => 'موجود بالفعل.';
 }

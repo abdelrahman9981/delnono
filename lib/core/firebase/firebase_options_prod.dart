@@ -16,6 +16,7 @@ class ProdFirebaseOptions {
       case TargetPlatform.android:
         return android;
       default:
+        // The web app for the dashboard is registered when Hosting is set up (docs/demo-plan.md).
         throw UnsupportedError('dr-elnono-clinic is configured for Android and iOS only.');
     }
   }
