@@ -2,26 +2,18 @@
  * Writes the quickstart seed data (specs/001-account-registration/quickstart.md) to the running
  * emulators. Regenerate emulator-seed/ from the repository root with:
  *
- *   functions/node_modules/.bin/firebase emulators:exec --only auth,firestore,storage \
+ *   functions/node_modules/.bin/firebase emulators:exec --only auth,firestore \
  *     --export-on-exit emulator-seed "cd functions && npm run seed"
  */
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import { getStorage } from "firebase-admin/storage";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { nameKey } from "../src/lib/nameKey";
 
 if (!process.env.FIRESTORE_EMULATOR_HOST) {
   throw new Error("FIRESTORE_EMULATOR_HOST is not set; refusing to seed anything but the emulator.");
 }
 
-if (!process.env.FIREBASE_STORAGE_EMULATOR_HOST) {
-  throw new Error("FIREBASE_STORAGE_EMULATOR_HOST is not set; start the storage emulator too.");
-}
-
-const app = initializeApp({ projectId: "demo-delnono", storageBucket: "demo-delnono.appspot.com" });
-const db = getFirestore(app);
+const db = getFirestore(initializeApp({ projectId: "demo-delnono" }));
 
 const PLACEHOLDER = "[نص مؤقت · يراجعه المحامي قبل الإطلاق]";
 const CLINIC_PHONE = "+201000000001";
@@ -104,7 +96,6 @@ async function main() {
 
   seedChildProfile(batch);
   await batch.commit();
-  await uploadPrescriptions();
   console.log(
     "Seeded settings (auth, policy, clinic, booking, vaccines, followUp), 4 placeholder vaccines, the placeholder",
     "schedule and follow-up lists, 1 clinic guardian and 3 unlinked clinic children with sample records on",
@@ -115,9 +106,8 @@ async function main() {
 
 // Child profile (003). Schedule, follow-up and danger signs are placeholders in brackets until the doctor
 // approves them (constitution Principle II, D-36). Records are samples so the screens can be tried
-// before staff entry (004).
+// before staff entry (004). Prescription photos are Phase 2 (D-39).
 const SEED_STAFF = "seed-staff";
-const RX_VISIT = "seed-youssef-v8";
 
 function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
   batch.set(db.doc("settings/vaccines"), {
@@ -202,9 +192,6 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
       date,
       type: "clinic",
       bookingId: null,
-      prescriptions: visitId === RX_VISIT
-        ? [1, 2].map((page) => ({ path: rxPath(childId, visitId, page), page }))
-        : [],
       createdAt: new Date(`${date}T18:00:00+02:00`),
     });
     batch.set(child.collection("measurements").doc(`${visitId}-m`), {
@@ -248,20 +235,6 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
       recordedAt: new Date(`${givenOn}T18:20:00+02:00`),
     });
   });
-}
-
-function rxPath(childId: string, visitId: string, page: number) {
-  return `prescriptions/${childId}/${visitId}/page-${page}.png`;
-}
-
-async function uploadPrescriptions() {
-  const bucket = getStorage(app).bucket();
-  for (const page of [1, 2]) {
-    await bucket.file(rxPath("seed-youssef", RX_VISIT, page)).save(
-      readFileSync(join(__dirname, "assets", `prescription-sample-${page}.png`)),
-      { contentType: "image/png" },
-    );
-  }
 }
 
 function ar(n: number) {

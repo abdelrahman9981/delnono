@@ -20,6 +20,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../features/auth/fakes.dart';
+import '../features/child_profile/fakes.dart' show profileDataOverrides;
 import '../features/registration/fakes.dart';
 import '../helpers/rtl_icons.dart';
 
@@ -47,6 +48,9 @@ class _Account implements AccountApi {
 class _Links implements ExternalLinks {
   @override
   Future<bool> openWhatsApp(String e164) async => true;
+
+  @override
+  Future<bool> callNumber(String number) async => true;
 }
 
 const ready = GuardState(signedIn: true, hasGuardian: true, consentCurrent: true, hasChildren: true);
@@ -74,6 +78,7 @@ void main() {
         phoneAuthServiceProvider.overrideWithValue(FakePhoneAuthService()),
         childrenRepositoryProvider.overrideWithValue(FakeChildrenRepository()),
         externalLinksProvider.overrideWithValue(_Links()),
+        ...profileDataOverrides(anyChild: true),
       ],
       child: const App(),
     ));
@@ -131,21 +136,23 @@ void main() {
     }
   });
 
-  testWidgets('child profile and add child have a back button to the list; list rows point forward', (tester) async {
+  testWidgets('My child entries point forward; each opens a screen with a back button to My child', (tester) async {
     await pumpApp(tester);
     await tester.tap(find.text('طفلي'));
     await tester.pumpAndSettle();
     expect(wrongWayIcons(tester), isEmpty);
-    final rowChevron = find.descendant(of: find.byType(ListTile), matching: find.byType(Icon)).last;
-    expect(pointing(tester.element(rowChevron)), Pointing.left);
+    for (final key in ['entry-vaccines', 'entry-visits', 'entry-follow-up', 'entry-details']) {
+      final entry = find.byKey(Key(key));
+      await tester.scrollUntilVisible(entry, 120, scrollable: find.byType(Scrollable).first);
+      final chevron = find.descendant(of: entry, matching: find.byType(Icon)).last;
+      expect(pointing(tester.element(chevron)), Pointing.left, reason: '$key must point forward (‹)');
+      await tester.tap(entry);
+      await tester.pumpAndSettle();
+      expect(location(), startsWith('/children/a'));
+      await expectBackTo(tester, Routes.children);
+    }
 
-    await tester.tap(find.text('يوسف'));
-    await tester.pumpAndSettle();
-    expect(location(), '/children/a');
-    await expectBackTo(tester, Routes.children);
-
-    await tester.tap(find.text('إضافة طفل'));
-    await tester.pumpAndSettle();
+    await tapKey(tester, 'add-child');
     expect(location(), Routes.childrenAdd);
     await expectBackTo(tester, Routes.children);
   });

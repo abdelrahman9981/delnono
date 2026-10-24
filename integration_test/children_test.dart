@@ -37,7 +37,7 @@ void main() {
 
     await tester.tap(find.text('طفلي'));
     await settle(tester, () => shows(find.text('آدم')));
-    await tester.tap(find.text('آدم'));
+    await tapInList(tester, find.byKey(const Key('entry-details')));
     await settle(tester, () => shows(find.byKey(const Key('profile-allergies'))));
     expect(find.byType(TextField), findsNWidgets(2), reason: 'birth date and sex are read-only');
 

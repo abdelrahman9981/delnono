@@ -26,7 +26,6 @@ class DefaultFirebaseOptions {
     appId: '1:000000000000:android:0000000000000000',
     messagingSenderId: '000000000000',
     projectId: 'demo-delnono',
-    storageBucket: 'demo-delnono.appspot.com',
   );
 
   static const _ios = FirebaseOptions(
@@ -34,7 +33,6 @@ class DefaultFirebaseOptions {
     appId: '1:000000000000:ios:0000000000000000',
     messagingSenderId: '000000000000',
     projectId: 'demo-delnono',
-    storageBucket: 'demo-delnono.appspot.com',
     iosBundleId: 'eg.drelnono.app',
   );
 }

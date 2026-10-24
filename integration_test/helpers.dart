@@ -74,6 +74,8 @@ Future<void> startApp(WidgetTester tester, {List<Override> overrides = const []}
 /// A signed-out launch starts at Welcome; "browse content first" enters the app's tabs.
 Future<void> leaveWelcome(WidgetTester tester) async {
   final browse = find.text('اتفرجي على المحتوى الأول');
+  // The router can report Welcome a frame before it is drawn (e.g. right after sign-out).
+  await settle(tester, () => shows(browse) || shows(find.text('حجز')));
   if (!shows(browse)) return;
   await tester.tap(browse);
   await settle(tester, () => shows(find.text('حجز')));

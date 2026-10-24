@@ -9,9 +9,9 @@
     "build": "tsc",
     "lint": "tsc -p tsconfig.dev.json",
     "pretest": "npm run build",
-    "test": "firebase emulators:exec --only auth,firestore,functions,storage \"mocha\"",
+    "test": "firebase emulators:exec --only auth,firestore,functions \"mocha\"",
     "seed": "tsx scripts/seed.ts",
-    "test:rules": "firebase emulators:exec --only firestore,auth,storage \"mocha --no-config --node-option import=tsx --timeout 20000 'test/rules/**/*.test.ts'\""
+    "test:rules": "firebase emulators:exec --only firestore,auth \"mocha --no-config --node-option import=tsx --timeout 20000 'test/rules/**/*.test.ts'\""
   },
   "dependencies": {
     "firebase-admin": "^14.5.0",
