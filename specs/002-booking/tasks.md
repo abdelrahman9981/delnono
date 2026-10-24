@@ -127,16 +127,16 @@ All user-facing text goes in `l10n/app_ar.arb`.
 
 **Independent Test**: quickstart scenario 13.
 
-- [ ] T040 [P] [US6] Add to `createBooking.test.ts` and `bookingPricing.test.ts`: active package covering the date → visit covered, vaccines charged; expired or other family's package → charged.
-- [ ] T041 [US6] Create `lib/features/booking/data/packages_repository.dart` (active package for a date) and show "باقة نشطة" / "مغطّى بالباقة" in the summary, success and my bookings.
+- [X] T040 [P] [US6] Add to `createBooking.test.ts` and `bookingPricing.test.ts`: active package covering the date → visit covered, vaccines charged; expired or other family's package → charged.
+- [X] T041 [US6] Create `lib/features/booking/data/packages_repository.dart` (active package for a date) and show "باقة نشطة" / "مغطّى بالباقة" in the summary, success and my bookings.
 
 ---
 
 ## Phase 9: Polish & Cross-Cutting Concerns
 
-- [ ] T042 Extend `functions/src/callables/deleteAccount.ts` to cancel upcoming confirmed bookings and free their places (research R9); add cases to `functions/test/functions/deleteAccount.test.ts`.
-- [ ] T043 [P] Check no hard-coded user-facing strings in `lib/features/booking/` (as 001 T086).
-- [ ] T044 [P] Add the booking scenarios to `specs/002-booking/quickstart.md`'s coverage table and run all of them, `npm test`, `flutter test` and every integration file; all must pass.
+- [X] T042 Extend `functions/src/callables/deleteAccount.ts` to cancel upcoming confirmed bookings and free their places (research R9); add cases to `functions/test/functions/deleteAccount.test.ts`.
+- [X] T043 [P] Check no hard-coded user-facing strings in `lib/features/booking/` (as 001 T086).
+- [X] T044 [P] Add the booking scenarios to `specs/002-booking/quickstart.md`'s coverage table and run all of them, `npm test`, `flutter test` and every integration file; all must pass.
 
 ---
 

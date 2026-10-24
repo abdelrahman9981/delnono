@@ -1,6 +1,7 @@
 import { strict as assert } from "node:assert";
 import { getApps } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
+import { guardianWithChildren, openNonVaccineDay, seedBookingSettings, visit } from "../helpers/booking";
 import {
   adminDb,
   callFunction,
@@ -80,5 +81,21 @@ describe("deleteAccount", () => {
   it("requires sign-in", async () => {
     const res = await callFunction("deleteAccount", { confirm: true });
     assert.equal(res.error?.status, "UNAUTHENTICATED");
+  });
+
+  it("cancels upcoming bookings and frees their places (002 research R9)", async () => {
+    await seedBookingSettings();
+    const g = await guardianWithChildren("+201000000077");
+    const day = openNonVaccineDay();
+    const booked = await callFunction<{ bookingId: string }>("createBooking", visit(day, 18, g.childIds), g);
+    assert.ok(booked.result, JSON.stringify(booked.error));
+    assert.equal((await adminDb().doc(`slots/${day}_18`).get()).get("taken"), 1);
+
+    await callFunction("deleteAccount", { confirm: true }, g);
+    assert.equal((await adminDb().doc(`bookings/${booked.result.bookingId}`).get()).get("status"), "cancelled");
+    assert.equal((await adminDb().doc(`slots/${day}_18`).get()).get("taken"), 0);
+    assert.equal((await adminDb().doc(`familyQuota/${g.uid}`).get()).exists, false);
+    const audit = await adminDb().collection("auditLog").where("action", "==", "account.deleted").get();
+    assert.deepEqual(audit.docs[0].get("details"), { cancelledBookings: [booked.result.bookingId] });
   });
 });

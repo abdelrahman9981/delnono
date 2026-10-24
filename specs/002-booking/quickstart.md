@@ -37,6 +37,21 @@ seeded clinic children on `+201000000001`).
 | 14 | Delete the account with an upcoming booking | Booking cancelled; place freed (research R9) |
 | 15 | Dark mode, large text, RTL chevrons on all booking screens | No overflow; forward ‹, back › |
 
+## Scenario coverage (T044)
+
+| # | Automated by |
+|---|--------------|
+| 1, 2 | `integration_test/booking_test.dart`; `test/features/booking/booking_screen_test.dart`; `booking_success_screen_test.dart` |
+| 3 | race tests in `functions/test/functions/createBooking.test.ts` (last place, same family) |
+| 4, 5 | `createBooking.test.ts` (US3); `booking_screen_test.dart` (US3 group) |
+| 6, 7 | `createBooking.test.ts` (FR-011, FR-011a) |
+| 8, 9 | `test/features/booking/my_bookings_screen_test.dart`; `changeBooking.test.ts` (price rise) |
+| 10, 11 | `integration_test/cancel_change_test.dart`; `cancelBooking.test.ts`; `changeBooking.test.ts` |
+| 12 | `my_bookings_screen_test.dart` (inside the window, WhatsApp) |
+| 13 | `createBooking.test.ts` (US6); `booking_screen_test.dart` (US6 group) |
+| 14 | `functions/test/functions/deleteAccount.test.ts` (bookings cancelled, places freed) |
+| 15 | `test/app/layout_test.dart` (booking, success, my bookings, change: light/dark, text ×2, RTL icons) |
+
 ## Not testable locally
 
 Reminders (007) and online payment (Phase 2).

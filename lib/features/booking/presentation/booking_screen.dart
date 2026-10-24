@@ -16,6 +16,7 @@ import '../../children/data/children_repository.dart';
 import '../application/booking_form_controller.dart';
 import '../data/booking_api.dart';
 import '../data/booking_settings.dart';
+import '../data/packages_repository.dart';
 import '../data/bookings_repository.dart';
 import '../domain/booking.dart';
 import '../data/slots_repository.dart';
@@ -36,9 +37,6 @@ class BookingScreen extends ConsumerStatefulWidget {
 }
 
 class _BookingScreenState extends ConsumerState<BookingScreen> {
-  /// Package covering the chosen day (feature 006); none until packages exist.
-  String? get _packageId => null;
-
   bool _started = false;
 
   /// Change mode: fills the form from the booking once it has loaded (FR-022).
@@ -86,7 +84,7 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     }
     return Scaffold(
       appBar: _appBar(l10n),
-      body: SafeArea(child: _BookingForm(settings: settings.value!, packageId: _packageId)),
+      body: SafeArea(child: _BookingForm(settings: settings.value!)),
     );
   }
 
@@ -105,10 +103,9 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
 }
 
 class _BookingForm extends ConsumerWidget {
-  const _BookingForm({required this.settings, required this.packageId});
+  const _BookingForm({required this.settings});
 
   final BookingSettings settings;
-  final String? packageId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -125,6 +122,8 @@ class _BookingForm extends ConsumerWidget {
     final date = form.date;
     final vaccinesAllowed = date != null && isVaccineDay(settings, date);
     final taken = date == null ? const <int, int>{} : (ref.watch(slotsTakenProvider(date)).value ?? const {});
+    // The family's package covering the chosen day, if any (feature 006, FR-016).
+    final packageId = date == null || vaccineOnly ? null : ref.watch(activePackageProvider(date)).value;
 
     final preview = previewPrice(
       visitType: form.visitType,

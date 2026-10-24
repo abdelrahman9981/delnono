@@ -1,8 +1,9 @@
 import { getAuth } from "firebase-admin/auth";
-import { FieldValue } from "firebase-admin/firestore";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { HttpsError, onCall } from "firebase-functions/https";
 import { db } from "../lib/admin";
 import { writeAudit } from "../lib/audit";
+import { slotId } from "../lib/booking/time";
 import { REGION } from "../lib/region";
 
 /**
@@ -26,6 +27,11 @@ export const deleteAccount = onCall({ region: REGION }, async (request) => {
     if (!guardian.exists) return; // Already done on an earlier attempt.
     const consents = await tx.get(guardianRef.collection("consents"));
     const children = await tx.get(db.collection("children").where("guardianUid", "==", uid));
+    // Upcoming bookings are cancelled and their places freed (002 research R9).
+    const upcoming = await tx.get(
+      db.collection("bookings").where("guardianUid", "==", uid).where("status", "==", "confirmed").where("startsAt", ">", Timestamp.now()),
+    );
+    const slots = await Promise.all(upcoming.docs.map((b) => tx.get(db.doc(`slots/${slotId(b.get("date"), b.get("hour"))}`))));
     const phone = guardian.get("phone") as string;
     const now = FieldValue.serverTimestamp();
 
@@ -37,9 +43,21 @@ export const deleteAccount = onCall({ region: REGION }, async (request) => {
     for (const child of children.docs) {
       tx.update(child.ref, { guardianUid: null, updatedAt: now });
     }
+    upcoming.docs.forEach((b, i) => {
+      tx.update(b.ref, { status: "cancelled", cancelledAt: now, cancelledBy: uid, updatedAt: now });
+      tx.set(b.ref.collection("events").doc(), { type: "cancelled", by: uid, at: now, reason: "account_deleted" });
+      tx.set(slots[i].ref, { taken: Math.max(0, ((slots[i].get("taken") as number | undefined) ?? 1) - 1) }, { merge: true });
+    });
+    tx.delete(db.doc(`familyQuota/${uid}`));
     tx.delete(guardianRef);
     await writeAudit(
-      { action: "account.deleted", actorUid: uid, subjectPhone: phone, childIds: children.docs.map((c) => c.id) },
+      {
+        action: "account.deleted",
+        actorUid: uid,
+        subjectPhone: phone,
+        childIds: children.docs.map((c) => c.id),
+        details: { cancelledBookings: upcoming.docs.map((b) => b.id) },
+      },
       tx,
     );
   });

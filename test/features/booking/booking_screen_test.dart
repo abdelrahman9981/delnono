@@ -1,6 +1,7 @@
 import 'package:delnono/core/clock.dart';
 import 'package:delnono/features/booking/data/booking_api.dart';
 import 'package:delnono/features/booking/data/booking_settings.dart';
+import 'package:delnono/features/booking/data/packages_repository.dart';
 import 'package:delnono/features/booking/data/slots_repository.dart';
 import 'package:delnono/features/booking/data/vaccines_repository.dart';
 import 'package:delnono/features/booking/domain/price_preview.dart';
@@ -32,6 +33,7 @@ void main() {
     List<Child> children = kids,
     Map<int, int> taken = const {17: 6, 18: 2},
     BookingSettings settings = const BookingSettings(),
+    String? packageId,
   }) async {
     api = FakeBookingApi();
     final h = ScreenHarness(
@@ -44,6 +46,7 @@ void main() {
         vaccinesProvider.overrideWith((ref) => Stream.value(vaccines)),
         slotsTakenProvider.overrideWith((ref, date) => Stream.value(taken)),
         bookingApiProvider.overrideWithValue(api),
+        activePackageProvider.overrideWith((ref, date) => Stream.value(packageId)),
       ],
     );
     await h.pump(tester);
@@ -170,6 +173,31 @@ void main() {
       await pick(tester, const Key('hour-18'));
       await pick(tester, const Key('child-a'));
       expect(find.byKey(const Key('vaccine-a-v1')), findsNothing);
+    });
+  });
+
+  group('US6 covered by package', () {
+    testWidgets('an active package: "باقة نشطة", visit covered, vaccines still charged', (tester) async {
+      await open(tester, packageId: 'pk');
+      await pick(tester, const Key('day-2026-11-16'));
+      await pick(tester, const Key('hour-18'));
+      await pick(tester, const Key('child-a'));
+      await scrollTo(tester, find.byKey(const Key('summary-total')));
+      expect(find.text('باقة نشطة'), findsOneWidget);
+      expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, 'مغطّى بالباقة');
+      await pick(tester, const Key('vaccine-a-v1'));
+      expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, '١٥٠ جنيه');
+      await pick(tester, const Key('confirm-booking'));
+      expect(api.created.single.$2, 150);
+    });
+
+    testWidgets('no package: the visit is charged', (tester) async {
+      await open(tester);
+      await pick(tester, const Key('day-2026-11-15'));
+      await pick(tester, const Key('hour-18'));
+      await pick(tester, const Key('child-a'));
+      await scrollTo(tester, find.byKey(const Key('summary-total')));
+      expect(find.text('باقة نشطة'), findsNothing);
     });
   });
 }

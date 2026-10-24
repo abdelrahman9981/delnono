@@ -172,6 +172,33 @@ describe("createBooking", () => {
     });
   });
 
+  describe("US6 covered by package (FR-016)", () => {
+    const pkg = (guardianUid: string, startsOn: string, endsOn: string, active = true) =>
+      adminDb().collection("packages").add({ guardianUid, startsOn, endsOn, active });
+
+    it("an active package covering the date: visit covered, vaccines charged", async () => {
+      const g = await guardianWithChildren("+201000000099");
+      const day = vaccineDay();
+      const ref = await pkg(g.uid, "2020-01-01", "2099-12-31");
+      const sel = { visitType: "visit", date: day, hour: 18, children: [{ childId: g.childIds[0], vaccines: ["v1"] }], expectedTotal: 150 };
+      const res = await callFunction<Result & { price: { packageId: string } }>("createBooking", sel, g);
+      assert.ok(res.result, JSON.stringify(res.error));
+      assert.deepEqual(res.result.price.visit, { amount: 0, covered: true });
+      assert.equal(res.result.price.total, 150);
+      assert.equal(res.result.price.packageId, ref.id);
+    });
+
+    it("an expired, inactive or other family's package is not used", async () => {
+      const g = await guardianWithChildren("+201000000099");
+      const other = await guardianWithChildren("+201000000088");
+      await pkg(g.uid, "2020-01-01", "2020-12-31");
+      await pkg(g.uid, "2020-01-01", "2099-12-31", false);
+      await pkg(other.uid, "2020-01-01", "2099-12-31");
+      const res = await callFunction<Result>("createBooking", visit(openNonVaccineDay(), 18, g.childIds), g);
+      assert.equal(res.result?.price.total, 300);
+    });
+  });
+
   describe("US3 vaccines (FR-008, FR-014, D-31)", () => {
     const withVaccines = (date: string, children: { childId: string; vaccines: string[] }[], visitType: string, expectedTotal: number) =>
       ({ visitType, date, hour: 18, children, expectedTotal });

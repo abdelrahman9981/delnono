@@ -4,17 +4,50 @@
       "collectionGroup": "bookings",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "guardianUid", "order": "ASCENDING" },
-        { "fieldPath": "startsAt", "order": "ASCENDING" }
+        {
+          "fieldPath": "guardianUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startsAt",
+          "order": "ASCENDING"
+        }
       ]
     },
     {
       "collectionGroup": "bookings",
       "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "guardianUid", "order": "ASCENDING" },
-        { "fieldPath": "date", "order": "ASCENDING" },
-        { "fieldPath": "status", "order": "ASCENDING" }
+        {
+          "fieldPath": "guardianUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "bookings",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "guardianUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startsAt",
+          "order": "ASCENDING"
+        }
       ]
     }
   ],

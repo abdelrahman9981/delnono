@@ -17,6 +17,7 @@ import 'package:delnono/features/auth/presentation/phone_screen.dart';
 import 'package:delnono/features/auth/presentation/reverify_screen.dart';
 import 'package:delnono/features/booking/application/booking_form_controller.dart';
 import 'package:delnono/features/booking/data/booking_settings.dart';
+import 'package:delnono/features/booking/data/packages_repository.dart';
 import 'package:delnono/features/booking/data/bookings_repository.dart';
 import 'package:delnono/features/booking/data/slots_repository.dart';
 import 'package:delnono/features/booking/data/vaccines_repository.dart';
@@ -142,6 +143,7 @@ void main() {
                 ])),
             slotsTakenProvider.overrideWith((ref, date) => Stream.value(const {17: 6, 18: 2})),
             myBookingsProvider.overrideWith((ref) => Stream.value([sampleBooking])),
+            activePackageProvider.overrideWith((ref, date) => Stream.value(null)),
           ]);
           addTearDown(container.dispose);
           container.read(registrationControllerProvider.notifier).setDetails(
