@@ -70,7 +70,7 @@ app's simulator tests once at the end. All user-facing text in `l10n/app_ar.arb`
 ## Phase 11: Polish
 
 - [X] T024 Layout tests for the dashboard screens (desktop and tablet width, light and dark, RTL icons); hard-coded strings check.
-- [ ] T025 Quickstart coverage table; run every automated check and the guardian app's simulator tests once; build the dashboard for the web (`flutter build web -t lib/dashboard/main.dart`). Hosting deploy is later (blocked: Blaze for the callables, D-40).
+- [X] T025 Quickstart coverage table; run every automated check and the guardian app's simulator tests once; build the dashboard for the web (`flutter build web -t lib/dashboard/main.dart`). Hosting deploy is later (blocked: Blaze for the callables, D-40).
 
 ## Dependencies
 

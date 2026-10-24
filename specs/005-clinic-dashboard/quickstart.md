@@ -28,6 +28,23 @@ Seeded staff (emulator only, password `Delnono-2026`):
 | 9 | Reports, CSV | Numbers match; no names or medical data (FR-022, FR-023) |
 | 10 | Settings, staff, audit log as doctor | Policy version change asks guardians again; disable a secretary; audit entries (FR-024, FR-025) |
 
+## Scenario coverage (T025)
+
+| # | Automated by |
+|---|--------------|
+| 1 | `functions/test/functions/staff/accounts.test.ts`; `functions/test/rules/staff.test.ts`; `test/dashboard/router_test.dart`, `shell_test.dart` |
+| 2, 3 | `functions/test/functions/staff/queue.test.ts`; `test/dashboard/today_screen_test.dart` |
+| 4 | `queue.test.ts` (payment, package sale, coverage at the other clinic); `today_screen_test.dart`, `screens_test.dart` |
+| 5, 6 | `functions/test/functions/staff/childFile.test.ts`; `screens_test.dart` (child file per role) |
+| 7 | `functions/test/functions/staff/admin.test.ts` (prices, kept booking price, orphaned bookings) |
+| 8 | `admin.test.ts` (content, follow-up drafts and publishing); `staff.test.ts` (published content rules); `screens_test.dart` |
+| 9 | `admin.test.ts` (report numbers, clinic scope); `screens_test.dart` (CSV columns) |
+| 10 | `admin.test.ts` (settings); `accounts.test.ts`; `staff.test.ts` (audit log for the doctor) |
+| Layout | `test/dashboard/layout_test.dart` (13 screens × desktop and tablet × light and dark × text ×1 and ×1.5) |
+
+The dashboard has no browser end-to-end runner (plan.md); the guardian app's simulator tests run once
+at the end of the feature, and the web build is checked with `flutter build web -t lib/dashboard/main.dart`.
+
 ## Not testable locally
 
 Hosting deploy and deployed callables (blocked: Blaze, D-40).
