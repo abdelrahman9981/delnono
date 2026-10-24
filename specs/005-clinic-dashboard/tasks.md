@@ -49,7 +49,7 @@ app's simulator tests once at the end. All user-facing text in `l10n/app_ar.arb`
 
 ## Phase 7: User Story 5 – Clinic, prices and vaccines (P2)
 
-- [ ] T016 [US5] `updateClinic` (field whitelist per role; audit of price changes) and `updateCatalogue` (doctor); tests.
+- [ ] T016 [US5] `updateClinic` (field whitelist per role; audit of price changes; refuses removing hours or adding holidays that still hold confirmed bookings, listing them) and `updateCatalogue` (doctor); tests.
 - [ ] T017 [US5] Clinic and Vaccines screens; widget tests.
 
 ## Phase 8: User Story 6 – Content and follow-up (P2)

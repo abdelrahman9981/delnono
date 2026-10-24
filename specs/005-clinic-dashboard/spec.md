@@ -56,7 +56,7 @@ The secretary sees today's hours for her clinic with the bookings in each hour a
 4. **Given** a confirmed booking whose hour has ended, **When** marked "لم يحضر", **Then** its status is no-show (no penalty, D-05).
 5. **Given** a family without a booking, **When** the secretary adds a walk-in (name, phone, children, visit type) to the current hour, **Then** it takes a place in that hour's capacity and joins the queue (FR-58, FR-59); a full hour refuses walk-ins.
 6. **Given** "إيقاف الحالات بدون حجز" is on for today, **Then** no walk-in can be added until it is turned off (D-07).
-7. **Given** a booking, **When** the secretary cancels or moves it on the family's behalf, **Then** the same rules as the app apply and the action is recorded with her name (FR-37).
+7. **Given** a booking, **When** the secretary cancels or moves it on the family's behalf, **Then** capacity, hours and family limits apply (not the cancel window) and the action is recorded with her name (FR-37).
 
 ---
 
@@ -187,7 +187,7 @@ The doctor edits app texts and settings (policy text and version, sign-in limits
 - **FR-006**: Staff MUST be able to mark a booking arrived, done or no-show; the arrival queue is ordered by arrival time with no priority (D-06, FR-60).
 - **FR-007**: Staff MUST be able to add walk-ins to an hour; walk-ins count against that hour's capacity (FR-58, FR-59, D-07).
 - **FR-008**: Staff MUST be able to stop and resume walk-ins for a day (D-07).
-- **FR-009**: Staff MUST be able to cancel or move a booking on the family's behalf under the app's rules, recorded with the staff member (FR-37).
+- **FR-009**: Staff MUST be able to cancel or move a booking on the family's behalf, recorded with the staff member (FR-37). The app's capacity, hours and family limits apply; the cancel window does not, because families inside it are told to contact the clinic (002 FR-020).
 - **FR-010**: Marking done MUST record a visit for each child at the clinic (D-48), linked to the booking or walk-in.
 
 **Payments and packages**
