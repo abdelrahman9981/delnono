@@ -1,6 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/firebase/callable.dart';
 import '../../../core/firebase/functions_region.dart';
 import 'guardian_repository.dart';
 
@@ -59,7 +60,7 @@ class FirebaseRegistrationApi implements RegistrationApi {
 
   @override
   Future<bool> completeRegistration(GuardianDetails details, int policyVersion) async {
-    final result = await _functions.httpsCallable('completeRegistration').call<Map<String, dynamic>>({
+    final result = await _functions.callFunction<Map<String, dynamic>>('completeRegistration', {
       'fullName': details.fullName,
       'relation': details.relation.name,
       if (details.email != null) 'email': details.email,
@@ -69,15 +70,15 @@ class FirebaseRegistrationApi implements RegistrationApi {
   }
 
   @override
-  Future<void> acceptPolicy(int policyVersion) => _functions
-      .httpsCallable('acceptPolicy')
-      .call<Object?>({'policyVersion': policyVersion, 'scopes': consentScopes});
+  Future<void> acceptPolicy(int policyVersion) =>
+      _functions.callFunction<Object?>('acceptPolicy', {'policyVersion': policyVersion, 'scopes': consentScopes});
 
   @override
   Future<List<LinkedChild>> linkClinicChildren(String birthDate) async {
     try {
-      final result =
-          await _functions.httpsCallable('linkClinicChildren').call<Map<String, dynamic>>({'birthDate': birthDate});
+      final result = await _functions.callFunction<Map<String, dynamic>>('linkClinicChildren', {
+        'birthDate': birthDate,
+      });
       return [
         for (final c in (result.data['linked'] as List).cast<Map<Object?, Object?>>())
           LinkedChild(c['childId'] as String, c['name'] as String),
@@ -98,5 +99,6 @@ class FirebaseRegistrationApi implements RegistrationApi {
   }
 }
 
-final registrationApiProvider =
-    Provider<RegistrationApi>((ref) => FirebaseRegistrationApi(ref.watch(functionsProvider)));
+final registrationApiProvider = Provider<RegistrationApi>(
+  (ref) => FirebaseRegistrationApi(ref.watch(functionsProvider)),
+);

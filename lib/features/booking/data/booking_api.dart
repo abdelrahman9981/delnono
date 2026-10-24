@@ -1,6 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/firebase/callable.dart';
 import '../../../core/firebase/functions_region.dart';
 import '../domain/price_preview.dart';
 
@@ -87,7 +88,7 @@ class FirebaseBookingApi implements BookingApi {
 
   Future<Map<String, dynamic>> _call(String name, Map<String, Object> data) async {
     try {
-      final result = await _functions.httpsCallable(name).call<Map<String, dynamic>>(data);
+      final result = await _functions.callFunction<Map<String, dynamic>>(name, data);
       return Map<String, dynamic>.from(result.data);
     } on FirebaseFunctionsException catch (e) {
       final details = e.details is Map ? Map<String, dynamic>.from(e.details as Map) : const <String, dynamic>{};

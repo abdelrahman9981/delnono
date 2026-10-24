@@ -57,4 +57,19 @@ void main() {
     await settle(tester, () => location(tester).startsWith('/register'));
     expect(location(tester), '/register/guardian?from=%2Fbooking', reason: 'not sent back to sign-in');
   });
+
+  testWidgets('a kept sign-in whose account no longer exists is signed out at start', (tester) async {
+    expect(FirebaseAuth.instance.currentUser, isNotNull, reason: 'signed in by the previous test');
+    // As after an emulator restart, or the account deleted on another phone.
+    await deleteAllEmulatorUsers();
+
+    await startApp(tester);
+    await settle(tester, () => FirebaseAuth.instance.currentUser == null);
+    expect(FirebaseAuth.instance.currentUser, isNull);
+
+    await leaveWelcome(tester);
+    await tester.tap(find.text('حجز'));
+    await settle(tester, () => location(tester).startsWith('/sign-in'));
+    expect(location(tester), '/sign-in?from=%2Fbooking');
+  });
 }
