@@ -15,6 +15,17 @@ import 'package:delnono/features/auth/data/phone_auth_service.dart';
 import 'package:delnono/features/auth/presentation/otp_screen.dart';
 import 'package:delnono/features/auth/presentation/phone_screen.dart';
 import 'package:delnono/features/auth/presentation/reverify_screen.dart';
+import 'package:delnono/features/booking/application/booking_form_controller.dart';
+import 'package:delnono/features/booking/data/booking_settings.dart';
+import 'package:delnono/features/booking/data/packages_repository.dart';
+import 'package:delnono/features/booking/data/bookings_repository.dart';
+import 'package:delnono/features/booking/data/slots_repository.dart';
+import 'package:delnono/features/booking/data/vaccines_repository.dart';
+import 'package:delnono/features/booking/domain/booking.dart';
+import 'package:delnono/features/booking/domain/price_preview.dart';
+import 'package:delnono/features/booking/presentation/booking_screen.dart';
+import 'package:delnono/features/booking/presentation/booking_success_screen.dart';
+import 'package:delnono/features/booking/presentation/my_bookings_screen.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/children/presentation/add_child_screen.dart';
 import 'package:delnono/features/children/presentation/child_profile_screen.dart';
@@ -61,7 +72,32 @@ const kids = [
   Child(id: 'b', name: 'مريم', birthDate: '2022-07-02', sex: Sex.female),
 ];
 
+final sampleBooking = Booking(
+  id: 'bk',
+  number: 248,
+  visitType: VisitType.visit,
+  children: const [
+    BookedChild(childId: 'a', name: 'يوسف أحمد محمود', vaccines: ['v1']),
+    BookedChild(childId: 'b', name: 'مريم', vaccines: []),
+  ],
+  date: '2026-11-16',
+  hour: 18,
+  startsAt: DateTime.utc(2026, 11, 16, 16),
+  status: BookingStatus.confirmed,
+  price: const PriceSnapshot(
+    visitAmount: 300,
+    visitCovered: false,
+    vaccines: [VaccineLine(childId: 'a', vaccineId: 'v1', name: '[تطعيم مؤقت ١]', amount: 150, shown: true)],
+    total: 450,
+    hasHiddenPrices: false,
+  ),
+);
+
 final screens = <String, Widget Function()>{
+  'booking': () => const ShellScaffold(location: '/booking', child: BookingScreen()),
+  'booking success': () => const BookingSuccessScreen(bookingId: 'bk'),
+  'my bookings': () => const MyBookingsScreen(),
+  'change booking': () => const BookingScreen(changeBookingId: 'bk'),
   'welcome': () => const WelcomeScreen(),
   'phone': () => const PhoneScreen(),
   'otp': () => const OtpScreen(),
@@ -100,12 +136,28 @@ void main() {
             registrationApiProvider.overrideWithValue(FakeRegistrationApi()),
             externalLinksProvider.overrideWithValue(_Links()),
             clockProvider.overrideWithValue(clock.call),
+            bookingSettingsProvider.overrideWith((ref) => Stream.value(const BookingSettings())),
+            vaccinesProvider.overrideWith((ref) => Stream.value(const [
+                  Vaccine(id: 'v1', name: '[تطعيم مؤقت ١]', price: 150, showPrice: true),
+                  Vaccine(id: 'v3', name: '[تطعيم مؤقت ٣]', price: 450, showPrice: false),
+                ])),
+            slotsTakenProvider.overrideWith((ref, date) => Stream.value(const {17: 6, 18: 2})),
+            myBookingsProvider.overrideWith((ref) => Stream.value([sampleBooking])),
+            activePackageProvider.overrideWith((ref, date) => Stream.value(null)),
           ]);
           addTearDown(container.dispose);
           container.read(registrationControllerProvider.notifier).setDetails(
                 const GuardianDetails(fullName: 'سارة', relation: Relation.mother),
               );
           await tester.runAsync(() => container.read(otpControllerProvider.notifier).sendCode('+201012345678'));
+          // A full booking selection, so the booking summary is laid out too (Mon 26 Oct is a vaccine day).
+          container.listen(bookingFormProvider, (_, _) {});
+          container.read(bookingFormProvider.notifier)
+            ..setDate('2026-10-26', const BookingSettings())
+            ..setHour(18)
+            ..toggleChild('a')
+            ..toggleChild('b')
+            ..toggleVaccine('a', 'v1');
 
           await tester.pumpWidget(UncontrolledProviderScope(
             container: container,

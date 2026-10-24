@@ -45,19 +45,22 @@ class _LinkChildrenScreenState extends ConsumerState<LinkChildrenScreen> {
       _submitting = true;
       _error = null;
     });
+    // Read before awaiting: once the link succeeds the guard moves on and this screen is disposed.
+    final api = ref.read(registrationApiProvider);
+    final registration = ref.read(registrationControllerProvider.notifier);
     try {
-      final linked = await ref.read(registrationApiProvider).linkClinicChildren(isoDate(_date!));
+      final linked = await api.linkClinicChildren(isoDate(_date!));
       // Children now exist, so first-run registration is complete.
-      ref.read(registrationControllerProvider.notifier).finish();
+      registration.finish();
       showAppMessage(l10n.linkSuccess(linked.map((c) => c.name).join(l10n.nameListSeparator)));
     } on LinkWrongBirthDate catch (e) {
-      setState(() => _remaining = e.remaining);
+      if (mounted) setState(() => _remaining = e.remaining);
     } on LinkLocked {
       showAppMessage(l10n.linkLocked);
     } on LinkNothingToLink {
       // Already linked elsewhere (e.g. by the clinic); the guard moves on.
     } catch (e) {
-      setState(() => _error = e);
+      if (mounted) setState(() => _error = e);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

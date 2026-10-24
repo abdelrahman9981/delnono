@@ -38,6 +38,31 @@ async function main() {
   // Placeholder number until the clinic supplies its WhatsApp number (D-36).
   batch.set(db.doc("settings/clinic"), { whatsappNumber: "+201000000000" });
 
+  // Booking settings (002). Placeholder values until the doctor sets them in the dashboard (004, D-36).
+  // Weekdays are ISO numbers: 1 = Monday … 7 = Sunday. Friday (5) is closed.
+  const evening = [{ from: 17, to: 21 }];
+  batch.set(db.doc("settings/booking"), {
+    capacityPerHour: 6,
+    workingHours: { "1": evening, "2": evening, "3": evening, "4": evening, "5": [], "6": evening, "7": evening },
+    holidays: [],
+    vaccineWeekdays: [1, 3],
+    visitPrice: 300,
+    cancelWindowHours: 3,
+    bookingHorizonDays: 14,
+    maxUpcomingPerFamily: 2,
+    placeholder: true,
+  });
+
+  // Vaccine list (002). Names are placeholders in brackets until the doctor's list arrives
+  // (constitution Principle II); the schedule itself comes in feature 003.
+  const vaccines = [
+    { id: "v1", name: "[تطعيم مؤقت ١]", price: 150, showPrice: true, kind: "basic", active: true },
+    { id: "v2", name: "[تطعيم مؤقت ٢]", price: 200, showPrice: true, kind: "basic", active: true },
+    { id: "v3", name: "[تطعيم مؤقت ٣]", price: 450, showPrice: false, kind: "additional", active: true },
+    { id: "v4", name: "[تطعيم مؤقت ٤]", price: 300, showPrice: true, kind: "additional", active: false },
+  ];
+  for (const { id, ...v } of vaccines) batch.set(db.doc(`vaccines/${id}`), { ...v, placeholder: true });
+
   batch.set(db.doc(`clinicGuardians/${CLINIC_PHONE}`), {
     fullName: "سارة محمود",
     relation: "mother",
@@ -62,7 +87,7 @@ async function main() {
   }
 
   await batch.commit();
-  console.log("Seeded settings, 1 clinic guardian and 2 unlinked clinic children on", CLINIC_PHONE);
+  console.log("Seeded settings (auth, policy, clinic, booking), 4 placeholder vaccines, 1 clinic guardian and 2 unlinked clinic children on", CLINIC_PHONE);
 }
 
 main().catch((e) => {

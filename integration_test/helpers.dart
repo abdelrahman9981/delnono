@@ -127,3 +127,35 @@ Future<void> adminSetFields(String path, Map<String, Object> fields) async {
 Future<void> ageGuardian(String uid, int days) => adminSetFields('guardians/$uid', {
       'lastActiveAt': {'timestampValue': DateTime.now().toUtc().subtract(Duration(days: days)).toIso8601String()},
     });
+
+/// Widgets whose key is a `ValueKey<String>` starting with [prefix] (e.g. "day-"). Safe to wait on
+/// with [shows]; use `.first` or `.last` only once they exist.
+Finder keysStarting(String prefix) => find.byWidgetPredicate(
+      (w) => w.key is ValueKey<String> && (w.key! as ValueKey<String>).value.startsWith(prefix),
+    );
+
+/// Registers a new guardian with one child [childName] (born on whatever the picker override returns),
+/// starting from Welcome or the tabs; ends on Booking.
+Future<void> registerWithChild(WidgetTester tester, String phone, String guardianName, String childName) async {
+  await signInFromBooking(tester, phone);
+  await registerGuardian(tester, guardianName);
+  await settle(tester, () => shows(find.byKey(const Key('child-name'))));
+  await tester.enterText(find.byKey(const Key('child-name')), childName);
+  await tapInList(tester, find.byKey(const Key('child-birth-date')));
+  await tapInList(tester, find.text('ولد'));
+  await tapInList(tester, find.text('حفظ'));
+  await settle(tester, () => location(tester) == '/booking');
+}
+
+/// Adds another child from the children list.
+Future<void> addChild(WidgetTester tester, String name) async {
+  await tester.tap(find.text('طفلي'));
+  await settle(tester, () => shows(find.text('إضافة طفل')));
+  await tapInList(tester, find.text('إضافة طفل'));
+  await settle(tester, () => shows(find.byKey(const Key('child-name'))));
+  await tester.enterText(find.byKey(const Key('child-name')), name);
+  await tapInList(tester, find.byKey(const Key('child-birth-date')));
+  await tapInList(tester, find.text('بنت'));
+  await tapInList(tester, find.text('حفظ'));
+  await settle(tester, () => shows(find.text(name)));
+}
