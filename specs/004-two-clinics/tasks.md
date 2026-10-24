@@ -56,7 +56,7 @@ Per phase: analyze, `flutter test`, `npm test`, `npm run test:rules`; simulator 
 
 ## Phase 6: User Story 4 – Change, cancel and contact by clinic (P2)
 
-- [ ] T018 [US4] Functions: `cancelBooking` and `changeBooking` use the booking's clinic (window, schedule, prices, slot); change cannot move clinics; tests.
+- [ ] T018 [US4] Functions: `cancelBooking` and `changeBooking` use the booking's clinic (window, schedule, prices, slot); change cannot move clinics; a booking without `clinicId` is treated as the main clinic (FR-018); tests.
 - [ ] T019 [US4] App: My bookings uses the booking's clinic cancel window and WhatsApp; change form fixed to the booking's clinic; Account support WhatsApp from the main clinic; tests.
 
 ## Phase 7: User Story 5 – Package valid in both clinics (P2)
