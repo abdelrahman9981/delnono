@@ -100,8 +100,8 @@ All user-facing text goes in `l10n/app_ar.arb`.
 
 **Independent Test**: quickstart scenarios 8–9.
 
-- [ ] T032 [P] [US4] Create `test/features/booking/my_bookings_screen_test.dart`: upcoming (confirmed; arrived on its day) soonest first, past (done, cancelled, no-show) latest first, status pills, number, amount from the snapshot, empty state with "احجزي ميعاد جديد".
-- [ ] T033 [US4] Create `lib/features/booking/presentation/my_bookings_screen.dart` matching `my-bookings.jpg` (tabs with counts, date tile, status pill, number, amount) and wire `/booking/mine`; add to the layout test.
+- [X] T032 [P] [US4] Create `test/features/booking/my_bookings_screen_test.dart`: upcoming (confirmed; arrived on its day) soonest first, past (done, cancelled, no-show) latest first, status pills, number, amount from the snapshot, empty state with "احجزي ميعاد جديد".
+- [X] T033 [US4] Create `lib/features/booking/presentation/my_bookings_screen.dart` matching `my-bookings.jpg` (tabs with counts, date tile, status pill, number, amount) and wire `/booking/mine`; add to the layout test.
 
 ---
 
@@ -111,15 +111,15 @@ All user-facing text goes in `l10n/app_ar.arb`.
 
 ### Tests for User Story 5
 
-- [ ] T034 [P] [US5] Create `functions/test/functions/cancelBooking.test.ts`: owner before the window → cancelled, place freed, event; inside the window → `inside_window`; not confirmed → `not_confirmed`; another guardian → `not-found`; uses `cancelWindowHours` from settings.
-- [ ] T035 [P] [US5] Create `functions/test/functions/changeBooking.test.ts`: move to another hour (old freed, new taken, same number), same hour no count change, new hour full → original unchanged, inside the window refused, price rule (kept lines keep old amounts after a price rise; added lines current), own day does not count against one-per-day.
-- [ ] T036 [P] [US5] Add to `my_bookings_screen_test.dart`: change and cancel before the window; inside it "فاضل أقل من ٣ ساعات" and "كلمي العيادة" opening WhatsApp; cancel needs a confirmation.
+- [X] T034 [P] [US5] Create `functions/test/functions/cancelBooking.test.ts`: owner before the window → cancelled, place freed, event; inside the window → `inside_window`; not confirmed → `not_confirmed`; another guardian → `not-found`; uses `cancelWindowHours` from settings.
+- [X] T035 [P] [US5] Create `functions/test/functions/changeBooking.test.ts`: move to another hour (old freed, new taken, same number), same hour no count change, new hour full → original unchanged, inside the window refused, price rule (kept lines keep old amounts after a price rise; added lines current), own day does not count against one-per-day.
+- [X] T036 [P] [US5] Add to `my_bookings_screen_test.dart`: change and cancel before the window; inside it "فاضل أقل من ٣ ساعات" and "كلمي العيادة" opening WhatsApp; cancel needs a confirmation.
 
 ### Implementation for User Story 5
 
-- [ ] T037 [US5] Create `functions/src/callables/cancelBooking.ts` and `changeBooking.ts` per contracts/callables.md (both update `familyQuota/{uid}`; change checks `expectedTotal`) and export them.
-- [ ] T038 [US5] Add cancel (with confirmation), change (`/booking/change/:id`, booking screen pre-filled) and the inside-window card to the app.
-- [ ] T039 [P] [US5] Create `integration_test/cancel_change_test.dart`: cancel frees the place; change keeps the number and moves the place.
+- [X] T037 [US5] Create `functions/src/callables/cancelBooking.ts` and `changeBooking.ts` per contracts/callables.md (both update `familyQuota/{uid}`; change checks `expectedTotal`) and export them.
+- [X] T038 [US5] Add cancel (with confirmation), change (`/booking/change/:id`, booking screen pre-filled) and the inside-window card to the app.
+- [X] T039 [P] [US5] Create `integration_test/cancel_change_test.dart`: cancel frees the place; change keeps the number and moves the place.
 
 ---
 

@@ -24,6 +24,7 @@ import 'package:delnono/features/booking/domain/booking.dart';
 import 'package:delnono/features/booking/domain/price_preview.dart';
 import 'package:delnono/features/booking/presentation/booking_screen.dart';
 import 'package:delnono/features/booking/presentation/booking_success_screen.dart';
+import 'package:delnono/features/booking/presentation/my_bookings_screen.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/children/presentation/add_child_screen.dart';
 import 'package:delnono/features/children/presentation/child_profile_screen.dart';
@@ -94,6 +95,8 @@ final sampleBooking = Booking(
 final screens = <String, Widget Function()>{
   'booking': () => const ShellScaffold(location: '/booking', child: BookingScreen()),
   'booking success': () => const BookingSuccessScreen(bookingId: 'bk'),
+  'my bookings': () => const MyBookingsScreen(),
+  'change booking': () => const BookingScreen(changeBookingId: 'bk'),
   'welcome': () => const WelcomeScreen(),
   'phone': () => const PhoneScreen(),
   'otp': () => const OtpScreen(),

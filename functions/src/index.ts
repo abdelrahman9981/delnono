@@ -9,3 +9,5 @@ export { deleteAccount } from "./callables/deleteAccount";
 export { touchSession } from "./callables/touchSession";
 export { reverifyGuardian } from "./callables/reverifyGuardian";
 export { createBooking } from "./callables/createBooking";
+export { cancelBooking } from "./callables/cancelBooking";
+export { changeBooking } from "./callables/changeBooking";

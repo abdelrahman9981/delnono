@@ -16,6 +16,8 @@ import '../../children/data/children_repository.dart';
 import '../application/booking_form_controller.dart';
 import '../data/booking_api.dart';
 import '../data/booking_settings.dart';
+import '../data/bookings_repository.dart';
+import '../domain/booking.dart';
 import '../data/slots_repository.dart';
 import '../data/vaccines_repository.dart';
 import '../domain/price_preview.dart';
@@ -37,11 +39,30 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
   /// Package covering the chosen day (feature 006); none until packages exist.
   String? get _packageId => null;
 
+  bool _started = false;
+
+  /// Change mode: fills the form from the booking once it has loaded (FR-022).
+  void _startChange(Booking? booking) {
+    if (_started || booking == null) return;
+    _started = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(bookingFormProvider.notifier).start(editing: booking);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final settings = ref.watch(bookingSettingsProvider);
     final children = ref.watch(childrenProvider);
+    final changeId = widget.changeBookingId;
+    if (changeId != null) {
+      final booking = ref.watch(bookingByIdProvider(changeId));
+      _startChange(booking);
+      if (ref.watch(bookingFormProvider).editing == null) {
+        return Scaffold(appBar: _appBar(l10n), body: const Center(child: CircularProgressIndicator()));
+      }
+    }
     if (!settings.hasValue || !children.hasValue) {
       return Scaffold(appBar: _appBar(l10n), body: const Center(child: CircularProgressIndicator()));
     }
