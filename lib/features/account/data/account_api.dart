@@ -1,6 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/firebase/callable.dart';
 import '../../../core/firebase/functions_region.dart';
 
 /// Account callables (contracts/callables.md).
@@ -18,10 +19,10 @@ class FirebaseAccountApi implements AccountApi {
   final FirebaseFunctions _functions;
 
   @override
-  Future<void> syncPhoneNumber() => _functions.httpsCallable('syncPhoneNumber').call<Object?>({});
+  Future<void> syncPhoneNumber() => _functions.callFunction<Object?>('syncPhoneNumber', {});
 
   @override
-  Future<void> deleteAccount() => _functions.httpsCallable('deleteAccount').call<Object?>({'confirm': true});
+  Future<void> deleteAccount() => _functions.callFunction<Object?>('deleteAccount', {'confirm': true});
 }
 
 final accountApiProvider = Provider<AccountApi>((ref) => FirebaseAccountApi(ref.watch(functionsProvider)));

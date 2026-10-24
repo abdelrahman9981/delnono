@@ -1,6 +1,7 @@
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/firebase/callable.dart';
 import '../../../core/firebase/functions_region.dart';
 
 /// `reverifyGuardian`: the date matched no linked child; [remaining] tries are left.
@@ -31,14 +32,14 @@ class FirebaseSessionApi implements SessionApi {
 
   @override
   Future<bool> touchSession() async {
-    final result = await _functions.httpsCallable('touchSession').call<Map<String, dynamic>>({});
+    final result = await _functions.callFunction<Map<String, dynamic>>('touchSession', {});
     return result.data['reverifyRequired'] == true;
   }
 
   @override
   Future<void> reverifyGuardian(String birthDate) async {
     try {
-      await _functions.httpsCallable('reverifyGuardian').call<Object?>({'birthDate': birthDate});
+      await _functions.callFunction<Object?>('reverifyGuardian', {'birthDate': birthDate});
     } on FirebaseFunctionsException catch (e) {
       if (e.code == 'permission-denied') {
         final details = e.details;

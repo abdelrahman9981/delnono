@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +12,30 @@ class AuthRepository {
   final FirebaseAuth _auth;
   final FirebaseFirestore _db;
 
-  Stream<User?> authStateChanges() => _auth.authStateChanges();
+  /// The uid whose account was last checked by [_signOutIfDeleted].
+  String? _checkedUid;
+
+  Stream<User?> authStateChanges() => _auth.authStateChanges().map((user) {
+    if (user != null && user.uid != _checkedUid) {
+      _checkedUid = user.uid;
+      unawaited(_signOutIfDeleted(user));
+    }
+    return user;
+  });
+
+  /// A sign-in kept on the phone for an account that no longer exists (deleted on another phone,
+  /// disabled, or wiped from the emulator) cannot refresh its token, so every call would fail with
+  /// a generic error. Reloading the user reports it; signing out lets the guard send the guardian
+  /// to sign-in. Offline and other errors keep the session.
+  Future<void> _signOutIfDeleted(User user) async {
+    try {
+      await user.reload();
+    } on FirebaseAuthException catch (e) {
+      if (_deletedAccountCodes.contains(e.code)) await signOut();
+    } catch (_) {}
+  }
+
+  static const _deletedAccountCodes = {'user-not-found', 'user-disabled', 'user-token-expired', 'invalid-user-token'};
 
   User? get currentUser => _auth.currentUser;
 
@@ -25,9 +50,9 @@ class AuthRepository {
 
 final firebaseAuthProvider = Provider<FirebaseAuth>((ref) => FirebaseAuth.instance);
 
-final authRepositoryProvider =
-    Provider<AuthRepository>((ref) => AuthRepository(ref.watch(firebaseAuthProvider), ref.watch(firestoreProvider)));
+final authRepositoryProvider = Provider<AuthRepository>(
+  (ref) => AuthRepository(ref.watch(firebaseAuthProvider), ref.watch(firestoreProvider)),
+);
 
 /// The signed-in Firebase user, or null when signed out.
-final authStateProvider =
-    StreamProvider<User?>((ref) => ref.watch(authRepositoryProvider).authStateChanges());
+final authStateProvider = StreamProvider<User?>((ref) => ref.watch(authRepositoryProvider).authStateChanges());

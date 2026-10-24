@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/firebase/callable.dart';
 import '../../../core/firebase/functions_region.dart';
 import '../../../core/settings/settings_repository.dart';
 import '../../auth/data/auth_repository.dart';
@@ -95,7 +96,7 @@ class ChildrenRepository {
   /// Throws [DuplicateChildException] for FR-022, or the function's error otherwise.
   Future<String> createChild(NewChild child) async {
     try {
-      final result = await _functions.httpsCallable('createChild').call<Map<String, dynamic>>({
+      final result = await _functions.callFunction<Map<String, dynamic>>('createChild', {
         'name': child.name,
         'birthDate': child.birthDate,
         'sex': child.sex.name,
