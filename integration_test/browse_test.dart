@@ -76,7 +76,7 @@ void main() {
     await settle(tester, () => location(tester) == '/booking?clinic=clinic-2');
     expect(location(tester), '/booking?clinic=clinic-2');
     await settle(tester, () => shows(find.byKey(const Key('chosen-clinic'))));
-    expect(find.descendant(of: find.byKey(const Key('chosen-clinic')), matching: find.textContaining('مدينة نصر')), findsOneWidget);
+    expect(find.descendant(of: find.byKey(const Key('chosen-clinic')), matching: find.textContaining('عيادة مدينة نصر')), findsOneWidget);
 
     // Restarting signed in skips Welcome and opens home.
     await startApp(tester);

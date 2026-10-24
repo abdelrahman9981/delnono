@@ -27,4 +27,13 @@ The seed now has two placeholder clinics:
 
 ## Scenario coverage
 
-Filled in by the polish task.
+| # | Automated by |
+|---|--------------|
+| 1, 2 | `integration_test/browse_test.dart` (Home signed out, "احجزي هنا" on clinic 2 through sign-in); `test/features/home/home_screen_test.dart`; `booking_screen_test.dart` (preselected clinic) |
+| 3 | `integration_test/booking_test.dart` (clinic 2: its price, clinic on success, slot per clinic); `integration_test/cancel_change_test.dart` (clinic 1); `booking_screen_test.dart` (004 group); `booking_success_screen_test.dart`; `functions/test/functions/createBooking.test.ts` (004 group) |
+| 4, 5 | `createBooking.test.ts` (one per day and the upcoming maximum across clinics) |
+| 6 | `cancelBooking.test.ts` (clinic 2's 6-hour window); `my_bookings_screen_test.dart` (004 group: window and WhatsApp per clinic) |
+| 7 | `createBooking.test.ts` (package sold at clinic 1 covers clinic 2) |
+| 8 | `visits_screen_test.dart` (clinic per visit, main clinic fallback) |
+| Rules | `functions/test/rules/clinics.test.ts` |
+| Layout | `test/app/layout_test.dart` (Home, clinic step: light/dark, text ×2, RTL icons) |

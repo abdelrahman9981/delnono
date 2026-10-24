@@ -70,8 +70,8 @@ Per phase: analyze, `flutter test`, `npm test`, `npm run test:rules`; simulator 
 ## Phase 9: Polish
 
 - [X] T022 `deleteAccount` frees slots at each booking's clinic; test.
-- [ ] T023 [P] Layout and RTL tests for Home and the clinic step; hard-coded strings check.
-- [ ] T024 Quickstart coverage table; run every automated check and all simulator tests once; all pass.
+- [X] T023 [P] Layout and RTL tests for Home and the clinic step; hard-coded strings check.
+- [X] T024 Quickstart coverage table; run every automated check and all simulator tests once; all pass.
 
 ---
 
