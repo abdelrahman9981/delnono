@@ -129,7 +129,7 @@ class FollowUpScreen extends ConsumerWidget {
                   ],
                   FilledButton.icon(
                     key: const Key('call-ambulance'),
-                    style: FilledButton.styleFrom(backgroundColor: c.dangerText, foregroundColor: Colors.white),
+                    style: FilledButton.styleFrom(backgroundColor: c.emergency, foregroundColor: Colors.white),
                     onPressed: () => links.callNumber(ambulanceNumber),
                     icon: const Icon(Icons.emergency_outlined),
                     label: Text(l10n.callAmbulance),
