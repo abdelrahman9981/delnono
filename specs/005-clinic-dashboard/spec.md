@@ -10,6 +10,16 @@
 
 **Design**: no Figma for the dashboard. It uses the app's design tokens (`docs/design/tokens.css`): colours, Readex Pro, radii, cards, pills, buttons, light and dark; a side navigation on desktop that becomes a drawer on a tablet. Arabic RTL; forward chevrons ‹, back ›.
 
+## Clarifications
+
+### Session 2026-10-24
+
+- Q: How do staff sign in? → A: Email and password, one account each, created by the doctor with a temporary password that must be changed at first sign-in. Phone codes stay for guardians (no SMS cost for staff, desktop use).
+- Q: When is a child's visit recorded: on arrival or when done? → A: When marked "تم" (done); measurements, doses and payment attach to that visit (D-48).
+- Q: Can a status be undone? → A: Statuses move forward only; the doctor alone can undo a mistaken "لم يحضر" or "تم" on the same day, recorded in the audit log.
+- Q: What happens to a walk-in child who is not registered? → A: The walk-in keeps the family name, phone and child names; no child record is created automatically; staff can register the child's basic data on that phone, and the family links it in the app (001 FR-021).
+- Q: Can the secretary change her clinic's prices and schedule? → A: Yes, for her clinic only (FR-46, D-47); every change is in the audit log. The vaccine list and schedule themselves are the doctor's.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Staff sign in with their own account (Priority: P1)
