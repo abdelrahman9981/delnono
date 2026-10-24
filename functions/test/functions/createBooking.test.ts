@@ -1,4 +1,5 @@
 import { strict as assert } from "node:assert";
+import { weekday } from "../../src/lib/booking/time";
 import { adminDb, callFunction, clearEmulators, seedSettings } from "../helpers/env";
 import {
   CLINIC,
@@ -264,7 +265,11 @@ describe("createBooking", () => {
         ...fields,
       });
     }
-    const clinic2Day = (from = 1) => openNonVaccineDay(from); // clinic 2 is open on the same weekdays except Saturday
+    /** An open day of clinic 2: clinic 1's open days except Saturday (weekday 6). */
+    const clinic2Day = (from = 1): string => {
+      const d = openNonVaccineDay(from);
+      return weekday(d) === 6 ? clinic2Day(from + 1) : d;
+    };
     const mondayOrWednesday = () => vaccineDay();
 
     it("uses the chosen clinic's hours, capacity and prices; booking and slot carry the clinic (FR-007 to FR-009)", async () => {
@@ -332,7 +337,13 @@ describe("createBooking", () => {
     it("the upcoming maximum counts both clinics (D-49)", async () => {
       await seedSecondClinic();
       const g = await guardianWithChildren("+201000000099");
-      const [d1, d2, d3] = threeOpenDays();
+      // Days both clinics are open: clinic 2 is closed on Saturdays (weekday 6).
+      const days: string[] = [];
+      for (let from = 1; days.length < 3; from++) {
+        const d = openNonVaccineDay(from);
+        if (weekday(d) !== 6 && !days.includes(d)) days.push(d);
+      }
+      const [d1, d2, d3] = days;
       assert.ok((await callFunction("createBooking", visit(d1, 18, g.childIds), g)).result);
       assert.ok((await callFunction("createBooking", visit(d2, 11, g.childIds, 350, CLINIC_2), g)).result);
       const third = await callFunction("createBooking", visit(d3, 11, g.childIds, 350, CLINIC_2), g);
