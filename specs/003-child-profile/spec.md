@@ -10,6 +10,15 @@
 
 **Design**: `docs/design/figma/child-profile.jpg` (My child tab) and `docs/design/screens/FollowUp.dc.html` (age follow-up and "متى تتصلين بالدكتور"); see `docs/design/README.md`. The app's RTL rule applies (forward chevrons ‹, back ›). The dark-mode toggle and notification bell in the Figma top bar are not part of this feature (the app follows the system theme; notifications are feature 007).
 
+## Clarifications
+
+### Session 2026-10-24
+
+- Q: Does the guardian see the doctor's written medical notes from a visit? → A: No. In Phase 1 the guardian sees the prescription photo and what was recorded (measurements, doses); the doctor's notes stay with the clinic.
+- Q: Who other than the linked guardian can open a prescription photo? → A: The doctor only; the secretary cannot (FR-23, D-11, D-29).
+- Q: How is the "طفلي" tab organised? → A: It opens on the selected child's profile (switcher, package, latest measurements, chart, as in the design), with entries that open separate Vaccines, Visits and Follow-up screens; the details edit and add child stay reachable from the profile.
+- Q: Can a visit have more than one prescription photo? → A: Yes, one or more pages per visit, shown in order.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - See my child's latest measurements and growth chart (Priority: P1)
@@ -133,7 +142,7 @@ A guardian who opened the profile before opens it again without a connection and
 
 **Profile**
 
-- **FR-001**: The "طفلي" tab MUST show the profile of one of the guardian's linked children, with a switcher between children; the last selected child is remembered on the device.
+- **FR-001**: The "طفلي" tab MUST open on the profile of one of the guardian's linked children, with a switcher between children; the last selected child is remembered on the device. The profile shows the package, latest measurements and growth chart, and opens separate Vaccines, Visits and Follow-up screens.
 - **FR-002**: The profile MUST show the child's name, age, and allergies if recorded (FR-12), and a way to edit name and allergies (001).
 - **FR-003**: The profile MUST show the latest weight (kg, one decimal), length (cm) and head circumference (cm), each with the date it was measured (FR-13, D-16).
 - **FR-004**: The profile MUST show a growth chart of the child's own recorded measurements against age, switchable between weight, length and head circumference. It MUST NOT show reference curves, percentiles or ranges (D-37; D-16 reference curves need the doctor's approval and are not in this feature).
@@ -153,7 +162,8 @@ A guardian who opened the profile before opens it again without a connection and
 
 - **FR-013**: The app MUST show the child's visit history, newest first, with date, visit type, and the measurements and doses recorded at that visit (FR-15).
 - **FR-014**: When a visit has a prescription photo uploaded by the doctor, the guardian MUST be able to open it full screen with zoom (D-30).
-- **FR-015**: Prescription photos MUST be readable only by the guardian linked to the child (with current consent and an active session, as in 001) and by staff; no one else can read them, even with the file's address.
+- **FR-015**: Prescription photos MUST be readable only by the guardian linked to the child (with current consent and an active session, as in 001) and by the doctor; the secretary and anyone else cannot read them, even with the file's address (FR-23, D-11).
+- **FR-015a**: A visit MAY have one or more prescription photos (pages), shown in order. The doctor's written medical notes are not shown to the guardian in Phase 1.
 
 **Follow-up and emergencies**
 
@@ -180,7 +190,7 @@ A guardian who opened the profile before opens it again without a connection and
 - **Vaccine schedule entry**: vaccine, basic or extra, dose number, due age, last allowed age (optional), doctor's note, order; plus for extras: suggested age, number of doses, interval, price and whether it is shown.
 - **Schedule info**: source, last review date, late threshold.
 - **Dose record**: child, schedule entry, date given, lot number (optional), visit, who recorded it.
-- **Visit**: child, date, visit type, booking (if any), prescription photos (doctor only).
+- **Visit**: child, date, visit type, booking (if any), prescription photos (one or more, uploaded by the doctor), doctor's notes (staff only, never sent to the guardian app).
 - **Follow-up age band**: age range (months), title, items; **Danger signs**: list of items. Both doctor-owned.
 - **Package** (read-only, owned by 006): family, start and end dates, active.
 
