@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
@@ -46,8 +47,20 @@ class PluginNotifier implements LocalNotifier {
     iOS: DarwinNotificationDetails(),
   );
 
+  /// False where the platform plugin is missing (widget tests): every call is then a no-op.
+  bool _ready = false;
+
   @override
   Future<void> init({required void Function(String route) onTap}) async {
+    try {
+      await _init(onTap);
+      _ready = true;
+    } on MissingPluginException {
+      debugPrint('local notifications: no platform plugin here; reminders stay in the page only');
+    }
+  }
+
+  Future<void> _init(void Function(String route) onTap) async {
     tzdata.initializeTimeZones();
     _cairo = tz.getLocation('Africa/Cairo');
     await _plugin.initialize(
@@ -68,6 +81,7 @@ class PluginNotifier implements LocalNotifier {
 
   @override
   Future<bool> requestPermission() async {
+    if (!_ready) return false;
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return await _plugin
               .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
@@ -82,6 +96,7 @@ class PluginNotifier implements LocalNotifier {
 
   @override
   Future<bool> permissionGranted() async {
+    if (!_ready) return false;
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       final o = await _plugin.resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()?.checkPermissions();
       return o?.isEnabled ?? false;
@@ -92,6 +107,7 @@ class PluginNotifier implements LocalNotifier {
 
   @override
   Future<void> replaceAll(List<Reminder> reminders) async {
+    if (!_ready) return;
     await _plugin.cancelAll();
     for (final r in reminders) {
       await _plugin.zonedSchedule(
@@ -108,7 +124,9 @@ class PluginNotifier implements LocalNotifier {
   }
 
   @override
-  Future<void> cancelAll() => _plugin.cancelAll();
+  Future<void> cancelAll() async {
+    if (_ready) await _plugin.cancelAll();
+  }
 }
 
 /// The app's notifier: the plugin on phones, nothing on the web. Tests override it.

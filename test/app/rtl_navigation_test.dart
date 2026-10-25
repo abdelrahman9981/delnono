@@ -13,6 +13,7 @@ import 'package:delnono/features/auth/data/session_api.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:delnono/features/notifications/data/local_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -78,6 +79,7 @@ void main() {
         childrenRepositoryProvider.overrideWithValue(FakeChildrenRepository()),
         externalLinksProvider.overrideWithValue(_Links()),
         ...profileDataOverrides(anyChild: true),
+        localNotifierProvider.overrideWithValue(const NoopNotifier()),
       ],
       child: const App(),
     ));

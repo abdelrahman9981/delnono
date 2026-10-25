@@ -17,9 +17,9 @@
 
 ## Phase 3: User Story 1 + 2 — Reminders on the phone (P1)
 
-- [ ] T007 [US1] lib/features/notifications/data/reminder_sync.dart: provider watching bookings, children, doses per child, schedule, catalogue and prefs; calls `replaceAll` with the planned list (switches applied); `cancelAll` on sign-out; started from the app root
-- [ ] T008 [US1] Tests in test/features/notifications/reminder_sync_test.dart with a FakeNotifier: booking added, moved, cancelled; a dose recorded; sign-out clears
-- [ ] T009 [US1] Tap → route: init in lib/main.dart with the router; cold-start launch details
+- [X] T007 [US1] lib/features/notifications/data/reminder_sync.dart: provider watching bookings, children, doses per child, schedule, catalogue and prefs; calls `replaceAll` with the planned list (switches applied); `cancelAll` on sign-out; started from the app root
+- [X] T008 [US1] Tests in test/features/notifications/reminder_sync_test.dart with a FakeNotifier: booking added, moved, cancelled; a dose recorded; sign-out clears
+- [X] T009 [US1] Tap → route: init in lib/main.dart with the router; cold-start launch details
 
 ## Phase 4: User Story 3 + 4 — Page, bell and switches (P2)
 
