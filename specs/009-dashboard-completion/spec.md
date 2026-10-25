@@ -10,6 +10,16 @@
 
 **Design**: no mockup for these screens. They follow the dashboard rules in `docs/design/README.md` ("Clinic dashboard") and `docs/design/dashboard/dash.css`: cards with a header row, labelled fields, dates from a date picker, status pills. Arabic RTL; forward chevrons ‹, back ›.
 
+## Clarifications
+
+### Session 2026-10-25
+
+- Q: Who may register a family at the desk: the secretary only, or the doctor too? → A: Any active staff member (secretary or doctor), recorded at the clinic they are working in (FR-64 names the secretary; the doctor is not excluded, D-47).
+- Q: When two files are merged and their basic data differ (name spelling, allergies), which wins? → A: The kept file's basic data stays as it is; nothing is copied from the closed file. The doctor corrects the kept file afterwards if needed, and the merge record keeps the closed file's name and birth date.
+- Q: Which bookings move to the kept child in a merge? → A: Only upcoming confirmed bookings; past, cancelled and done bookings keep the child they were made for, so history and reports do not change.
+- Q: Who may link children to a guardian's account from the dashboard after a locked link? → A: Any active staff member, after checking the guardian in person; the action asks for confirmation and is in the audit log (001 FR-021a says "staff").
+- Q: Should desk registration also store the guardian's name? → A: No. Only the number; the guardian gives their own details in the app, and nothing from the clinic's record is shown before the birth-date check (001 acceptance scenario 3).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - The secretary registers a family at the desk (Priority: P1)
@@ -90,21 +100,21 @@ A guardian who entered three wrong birth dates is told to contact the clinic (00
 
 ### Functional Requirements
 
-- **FR-001**: Staff (secretary or doctor) MUST be able to register, from the dashboard, a mobile number and one or more children with name, birth date and sex, and optionally birth weight (kg) and allergies, validated as in the app (001 FR-018).
+- **FR-001**: Any active staff member (secretary or doctor) MUST be able to register, from the dashboard, a mobile number and one or more children with name, birth date and sex, and optionally birth weight (kg) and allergies, validated as in the app (001 FR-018).
 - **FR-002**: Desk-registered children MUST be stored on the number with no linked app account, marked as registered by staff at the staff member's current clinic, and MUST be linked only through the app's birth-date check (001 FR-021) or by staff under FR-008.
 - **FR-003**: Registration MUST be offered from the Children screen and from a walk-in in Today, prefilled with the walk-in's number and children's names.
 - **FR-004**: Before creating anything, the server MUST check each child against existing open files on the same number by normalised name and birth date; on any match it MUST create nothing and return the matching child(ren), which the dashboard shows with a link to the file.
 - **FR-005**: Only the doctor MUST be able to merge two open files on the same number, choosing the kept file; the server MUST refuse merges by anyone else, of a file with itself, or across numbers.
-- **FR-006**: A merge MUST move every measurement, dose and visit (with their change logs and staff notes) to the kept file unchanged, repoint the closed child in upcoming bookings to the kept child (dropping it when the booking already has the kept child), and mark the closed file as merged into the kept one, all at once or not at all.
+- **FR-006**: A merge MUST move every measurement, dose and visit (with their change logs and staff notes) to the kept file unchanged, repoint the closed child in upcoming confirmed bookings to the kept child (dropping it when the booking already has the kept child; past, cancelled and done bookings are not changed), keep the kept file's basic data unchanged, and mark the closed file as merged into the kept one, all at once or not at all.
 - **FR-007**: Closed (merged) files MUST NOT appear in staff search, the guardian's app, or the duplicate check, and opening one MUST say which file it was merged into.
-- **FR-008**: Staff MUST be able to link a number's unlinked children to the guardian account on that number, which clears a linking lock (001 FR-021a).
+- **FR-008**: Any active staff member, after confirming, MUST be able to link a number's unlinked children to the guardian account on that number, which clears a linking lock (001 FR-021a).
 - **FR-009**: Every registration, merge and staff link MUST be written to the audit log with the staff member, the number and the children (D-13).
 - **FR-010**: The new screens MUST follow the dashboard design rules (cards, labelled fields, dates from a date picker, RTL) and lay out without overflow at desktop and tablet widths, light and dark, normal and large text.
 
 ### Key Entities
 
 - **Child file (existing)**: gains who registered it (`guardian` or `staff`) and at which clinic for desk registrations, and for a closed file, which file it was merged into and when.
-- **Merge record**: in the audit log: kept file, closed file, the doctor, and how many measurements, doses, visits and bookings moved.
+- **Merge record**: in the audit log: kept file, closed file (with its name and birth date), the doctor, and how many measurements, doses, visits and bookings moved.
 
 ## Success Criteria *(mandatory)*
 
