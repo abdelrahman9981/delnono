@@ -11,15 +11,19 @@ export interface ReportRow {
   arrivals: number;
   noShows: number;
   walkIns: number;
+  /** Cash paid for visits (bookings and walk-ins). */
   cash: number;
   packagesSold: number;
+  /** Cash paid for packages sold, kept apart from visit cash. */
+  packageRevenue: number;
 }
 
-const empty = (key: string): ReportRow => ({ key, bookings: 0, arrivals: 0, noShows: 0, walkIns: 0, cash: 0, packagesSold: 0 });
+const empty = (key: string): ReportRow => ({ key, bookings: 0, arrivals: 0, noShows: 0, walkIns: 0, cash: 0, packagesSold: 0, packageRevenue: 0 });
 
 /**
  * Daily or monthly numbers (D-20, 005 FR-022): bookings (not cancelled), arrivals (bookings that
- * arrived or were done), no-shows, walk-ins, cash collected (bookings and walk-ins) and packages sold,
+ * arrived or were done), no-shows, walk-ins, cash for visits (bookings and walk-ins), and packages sold
+ * with their revenue kept apart,
  * for a clinic or, for the doctor, all clinics. Numbers only: no names, phones or medical data.
  */
 export const report = onCall({ region: REGION }, async (request) => {
@@ -69,11 +73,11 @@ export const report = onCall({ region: REGION }, async (request) => {
     if (!mine(p.get("soldAtClinicId"))) continue;
     const r = row(p.get("soldOn"));
     r.packagesSold++;
-    r.cash += Number(p.get("price") ?? 0);
+    r.packageRevenue += Number(p.get("price") ?? 0);
   }
   const list = [...rows.values()].sort((a, b) => a.key.localeCompare(b.key));
   const total = list.reduce((t, r) => {
-    for (const k of ["bookings", "arrivals", "noShows", "walkIns", "cash", "packagesSold"] as const) t[k] += r[k];
+    for (const k of ["bookings", "arrivals", "noShows", "walkIns", "cash", "packagesSold", "packageRevenue"] as const) t[k] += r[k];
     return t;
   }, empty("total"));
   return { rows: list, total };

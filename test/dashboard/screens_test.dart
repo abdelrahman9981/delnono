@@ -85,14 +85,14 @@ void main() {
   group('reports (US7)', () {
     test('CSV holds dates, clinic and the six numbers only (FR-023)', () {
       final csv = reportCsv(
-        [{'key': '2026-11-15', 'bookings': 3, 'arrivals': 1, 'noShows': 1, 'walkIns': 1, 'cash': 1950, 'packagesSold': 1}],
-        {'key': 'total', 'bookings': 3, 'arrivals': 1, 'noShows': 1, 'walkIns': 1, 'cash': 1950, 'packagesSold': 1},
+        [{'key': '2026-11-15', 'bookings': 3, 'arrivals': 1, 'noShows': 1, 'walkIns': 1, 'cash': 450, 'packagesSold': 1, 'packageRevenue': 1500}],
+        {'key': 'total', 'bookings': 3, 'arrivals': 1, 'noShows': 1, 'walkIns': 1, 'cash': 450, 'packagesSold': 1, 'packageRevenue': 1500},
         '[عيادة]',
         const ['التاريخ', 'العيادة'],
       );
       final lines = csv.trim().split('\n');
-      expect(lines[1], 'date,clinic,bookings,arrivals,noShows,walkIns,cash,packagesSold');
-      expect(lines[2], '2026-11-15,[عيادة],3,1,1,1,1950,1');
+      expect(lines[1], 'date,clinic,bookings,arrivals,noShows,walkIns,cash,packagesSold,packageRevenue');
+      expect(lines[2], '2026-11-15,[عيادة],3,1,1,1,450,1,1500');
       expect(lines.last, startsWith('total,'));
     });
 
