@@ -8,6 +8,7 @@ import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:delnono/features/shell/shell_scaffold.dart';
+import 'package:delnono/features/notifications/data/local_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -189,6 +190,7 @@ void main() {
           // The Booking tab needs booking data; none of these tests books.
           ...clinicOverrides(),
           childrenProvider.overrideWith((ref) => Stream.value(const [])),
+          localNotifierProvider.overrideWithValue(const NoopNotifier()),
         ],
         child: const App(),
       ));

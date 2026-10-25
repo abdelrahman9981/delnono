@@ -74,11 +74,3 @@ class ContentPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) =>
       PlaceholderScreen(title: AppLocalizations.of(context).placeholderContent, showAppBar: false);
 }
-
-class NotificationsPlaceholder extends StatelessWidget {
-  const NotificationsPlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context) =>
-      PlaceholderScreen(title: AppLocalizations.of(context).placeholderNotifications);
-}
