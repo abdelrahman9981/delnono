@@ -3,6 +3,7 @@
 // read; turning booking reminders off removes them from the phone.
 
 import 'package:delnono/core/firebase/firebase_init.dart';
+import 'package:delnono/features/notifications/data/local_notifier.dart';
 import 'package:delnono/features/notifications/domain/reminders.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,37 @@ Future<void> wait(WidgetTester tester, int seconds) async {
 Future<Set<int>> pendingIds() async =>
     {for (final r in await FlutterLocalNotificationsPlugin().pendingNotificationRequests()) r.id};
 
+/// The real plugin, recording what the app asks it to schedule. iOS keeps scheduled requests only
+/// after the guardian allows notifications, and a test cannot answer that system prompt (simctl
+/// cannot grant it), so the phone's own queue is checked only when permission exists.
+class RecordingNotifier implements LocalNotifier {
+  final real = PluginNotifier();
+  var scheduled = <String>[];
+
+  @override
+  Future<void> init({required void Function(String route) onTap}) => real.init(onTap: onTap);
+  @override
+  Future<bool> requestPermission() => real.requestPermission();
+  @override
+  Future<bool> permissionGranted() => real.permissionGranted();
+  @override
+  Future<void> replaceAll(List<Reminder> reminders) {
+    scheduled = [for (final r in reminders) r.key];
+    return real.replaceAll(reminders);
+  }
+
+  @override
+  Future<void> cancelAll() {
+    scheduled = [];
+    return real.cancelAll();
+  }
+
+  @override
+  bool get canOpenSettings => real.canOpenSettings;
+  @override
+  Future<void> openSettings() => real.openSettings();
+}
+
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -34,7 +66,8 @@ void main() {
   });
 
   testWidgets('a booking schedules reminders, shows on the bell and the page; switching off removes them', (tester) async {
-    await startApp(tester, overrides: [pickerOverride]);
+    final phone = RecordingNotifier();
+    await startApp(tester, overrides: [pickerOverride, localNotifierProvider.overrideWithValue(phone)]);
     await registerWithChild(tester, '+201000000088', 'هبة علي', 'سليم');
 
     await tester.tap(find.text('حجز'));
@@ -50,10 +83,12 @@ void main() {
     await settle(tester, () => shows(find.byKey(const Key('booking-number'))));
     final bookingId = location(tester).split('/').last;
 
-    // The phone now has this booking's two reminders (FR-001, FR-003).
+    // The app scheduled this booking's two reminders on the phone (FR-001, FR-003).
     await wait(tester, 3);
-    final pending = await pendingIds();
-    expect(pending, containsAll([reminderId('booking:$bookingId:24h'), reminderId('booking:$bookingId:1h')]));
+    expect(phone.scheduled, containsAll(['booking:$bookingId:24h', 'booking:$bookingId:1h']));
+    if (await phone.permissionGranted()) {
+      expect(await pendingIds(), containsAll([reminderId('booking:$bookingId:24h'), reminderId('booking:$bookingId:1h')]));
+    }
 
     // The bell counts the confirmation; the page lists it (FR-007, FR-008).
     await tester.tap(find.text('الرئيسية'));
@@ -67,8 +102,8 @@ void main() {
     // Booking reminders off: they leave the phone (FR-005).
     await tapInList(tester, find.byKey(const Key('notif-booking')));
     await wait(tester, 2);
-    final after = await pendingIds();
-    expect(after, isNot(contains(reminderId('booking:$bookingId:1h'))));
-    expect(after, isNot(contains(reminderId('booking:$bookingId:24h'))));
+    expect(phone.scheduled, isNot(contains('booking:$bookingId:1h')));
+    expect(phone.scheduled, isNot(contains('booking:$bookingId:24h')));
+    expect((await pendingIds()).intersection({reminderId('booking:$bookingId:1h'), reminderId('booking:$bookingId:24h')}), isEmpty);
   });
 }

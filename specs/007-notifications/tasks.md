@@ -30,8 +30,8 @@
 
 ## Phase 5: Polish
 
-- [ ] T014 Integration test integration_test/notifications_test.dart (book → bell shows the confirmation → page → mark read; switch off/on) on the simulator
-- [ ] T015 Mark tasks done; analyze, flutter test, functions and rules tests (unchanged), simulator run at the end
+- [X] T014 Integration test integration_test/notifications_test.dart (book → bell shows the confirmation → page → mark read; switch off/on) on the simulator
+- [X] T015 Mark tasks done; analyze, flutter test, functions and rules tests (unchanged), simulator run at the end
 
 ## Analyze (2026-10-25)
 
