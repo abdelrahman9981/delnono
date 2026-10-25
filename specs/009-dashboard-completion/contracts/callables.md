@@ -31,7 +31,7 @@ Response: `{ linked: [{childId, name}] }`. Clears `linkAttempts/{phone}` and `cl
 
 ## openChildFile (changed)
 
-A closed file returns `{ merged: { into, name } }` and nothing else.
+A closed file returns `{ merged: { into, name } }` and nothing else. An open, unlinked child also gets `accountOnNumber: boolean` (a guardian account exists on its number), so the dashboard offers the staff link only when it can work.
 
 ## searchChildren (unchanged)
 
