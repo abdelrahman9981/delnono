@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/brand_images.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../app/route_guard.dart';
 import '../../app/theme.dart';
@@ -56,6 +57,8 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
+/// The doctor's photo under a dark gradient, so the white text stays readable; the tagline sits
+/// alone in the top corner over the wall, away from his face and from the name.
 class _DoctorCard extends StatelessWidget {
   const _DoctorCard();
 
@@ -65,39 +68,64 @@ class _DoctorCard extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     return Container(
       key: const Key('doctor-card'),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFA9CFE6), Color(0xFF2C3E50)],
-        ),
-      ),
-      child: Column(
+      height: 300,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), color: const Color(0xFF2C3E50)),
+      child: Stack(
+        fit: StackFit.expand,
         children: [
-          // Placeholder until the doctor's real photo arrives (docs/design/README.md).
-          Container(
-            width: 96,
-            height: 96,
+          Image.asset(
+            BrandImages.doctorHero,
+            key: const Key('doctor-photo'),
+            fit: BoxFit.cover,
+            alignment: BrandImages.doctorHeroFocus,
+            semanticLabel: l10n.doctorName,
+          ),
+          const DecoratedBox(
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white70, width: 2),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0x00081D2B), Color(0x33081D2B), Color(0xE6081D2B)],
+                stops: [0, .4, 1],
+              ),
             ),
-            child: const Icon(Icons.person_outline, size: 48, color: Colors.white),
           ),
-          const SizedBox(height: 6),
-          Text(l10n.doctorPhotoPlaceholder, style: text.bodySmall?.copyWith(color: Colors.white70)),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-            decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(999)),
-            child: Text(l10n.doctorTagline, style: text.bodySmall?.copyWith(color: Colors.white)),
+          PositionedDirectional(
+            top: 14,
+            end: 14,
+            child: Container(
+              key: const Key('doctor-tagline'),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              decoration: BoxDecoration(color: const Color(0x99081D2B), borderRadius: BorderRadius.circular(999)),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: const BoxDecoration(color: Color(0xFF4FBF9F), shape: BoxShape.circle),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(l10n.doctorTagline, style: text.bodySmall?.copyWith(color: Colors.white)),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 10),
-          Text(l10n.doctorName, style: text.headlineMedium?.copyWith(color: Colors.white)),
-          const SizedBox(height: 4),
-          Text(l10n.doctorTitle, textAlign: TextAlign.center, style: text.bodyMedium?.copyWith(color: Colors.white)),
+          PositionedDirectional(
+            start: 20,
+            end: 20,
+            bottom: 18,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.doctorName, style: text.headlineMedium?.copyWith(color: Colors.white)),
+                const SizedBox(height: 4),
+                Text(l10n.doctorTitle, style: text.bodyMedium?.copyWith(color: Colors.white.withValues(alpha: .92))),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -117,84 +145,106 @@ class _ClinicCard extends ConsumerWidget {
     final links = ref.read(externalLinksProvider);
     final hours = hoursSummary(l10n, clinic.workingHours);
 
+    // The waiting-room photo is of the main clinic, so only its card shows it.
+    final isMain = ref.watch(mainClinicProvider)?.id == clinic.id;
+
     return Card(
       key: Key('clinic-card-${clinic.id}'),
       margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(color: c.blueSoft, borderRadius: BorderRadius.circular(14)),
-                  child: Icon(Icons.location_on_outlined, color: c.blue),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(clinic.name, style: text.titleMedium),
-                      const SizedBox(height: 2),
-                      Text(clinic.address, style: text.bodySmall?.copyWith(color: c.muted)),
-                    ],
-                  ),
-                ),
-              ],
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (isMain)
+            Image.asset(
+              BrandImages.waitingRoom,
+              key: Key('clinic-photo-${clinic.id}'),
+              height: 150,
+              fit: BoxFit.cover,
+              semanticLabel: l10n.clinicWaitingRoom,
             ),
-            const SizedBox(height: 12),
-            for (final line in hours)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.schedule, size: 16, color: c.muted),
-                    const SizedBox(width: 6),
-                    Expanded(child: Text(line, style: text.bodySmall)),
+                    const CircleAvatar(radius: 22, backgroundImage: AssetImage(BrandImages.doctorAvatar)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(clinic.name, style: text.titleMedium),
+                          const SizedBox(height: 2),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.location_on_outlined, size: 16, color: c.blue),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(clinic.address, style: text.bodySmall?.copyWith(color: c.muted)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            const SizedBox(height: 10),
-            FilledButton.icon(
-              key: Key('book-at-${clinic.id}'),
-              onPressed: () => context.go(Uri(path: Routes.booking, queryParameters: {'clinic': clinic.id}).toString()),
-              icon: const Icon(Icons.calendar_today_outlined),
-              label: Text(l10n.bookHere),
-            ),
-            if (clinic.phone != null || clinic.whatsapp != null) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  if (clinic.phone != null)
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        key: Key('call-${clinic.id}'),
-                        onPressed: () => links.callNumber(clinic.phone!),
-                        icon: const Icon(Icons.call_outlined),
-                        label: Text(l10n.callClinicShort),
-                      ),
+                const SizedBox(height: 12),
+                for (final line in hours)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.schedule, size: 16, color: c.muted),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text(line, style: text.bodySmall)),
+                      ],
                     ),
-                  if (clinic.phone != null && clinic.whatsapp != null) const SizedBox(width: 8),
-                  if (clinic.whatsapp != null)
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        key: Key('whatsapp-${clinic.id}'),
-                        onPressed: () => links.openWhatsApp(clinic.whatsapp!),
-                        icon: const Icon(Icons.chat_outlined),
-                        label: Text(l10n.whatsapp),
-                      ),
-                    ),
+                  ),
+                const SizedBox(height: 10),
+                FilledButton.icon(
+                  key: Key('book-at-${clinic.id}'),
+                  onPressed: () =>
+                      context.go(Uri(path: Routes.booking, queryParameters: {'clinic': clinic.id}).toString()),
+                  icon: const Icon(Icons.calendar_today_outlined),
+                  label: Text(l10n.bookHere),
+                ),
+                if (clinic.phone != null || clinic.whatsapp != null) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      if (clinic.phone != null)
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            key: Key('call-${clinic.id}'),
+                            onPressed: () => links.callNumber(clinic.phone!),
+                            icon: const Icon(Icons.call_outlined),
+                            label: Text(l10n.callClinicShort),
+                          ),
+                        ),
+                      if (clinic.phone != null && clinic.whatsapp != null) const SizedBox(width: 8),
+                      if (clinic.whatsapp != null)
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            key: Key('whatsapp-${clinic.id}'),
+                            onPressed: () => links.openWhatsApp(clinic.whatsapp!),
+                            icon: const Icon(Icons.chat_outlined),
+                            label: Text(l10n.whatsapp),
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
-              ),
-            ],
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

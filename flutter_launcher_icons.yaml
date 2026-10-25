@@ -1,0 +1,19 @@
+# App icon for the guardian app and the dashboard (web favicon), generated with
+#   dart run flutter_launcher_icons
+# The macOS, Windows and Linux runners are left as they are.
+flutter_launcher_icons:
+  image_path: "assets/icon/app_icon_1024.png"
+  android: true
+  adaptive_icon_background: "#CBE7EE"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  ios: true
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: "assets/icon/app_icon_1024.png"
+    background_color: "#CBE7EE"
+    theme_color: "#16324B"
+  macos:
+    generate: false
+  windows:
+    generate: false

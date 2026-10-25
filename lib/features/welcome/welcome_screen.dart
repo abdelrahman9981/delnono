@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../app/brand_images.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../app/route_guard.dart';
 import '../../app/theme.dart';
@@ -66,6 +67,9 @@ class WelcomeScreen extends StatelessWidget {
                     FilledButton(onPressed: () => context.go(Routes.signIn), child: Text(l10n.welcomeRegister)),
                     const SizedBox(height: 8),
                     OutlinedButton(onPressed: () => context.go(Routes.content), child: Text(l10n.welcomeBrowse)),
+                    // Below the buttons, so the photo never pushes registration off the first screen.
+                    const SizedBox(height: 18),
+                    const _WaitingRoom(),
                     const SizedBox(height: 10),
                     Text(l10n.welcomeDisclaimer, style: text.bodySmall?.copyWith(height: 1.6), textAlign: TextAlign.center),
                   ],
@@ -79,15 +83,13 @@ class WelcomeScreen extends StatelessWidget {
   }
 }
 
-/// Hero card with the doctor's photo. The photo is a marked placeholder until the clinic sends
-/// the real one (D-36).
+/// Hero card with the doctor's photo under a dark gradient, so the white text stays readable.
 class _DoctorHero extends StatelessWidget {
   const _DoctorHero();
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    const ink = Color(0xFF27516A);
 
     return Container(
       height: 300,
@@ -105,29 +107,12 @@ class _DoctorHero extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Semantics(
-            label: l10n.welcomePhotoPlaceholder,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 40),
-              child: Column(
-                children: [
-                  Container(
-                    width: 84,
-                    height: 84,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withValues(alpha: .3),
-                      border: Border.all(color: ink.withValues(alpha: .5), width: 2),
-                    ),
-                    child: const Icon(Icons.person_outline, size: 40, color: ink),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(l10n.welcomePhotoPlaceholder,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: ink)),
-                  Text(l10n.welcomePhotoSoon, style: TextStyle(fontSize: 11, color: ink.withValues(alpha: .8))),
-                ],
-              ),
-            ),
+          Image.asset(
+            BrandImages.doctorHero,
+            key: const Key('welcome-doctor-photo'),
+            fit: BoxFit.cover,
+            alignment: BrandImages.doctorHeroFocus,
+            semanticLabel: l10n.welcomeDoctorName,
           ),
           const DecoratedBox(
             decoration: BoxDecoration(
@@ -203,6 +188,53 @@ class _Feature extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// The waiting room, so a family sees the clinic before the first visit.
+class _WaitingRoom extends StatelessWidget {
+  const _WaitingRoom();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Container(
+      key: const Key('welcome-waiting-room'),
+      height: 180,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(22)),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(BrandImages.waitingRoom, fit: BoxFit.cover, semanticLabel: l10n.welcomeWaitingRoom),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0x00081D2B), Color(0xCC081D2B)],
+                stops: [.45, 1],
+              ),
+            ),
+          ),
+          PositionedDirectional(
+            start: 16,
+            end: 16,
+            bottom: 14,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.welcomeWaitingRoom,
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                Text(l10n.welcomeWaitingRoomCaption,
+                    style: TextStyle(fontSize: 12, color: Colors.white.withValues(alpha: .88))),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

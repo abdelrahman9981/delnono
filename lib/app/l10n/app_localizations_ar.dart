@@ -357,12 +357,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get welcomeDoctorTitle => 'استشاري طب الأطفال وحديثي الولادة · المقطم';
 
   @override
-  String get welcomePhotoPlaceholder => 'صورة د. أحمد';
-
-  @override
-  String get welcomePhotoSoon => 'هنضيف الصورة الحقيقية قريب';
-
-  @override
   String get welcomeHeading => 'أهلًا بيكي';
 
   @override
@@ -1217,10 +1211,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get doctorTagline => 'موجودين عشان نطمنك';
-
-  @override
-  String get doctorPhotoPlaceholder =>
-      '[صورة د. أحمد · هنضيف الصورة الحقيقية قريب]';
 
   @override
   String get bookHere => 'احجزي هنا';
@@ -2150,4 +2140,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashErrNotLocked => 'الحساب مش مقفول.';
+
+  @override
+  String get clinicWaitingRoom => 'مكان الانتظار في العيادة';
+
+  @override
+  String get welcomeWaitingRoom => 'مكان الانتظار في العيادة';
+
+  @override
+  String get welcomeWaitingRoomCaption => 'مكان مريح للأطفال وأهاليهم';
 }

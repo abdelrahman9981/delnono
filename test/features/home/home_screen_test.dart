@@ -86,4 +86,25 @@ void main() {
     expect(find.byKey(const Key('whatsapp-a')), findsOneWidget);
     expect(find.byKey(const Key('clinic-card-b')), findsNothing);
   });
+
+  testWidgets("the doctor's real photo; the tagline never overlaps the name (docs/design/README.md)", (tester) async {
+    await open(tester);
+    expect(find.byKey(const Key('doctor-photo')), findsOneWidget);
+    expect(find.textContaining('صورة د.'), findsNothing, reason: 'no placeholder caption');
+    final tagline = tester.getRect(find.byKey(const Key('doctor-tagline')));
+    final name = tester.getRect(find.descendant(of: find.byKey(const Key('doctor-card')), matching: find.text('د. أحمد العبد')));
+    expect(tagline.overlaps(name), isFalse);
+    expect(tagline.bottom, lessThan(name.top));
+  });
+
+  testWidgets("the waiting room shows on the main clinic's card only; each card has the doctor's avatar", (tester) async {
+    await open(tester);
+    expect(find.byKey(const Key('clinic-photo-clinic-1')), findsOneWidget);
+    expect(find.byKey(const Key('clinic-photo-clinic-2')), findsNothing);
+    await scrollTo(tester, find.byKey(const Key('clinic-card-clinic-2')));
+    expect(
+      find.descendant(of: find.byKey(const Key('clinic-card-clinic-2')), matching: find.byType(CircleAvatar)),
+      findsOneWidget,
+    );
+  });
 }
