@@ -9,6 +9,7 @@ import '../../app/theme.dart';
 import '../../core/launch/external_links.dart';
 import '../account/presentation/account_button.dart';
 import '../clinics/data/clinics_repository.dart';
+import '../notifications/presentation/notifications_bell.dart';
 import '../clinics/domain/hours_summary.dart';
 import '../registration/data/guardian_repository.dart';
 
@@ -26,7 +27,7 @@ class HomeScreen extends ConsumerWidget {
     final clinics = ref.watch(clinicsProvider);
 
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false, actions: const [AccountButton()]),
+      appBar: AppBar(automaticallyImplyLeading: false, actions: const [NotificationsBell(), AccountButton()]),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 0, 18, 28),

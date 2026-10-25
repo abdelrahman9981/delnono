@@ -56,6 +56,11 @@ class FakeNotifier implements LocalNotifier {
     cleared++;
     scheduled = const [];
   }
+
+  @override
+  bool get canOpenSettings => false;
+  @override
+  Future<void> openSettings() async {}
 }
 
 void main() {

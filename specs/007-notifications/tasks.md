@@ -23,10 +23,10 @@
 
 ## Phase 4: User Story 3 + 4 — Page, bell and switches (P2)
 
-- [ ] T010 [US3] lib/features/notifications/presentation/notifications_screen.dart per Notifications.dc.html (groups, mark all read, items open their route, switches with the note) and route `/notifications` in lib/app/router.dart
-- [ ] T011 [US3] Bell with unread count on Home (lib/features/home/home_screen.dart), signed-in only
-- [ ] T012 [US4] Permission: ask on the first booking success and when a switch is turned on; denied note with a button to the phone's settings
-- [ ] T013 Widget tests in test/features/notifications/notifications_screen_test.dart (groups, mark read, bell count, switches, permission note) and add the page to test/app/layout_test.dart
+- [X] T010 [US3] lib/features/notifications/presentation/notifications_screen.dart per Notifications.dc.html (groups, mark all read, items open their route, switches with the note) and route `/notifications` in lib/app/router.dart
+- [X] T011 [US3] Bell with unread count on Home (lib/features/home/home_screen.dart), signed-in only
+- [X] T012 [US4] Permission: ask on the first booking success and when a switch is turned on; denied note with a button to the phone's settings
+- [X] T013 Widget tests in test/features/notifications/notifications_screen_test.dart (groups, mark read, bell count, switches, permission note) and add the page to test/app/layout_test.dart
 
 ## Phase 5: Polish
 

@@ -40,9 +40,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get placeholderContent => 'المحتوى';
 
   @override
-  String get placeholderNotifications => 'الإشعارات';
-
-  @override
   String get screenWelcome => 'أهلًا بيكي';
 
   @override
@@ -2234,4 +2231,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get eventBookingCancelled => 'اتلغى حجزك';
+
+  @override
+  String get notifYesterday => 'أمس';
+
+  @override
+  String get notifUnread => 'غير مقروء';
 }

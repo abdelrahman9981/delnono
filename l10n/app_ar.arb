@@ -13,7 +13,6 @@
   "placeholderHome": "الرئيسية",
   "placeholderBooking": "الحجز",
   "placeholderContent": "المحتوى",
-  "placeholderNotifications": "الإشعارات",
 
   "screenWelcome": "أهلًا بيكي",
   "screenSignIn": "رقم الموبايل",
@@ -755,5 +754,7 @@
   "@remindVaccineSoon": {"placeholders": {"child": {"type": "String"}}},
   "@remindVaccineToday": {"placeholders": {"child": {"type": "String"}}},
   "@remindVaccineBody": {"placeholders": {"vaccine": {"type": "String"}, "date": {"type": "String"}}},
-  "@remindVaccineDose": {"placeholders": {"vaccine": {"type": "String"}, "dose": {"type": "String"}}}
+  "@remindVaccineDose": {"placeholders": {"vaccine": {"type": "String"}, "dose": {"type": "String"}}},
+  "notifYesterday": "أمس",
+  "notifUnread": "غير مقروء"
 }

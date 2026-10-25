@@ -154,12 +154,6 @@ abstract class AppLocalizations {
   /// **'المحتوى'**
   String get placeholderContent;
 
-  /// No description provided for @placeholderNotifications.
-  ///
-  /// In ar, this message translates to:
-  /// **'الإشعارات'**
-  String get placeholderNotifications;
-
   /// No description provided for @screenWelcome.
   ///
   /// In ar, this message translates to:
@@ -4047,6 +4041,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'اتلغى حجزك'**
   String get eventBookingCancelled;
+
+  /// No description provided for @notifYesterday.
+  ///
+  /// In ar, this message translates to:
+  /// **'أمس'**
+  String get notifYesterday;
+
+  /// No description provided for @notifUnread.
+  ///
+  /// In ar, this message translates to:
+  /// **'غير مقروء'**
+  String get notifUnread;
 }
 
 class _AppLocalizationsDelegate

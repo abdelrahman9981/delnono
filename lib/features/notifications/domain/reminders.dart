@@ -134,11 +134,21 @@ List<Reminder> toSchedule(List<Reminder> all, {required DateTime now, required b
   return on.take(maxScheduled).toList();
 }
 
+enum FeedKind { bookingReminder, vaccineReminder, confirmed, cancelled }
+
 /// One line of the notifications page.
 class FeedItem {
-  const FeedItem({required this.key, required this.at, required this.title, required this.body, required this.route});
+  const FeedItem({
+    required this.key,
+    required this.kind,
+    required this.at,
+    required this.title,
+    required this.body,
+    required this.route,
+  });
 
   final String key;
+  final FeedKind kind;
   final DateTime at;
   final String title;
   final String body;
@@ -152,11 +162,20 @@ List<FeedItem> feedItems(List<Reminder> all, List<Booking> bookings, AppLocaliza
   bool inWindow(DateTime t) => !t.isAfter(now) && t.isAfter(since);
   final items = <FeedItem>[
     for (final r in all)
-      if (inWindow(r.at)) FeedItem(key: r.key, at: r.at, title: r.title, body: r.body, route: r.route),
+      if (inWindow(r.at))
+        FeedItem(
+          key: r.key,
+          kind: r.kind == ReminderKind.booking ? FeedKind.bookingReminder : FeedKind.vaccineReminder,
+          at: r.at,
+          title: r.title,
+          body: r.body,
+          route: r.route,
+        ),
     for (final b in bookings) ...[
       if ((b.updatedAt ?? b.createdAt) case final t? when inWindow(t))
         FeedItem(
           key: 'confirmed:${b.id}:${b.startsAt.millisecondsSinceEpoch}',
+          kind: FeedKind.confirmed,
           at: t,
           title: l10n.eventBookingConfirmed,
           body: '${bookingTitle(l10n, b)} · ${dayLabel(b.date)}',
@@ -165,6 +184,7 @@ List<FeedItem> feedItems(List<Reminder> all, List<Booking> bookings, AppLocaliza
       if (b.status == BookingStatus.cancelled && b.cancelledAt != null && inWindow(b.cancelledAt!))
         FeedItem(
           key: 'cancelled:${b.id}',
+          kind: FeedKind.cancelled,
           at: b.cancelledAt!,
           title: l10n.eventBookingCancelled,
           body: '${bookingTitle(l10n, b)} · ${dayLabel(b.date)}',

@@ -1,4 +1,5 @@
 import 'package:delnono/core/launch/external_links.dart';
+import 'package:delnono/features/auth/data/auth_repository.dart';
 import 'package:delnono/features/clinics/data/clinics_repository.dart';
 import 'package:delnono/features/home/home_screen.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
@@ -38,6 +39,8 @@ void main() {
         ...clinicOverrides(clinics: clinics),
         guardianProvider.overrideWith((ref) => Stream.value(guardian)),
         externalLinksProvider.overrideWithValue(links),
+        // Signed out unless a test says otherwise: no bell (007 FR-008).
+        authStateProvider.overrideWith((ref) => Stream.value(null)),
       ],
     );
     await h.pump(tester);

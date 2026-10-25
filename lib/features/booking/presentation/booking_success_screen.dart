@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/l10n/app_localizations.dart';
 import '../../../app/route_guard.dart';
 import '../../../app/theme.dart';
+import '../../notifications/presentation/reminder_offer.dart';
 import '../../../core/format/arabic_digits.dart';
 import '../../registration/data/guardian_repository.dart';
 import '../data/bookings_repository.dart';
@@ -145,6 +146,8 @@ class BookingSuccessScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            // The first time, offer the reminders here, where they make sense (007 FR-006).
+            const ReminderOffer(),
             const SizedBox(height: 18),
             FilledButton.icon(
               key: const Key('view-my-bookings'),

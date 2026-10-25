@@ -3,6 +3,7 @@ import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../domain/reminders.dart';
@@ -18,6 +19,10 @@ abstract interface class LocalNotifier {
   /// Cancels every pending reminder and schedules [reminders] (research R1).
   Future<void> replaceAll(List<Reminder> reminders);
   Future<void> cancelAll();
+
+  /// Whether [openSettings] can open this app's notification settings (iOS only).
+  bool get canOpenSettings;
+  Future<void> openSettings();
 }
 
 /// Web (the demo) and tests: nothing on the phone; the page still works.
@@ -34,6 +39,10 @@ class NoopNotifier implements LocalNotifier {
   Future<void> replaceAll(List<Reminder> reminders) async {}
   @override
   Future<void> cancelAll() async {}
+  @override
+  bool get canOpenSettings => false;
+  @override
+  Future<void> openSettings() async {}
 }
 
 /// flutter_local_notifications: times in Cairo (research R3), inexact on Android (no exact-alarm
@@ -126,6 +135,14 @@ class PluginNotifier implements LocalNotifier {
   @override
   Future<void> cancelAll() async {
     if (_ready) await _plugin.cancelAll();
+  }
+
+  @override
+  bool get canOpenSettings => defaultTargetPlatform == TargetPlatform.iOS;
+
+  @override
+  Future<void> openSettings() async {
+    if (canOpenSettings) await launchUrl(Uri.parse('app-settings:'));
   }
 }
 

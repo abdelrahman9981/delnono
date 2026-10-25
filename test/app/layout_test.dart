@@ -17,8 +17,8 @@ import 'package:delnono/features/auth/presentation/phone_screen.dart';
 import 'package:delnono/features/auth/presentation/reverify_screen.dart';
 import 'package:delnono/features/booking/application/booking_form_controller.dart';
 import 'package:delnono/features/booking/data/booking_settings.dart';
-import 'package:delnono/features/booking/data/packages_repository.dart';
 import 'package:delnono/features/booking/data/bookings_repository.dart';
+import 'package:delnono/features/booking/data/packages_repository.dart';
 import 'package:delnono/features/booking/data/slots_repository.dart';
 import 'package:delnono/features/booking/data/vaccines_repository.dart';
 import 'package:delnono/features/booking/domain/booking.dart';
@@ -33,6 +33,11 @@ import 'package:delnono/features/child_profile/presentation/visits_screen.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/children/presentation/add_child_screen.dart';
 import 'package:delnono/features/children/presentation/child_profile_screen.dart';
+import 'package:delnono/features/home/home_screen.dart';
+import 'package:delnono/features/notifications/data/local_notifier.dart';
+import 'package:delnono/features/notifications/data/reminder_sync.dart';
+import 'package:delnono/features/notifications/domain/reminders.dart';
+import 'package:delnono/features/notifications/presentation/notifications_screen.dart';
 import 'package:delnono/features/registration/application/registration_controller.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:delnono/features/registration/data/registration_api.dart';
@@ -40,7 +45,6 @@ import 'package:delnono/features/registration/presentation/consent_screen.dart';
 import 'package:delnono/features/registration/presentation/guardian_details_screen.dart';
 import 'package:delnono/features/registration/presentation/link_children_screen.dart';
 import 'package:delnono/features/shell/shell_scaffold.dart';
-import 'package:delnono/features/home/home_screen.dart';
 import 'package:delnono/features/welcome/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +53,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 import '../features/auth/fakes.dart';
 import '../features/child_profile/fakes.dart' show profileDataOverrides;
@@ -125,9 +131,12 @@ final screens = <String, Widget Function()>{
   'account': () => const AccountScreen(),
   'change phone': () => const ChangePhoneScreen(),
   'delete account': () => const DeleteAccountScreen(),
+  'notifications': () => const NotificationsScreen(),
 };
 
 void main() {
+  setUp(() => SharedPreferencesAsyncPlatform.instance = InMemorySharedPreferencesAsync.empty());
+
   for (final brightness in Brightness.values) {
     for (final scale in [1.0, 2.0]) {
       for (final MapEntry(key: name, value: build) in screens.entries) {
@@ -152,6 +161,19 @@ void main() {
             slotsTakenProvider.overrideWith((ref, key) => Stream.value(const {17: 6, 18: 2})),
             myBookingsProvider.overrideWith((ref) => Stream.value([sampleBooking])),
             activePackageProvider.overrideWith((ref, date) => Stream.value(null)),
+            // Reminders the page lists, and a phone that has not allowed notifications (denied note).
+            localNotifierProvider.overrideWithValue(const NoopNotifier()),
+            feedProvider.overrideWithValue([
+              for (final (i, kind) in FeedKind.values.indexed)
+                FeedItem(
+                  key: 'k$i',
+                  kind: kind,
+                  at: DateTime.utc(2026, 10, 20 - i, 7),
+                  title: 'تطعيم يوسف أحمد محمود بعد ٣ أيام',
+                  body: '[تطعيم مؤقت بأسم طويل] · الجرعة ٢ · الأحد، ١٥ نوفمبر ٢٠٢٦',
+                  route: '/booking/mine',
+                ),
+            ]),
             ...profileDataOverrides(
               anyChild: true,
               clinics: const [clinic1, clinic2],
