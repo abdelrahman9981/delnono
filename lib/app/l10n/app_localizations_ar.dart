@@ -1773,4 +1773,260 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashMoveForFamily => 'نقل الحجز لميعاد تاني';
+
+  @override
+  String get dashBrand => 'دكتور النونو';
+
+  @override
+  String get dashAdminSection => 'إدارة';
+
+  @override
+  String get dashUnsaved => 'فيه تغييرات مش محفوظة';
+
+  @override
+  String get dashAllSaved => 'كل التغييرات محفوظة';
+
+  @override
+  String get dashDiscard => 'تراجع';
+
+  @override
+  String get dashSaveChanges => 'حفظ التغييرات';
+
+  @override
+  String get dashPickRange => 'اختاري الفترة';
+
+  @override
+  String get dashEgp => 'جنيه';
+
+  @override
+  String get dashKpiBookings => 'الحجوزات';
+
+  @override
+  String dashKpiCapacity(String count) {
+    return 'من $count مكان';
+  }
+
+  @override
+  String get dashKpiArrived => 'وصلوا';
+
+  @override
+  String get dashKpiDone => 'تم الكشف';
+
+  @override
+  String get dashKpiNoShow => 'لم يحضر';
+
+  @override
+  String get dashKpiCash => 'كاش النهارده';
+
+  @override
+  String get dashKpiCashNote => 'كشوفات بس، من غير الباقات';
+
+  @override
+  String get dashHourOver => 'خلصت';
+
+  @override
+  String get dashHourNow => 'دلوقتي';
+
+  @override
+  String get dashTodayBookings => 'حجوزات النهارده';
+
+  @override
+  String get dashAllHours => 'كل الساعات';
+
+  @override
+  String get dashColNumber => '#';
+
+  @override
+  String get dashColChild => 'الطفل';
+
+  @override
+  String get dashColVisit => 'الزيارة';
+
+  @override
+  String get dashColStatus => 'الحالة';
+
+  @override
+  String get dashColPayment => 'الدفع';
+
+  @override
+  String get dashColAction => 'إجراء';
+
+  @override
+  String get dashOpenFile => 'الملف';
+
+  @override
+  String get dashPayPackage => 'باقة';
+
+  @override
+  String dashPayCash(String amount) {
+    return '$amount ج';
+  }
+
+  @override
+  String get dashClinicContact => 'بيانات العيادة والتواصل';
+
+  @override
+  String get dashPricesBooking => 'الأسعار والحجز';
+
+  @override
+  String get dashHoursAndVaccineDays => 'مواعيد العمل وأيام التطعيم';
+
+  @override
+  String get dashHoursHint =>
+      'اختاري فترات كل يوم من القائمة. يوم من غير فترات = مقفول.';
+
+  @override
+  String get dashAddRange => 'فترة';
+
+  @override
+  String get dashDayClosed => 'مقفول';
+
+  @override
+  String get dashHolidayHint =>
+      'الأيام دي العيادة مقفولة فيها ومش بتظهر في الحجز.';
+
+  @override
+  String get dashAddHoliday => 'إجازة';
+
+  @override
+  String get dashHolidayWarn =>
+      'لو فيه حجوزات مؤكدة في يوم إجازة، الحفظ هيتوقف لحد ما تنقليها أو تلغيها.';
+
+  @override
+  String get dashNoHolidays => 'مفيش إجازات جاية.';
+
+  @override
+  String get dashVaccinePricesClinic => 'أسعار التطعيمات في العيادة';
+
+  @override
+  String get dashOffered => 'متاح';
+
+  @override
+  String get dashShownToGuardian => 'يظهر للأم';
+
+  @override
+  String get dashPriceAtClinic => 'بالسعر في العيادة';
+
+  @override
+  String get dashUnitMonths => 'شهر';
+
+  @override
+  String get dashUnitHours => 'ساعة';
+
+  @override
+  String get dashUnitPerHour => 'طفل/ساعة';
+
+  @override
+  String get dashChildFileTitle => 'ملف الطفل';
+
+  @override
+  String get dashChildFileAudited => 'فتح الملف ده اتسجل في سجل التدقيق';
+
+  @override
+  String get dashBack => 'رجوع';
+
+  @override
+  String get dashVisits => 'الزيارات';
+
+  @override
+  String get dashDoctorNotes => 'ملاحظات الدكتور';
+
+  @override
+  String get dashDoctorOnly => 'للدكتور بس';
+
+  @override
+  String get dashNewMeasurement => 'تسجيل قياس جديد';
+
+  @override
+  String get dashSaveMeasurement => 'حفظ القياس';
+
+  @override
+  String get dashMeasurementHint =>
+      'اكتبي قيمة واحدة على الأقل. التصحيح بعد الحفظ للدكتور بس.';
+
+  @override
+  String get dashMeasurementHistory => 'القياسات المتسجلة';
+
+  @override
+  String get dashNumbersOnly =>
+      'القياسات معروضة بالأرقام بس، من غير أي حكم طبي.';
+
+  @override
+  String get dashColDate => 'التاريخ';
+
+  @override
+  String get dashColClinic => 'العيادة';
+
+  @override
+  String get dashColRecorder => 'سجّله';
+
+  @override
+  String get dashColVaccine => 'التطعيم';
+
+  @override
+  String get dashColDose => 'الجرعة';
+
+  @override
+  String get dashColLot => 'التشغيلة';
+
+  @override
+  String get dashColNote => 'الملاحظة';
+
+  @override
+  String get dashCorrectShort => 'تصحيح';
+
+  @override
+  String get dashCorrected => 'اتصحح';
+
+  @override
+  String get dashGuardian => 'ولي الأمر';
+
+  @override
+  String dashClinicsVisited(String clinics) {
+    return 'زار: $clinics';
+  }
+
+  @override
+  String get dashNoPackage => 'من غير باقة';
+
+  @override
+  String dashResultsCount(String count) {
+    return '$count نتيجة';
+  }
+
+  @override
+  String get dashReportFilters => 'الفترة والعيادة';
+
+  @override
+  String get dashReportResult => 'النتيجة';
+
+  @override
+  String get dashStaffList => 'الحسابات';
+
+  @override
+  String get dashActive => 'شغال';
+
+  @override
+  String get dashAuditHint =>
+      'كل فتح لملف طفل وكل تصحيح بيتسجل هنا. السجل للقراءة بس.';
+
+  @override
+  String get dashContentList => 'النصايح والفيديوهات';
+
+  @override
+  String get dashFollowUpBands => 'قوايم المتابعة حسب السن';
+
+  @override
+  String get dashDangerSigns => 'علامات الخطر';
+
+  @override
+  String get dashCatalogue => 'التطعيمات في التطبيق';
+
+  @override
+  String get dashSettingsHint => 'إعدادات للعيلة كلها في العيادتين.';
+
+  @override
+  String dashClinicArea(String area) {
+    return 'عيادة $area';
+  }
 }

@@ -7,6 +7,7 @@ import '../../features/child_profile/data/follow_up_repository.dart';
 import '../data/dashboard_api.dart';
 import '../data/staff_session.dart';
 import '../widgets/dash_page.dart';
+import '../widgets/dash_ui.dart';
 
 /// The saved drafts, or null when there are none (research R7).
 final followUpDraftsProvider = StreamProvider<({List<FollowUpBand> bands, List<String>? dangerSigns})?>(
@@ -102,65 +103,72 @@ class _FollowUpEditorScreenState extends ConsumerState<FollowUpEditorScreen> {
             child: Text(l10n.dashPublish),
           ),
       ],
+      subtitle: l10n.dashDraftNote,
+      showClinic: false,
       children: [
-        Text(l10n.dashDraftNote, style: Theme.of(context).textTheme.bodySmall),
-        const SizedBox(height: 12),
-        Text(l10n.whenToCall, style: Theme.of(context).textTheme.titleMedium),
-        TextField(
-          key: const Key('danger-signs'),
-          controller: _danger,
-          maxLines: 5,
-          decoration: InputDecoration(helperText: l10n.dashOnePerLine),
+        DashCard(
+          title: l10n.whenToCall,
+          hint: l10n.dashOnePerLine,
+          icon: Icons.warning_amber_rounded,
+          tone: Tone.pink,
+          child: TextField(
+            key: const Key('danger-signs'),
+            controller: _danger,
+            maxLines: 5,
+            decoration: dashInput(context),
+          ),
         ),
-        const SizedBox(height: 20),
-        for (final (i, b) in _bands!.indexed)
-          Card(
+        const SizedBox(height: 16),
+        for (final (i, b) in _bands!.indexed) ...[
+          DashCard(
             key: Key('band-$i'),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: TextField(
-                          controller: b.title,
-                          decoration: InputDecoration(labelText: l10n.dashItemTitle),
-                        ),
+            title: b.title.text.isEmpty ? l10n.dashFollowUpBands : b.title.text,
+            icon: Icons.checklist_rtl,
+            tone: Tone.green,
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: TextField(
+                        controller: b.title,
+                        decoration: InputDecoration(labelText: l10n.dashItemTitle),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: b.from,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(labelText: l10n.dashAgeFrom),
-                        ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: b.from,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(labelText: l10n.dashAgeFrom),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: TextField(
-                          controller: b.to,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(labelText: l10n.dashAgeTo),
-                        ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: b.to,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(labelText: l10n.dashAgeTo),
                       ),
-                      IconButton(
-                        tooltip: l10n.dashRemove,
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: () => setState(() => _bands!.removeAt(i)),
-                      ),
-                    ],
-                  ),
-                  TextField(
-                    controller: b.items,
-                    maxLines: 4,
-                    decoration: InputDecoration(helperText: l10n.dashOnePerLine),
-                  ),
-                ],
-              ),
+                    ),
+                    IconButton(
+                      tooltip: l10n.dashRemove,
+                      icon: const Icon(Icons.delete_outline),
+                      onPressed: () => setState(() => _bands!.removeAt(i)),
+                    ),
+                  ],
+                ),
+                TextField(
+                  controller: b.items,
+                  maxLines: 4,
+                  decoration: InputDecoration(helperText: l10n.dashOnePerLine),
+                ),
+              ],
             ),
           ),
+          const SizedBox(height: 12),
+        ],
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(

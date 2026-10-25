@@ -6,6 +6,7 @@ import '../../core/settings/settings_repository.dart';
 import '../../features/clinics/data/clinics_repository.dart';
 import '../data/dashboard_api.dart';
 import '../widgets/dash_page.dart';
+import '../widgets/dash_ui.dart';
 
 final staffListProvider = StreamProvider<List<Map<String, dynamic>>>(
   (ref) => ref
@@ -39,44 +40,57 @@ class StaffScreen extends ConsumerWidget {
           label: Text(l10n.dashNewStaff),
         ),
       ],
+      showClinic: false,
       children: [
-        for (final s in staff)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: ActionRow(
-                key: Key('staff-${s['uid']}'),
-                title: '${s['name']} · ${s['email']}',
-                subtitle: [
-                  s['role'] == 'doctor' ? l10n.dashRoleDoctor : l10n.dashRoleSecretary,
-                  if (s['clinicId'] != null) clinics.where((c) => c.id == s['clinicId']).firstOrNull?.name ?? '',
-                  if (s['active'] != true) l10n.dashDisabled,
-                ].join(' · '),
-                actions: [
-                  IconButton(
-                    tooltip: l10n.dashEdit,
-                    icon: const Icon(Icons.edit_outlined),
-                    onPressed: () => showDialog<void>(
-                      context: context,
-                      builder: (_) => _StaffDialog(existing: s),
+        DashCard(
+          title: l10n.dashStaffList,
+          icon: Icons.badge_outlined,
+          tone: Tone.navy,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (staff.isEmpty) Text(l10n.dashNothingYet),
+              for (final (i, s) in staff.indexed) ...[
+                if (i > 0) const Divider(height: 1),
+                ActionRow(
+                  key: Key('staff-${s['uid']}'),
+                  leading: InitialAvatar('${s['name']}', tone: s['role'] == 'doctor' ? Tone.navy : Tone.pink),
+                  title: '${s['name']} · ${s['email']}',
+                  subtitle: [
+                    s['role'] == 'doctor' ? l10n.dashRoleDoctor : l10n.dashRoleSecretary,
+                    if (s['clinicId'] != null) clinics.where((c) => c.id == s['clinicId']).firstOrNull?.name ?? '',
+                  ].join(' · '),
+                  actions: [
+                    StatusPill(
+                      s['active'] == true ? l10n.dashActive : l10n.dashDisabled,
+                      s['active'] == true ? PillKind.ok : PillKind.noShow,
                     ),
-                  ),
-                  OutlinedButton(
-                    key: Key('staff-toggle-${s['uid']}'),
-                    onPressed: () => runAction(
-                      context,
-                      () => api.call('manageStaff', {
-                        'action': s['active'] == true ? 'disable' : 'enable',
-                        'uid': s['uid'],
-                      }),
-                      done: l10n.dashSaved,
+                    IconButton(
+                      tooltip: l10n.dashEdit,
+                      icon: const Icon(Icons.edit_outlined),
+                      onPressed: () => showDialog<void>(
+                        context: context,
+                        builder: (_) => _StaffDialog(existing: s),
+                      ),
                     ),
-                    child: Text(s['active'] == true ? l10n.dashDisable : l10n.dashEnable),
-                  ),
-                ],
-              ),
-            ),
+                    OutlinedButton(
+                      key: Key('staff-toggle-${s['uid']}'),
+                      onPressed: () => runAction(
+                        context,
+                        () => api.call('manageStaff', {
+                          'action': s['active'] == true ? 'disable' : 'enable',
+                          'uid': s['uid'],
+                        }),
+                        done: l10n.dashSaved,
+                      ),
+                      child: Text(s['active'] == true ? l10n.dashDisable : l10n.dashEnable),
+                    ),
+                  ],
+                ),
+              ],
+            ],
           ),
+        ),
       ],
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart' show DateFormat;
 
 import '../../app/l10n/app_localizations.dart';
 import '../../app/theme.dart';
@@ -7,42 +9,69 @@ import '../../core/clock.dart';
 import '../../core/format/age.dart';
 import '../../core/format/arabic_digits.dart';
 import '../../features/booking/domain/clinic_time.dart';
+import '../../features/booking/presentation/booking_format.dart';
 import '../../features/child_profile/data/vaccine_schedule_repository.dart';
 import '../../features/child_profile/presentation/profile_format.dart';
 import '../../features/clinics/data/clinics_repository.dart';
 import '../data/dashboard_api.dart';
 import '../data/staff_session.dart';
+import '../router.dart';
 import '../widgets/dash_page.dart';
+import '../widgets/dash_ui.dart';
 
 /// The child file, opened through `openChildFile` so the opening is logged (D-13, FR-028).
 final childFileProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, String>(
   (ref, childId) => ref.read(dashboardApiProvider).call('openChildFile', {'childId': childId}),
 );
 
-/// Child file (005 US4): basic data, measurements and doses recorded at the clinic (D-29), the
-/// doctor's corrections and notes (D-11), the family package (D-46).
-class ChildFileScreen extends ConsumerWidget {
+/// Child file (005 US4; docs/design/dashboard/ChildFile): a header card with the child, guardian,
+/// package and clinics visited, then tabs for measurements, doses, visits and the doctor's notes.
+/// Staff record at their clinic (D-29); only the doctor corrects (with a change log) and reads or
+/// writes notes (D-11); the family package can be sold here (D-46).
+class ChildFileScreen extends ConsumerStatefulWidget {
   const ChildFileScreen({super.key, required this.childId});
 
   final String childId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ChildFileScreen> createState() => _ChildFileScreenState();
+}
+
+class _ChildFileScreenState extends ConsumerState<ChildFileScreen> {
+  int _tab = 0;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final file = ref.watch(childFileProvider(childId));
-    return file.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text(dashErrorText(l10n, e))),
-      data: (f) => _File(childId: childId, file: f),
+    final file = ref.watch(childFileProvider(widget.childId));
+    return DashPage(
+      title: l10n.dashChildFileTitle,
+      subtitle: l10n.dashChildFileAudited,
+      leading: IconButton(
+        key: const Key('child-back'),
+        tooltip: l10n.dashBack,
+        // The platform back arrow follows the text direction: it points right (›, back) in RTL.
+        icon: const BackButtonIcon(),
+        onPressed: () => context.go(DashRoutes.children),
+      ),
+      children: [
+        file.when(
+          loading: () => const Padding(padding: EdgeInsets.all(40), child: Center(child: CircularProgressIndicator())),
+          error: (e, _) => Center(child: Text(dashErrorText(l10n, e))),
+          data: (f) => _File(childId: widget.childId, file: f, tab: _tab, onTab: (i) => setState(() => _tab = i)),
+        ),
+      ],
     );
   }
 }
 
 class _File extends ConsumerWidget {
-  const _File({required this.childId, required this.file});
+  const _File({required this.childId, required this.file, required this.tab, required this.onTab});
 
   final String childId;
   final Map<String, dynamic> file;
+  final int tab;
+  final ValueChanged<int> onTab;
 
   List<Map<String, dynamic>> _list(String key) => [
     for (final x in (file[key] as List? ?? const [])) Map<String, dynamic>.from(x as Map),
@@ -51,11 +80,9 @@ class _File extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    final text = Theme.of(context).textTheme;
     final c = Theme.of(context).extension<AppColors>()!;
     final child = Map<String, dynamic>.from(file['child'] as Map);
-    final staff = ref.watch(staffSessionProvider).value;
-    final isDoctor = staff?.isDoctor ?? false;
+    final isDoctor = ref.watch(staffSessionProvider).value?.isDoctor ?? false;
     final clinicId = ref.watch(currentClinicIdProvider);
     final clinics = ref.watch(allClinicsProvider).value ?? const <Clinic>[];
     String clinicName(Object? id) => clinics.where((x) => x.id == id).firstOrNull?.area ?? '';
@@ -65,215 +92,340 @@ class _File extends ConsumerWidget {
     final visits = _list('visits')..sort((a, b) => '${b['date']}'.compareTo('${a['date']}'));
     final today = ClinicTime.dateOf(ref.watch(clockProvider)());
     final package = _list('packages')
-        .where(
-          (p) =>
-              p['active'] == true && '${p['startsOn']}'.compareTo(today) <= 0 && today.compareTo('${p['endsOn']}') <= 0,
-        )
+        .where((p) => p['active'] == true && '${p['startsOn']}'.compareTo(today) <= 0 && today.compareTo('${p['endsOn']}') <= 0)
         .firstOrNull;
+    final visited = {
+      for (final r in [...measurements, ...doses, ...visits])
+        if (clinicName(r['clinicId']).isNotEmpty) clinicName(r['clinicId']),
+    };
     void reload() => ref.invalidate(childFileProvider(childId));
+    Future<void> dialog(Widget d) async {
+      if (await showDialog<bool>(context: context, builder: (_) => d) == true) reload();
+    }
 
-    Widget section(String title, List<Widget> children, {Widget? action}) => Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(child: Text(title, style: text.titleMedium)),
-                ?action,
-              ],
+    String value(Object? v, String unit) => v == null ? '—' : '${measureValue((v as num).toDouble())} $unit';
+    Widget recorder(Map<String, dynamic> r) => Text('${r['recordedByName'] ?? '—'}', style: TextStyle(color: c.muted));
+    Widget correction(Map<String, dynamic> r, String kind, Widget Function() editor) => Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        if (r['correctedBy'] != null) StatusPill(l10n.dashCorrected, PillKind.warn, dot: false),
+        if (isDoctor)
+          OutlinedButton.icon(
+            key: Key('correct-$kind-${r['id']}'),
+            onPressed: () => dialog(editor()),
+            icon: const Icon(Icons.edit_note, size: 18),
+            label: Text(l10n.dashCorrectShort),
+          ),
+      ],
+    );
+
+    final header = DashCard(
+      key: const Key('child-header'),
+      child: Wrap(
+        spacing: 20,
+        runSpacing: 14,
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Row(mainAxisSize: MainAxisSize.min, children: [
+            InitialAvatar('${child['name']}', tone: child['sex'] == 'female' ? Tone.pink : Tone.blue, size: 56),
+            const SizedBox(width: 14),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+              Text('${child['name']}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+              Text(
+                '${arabicAge('${child['birthDate']}', l10n)} · ${child['sex'] == 'female' ? l10n.sexFemale : l10n.sexMale} · ${child['birthDate']}',
+                style: TextStyle(color: c.muted),
+              ),
+              Text('${l10n.dashGuardian}: ${child['guardianPhone'] ?? ''}', style: TextStyle(color: c.muted)),
+              if (child['allergies'] != null && '${child['allergies']}'.isNotEmpty)
+                Text(l10n.detailsAllergies('${child['allergies']}'), style: TextStyle(color: c.dangerText)),
+            ]),
+          ]),
+          Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
+            if (package != null)
+              StatusPill(l10n.packageActiveUntil('${package['endsOn']}'), PillKind.ok, key: const Key('child-package'))
+            else ...[
+              StatusPill(l10n.dashNoPackage, PillKind.info, dot: false),
+              if (child['guardianUid'] != null && clinicId != null)
+                OutlinedButton(
+                  key: const Key('sell-package'),
+                  onPressed: () async {
+                    final ok = await runAction(
+                      context,
+                      () => ref.read(dashboardApiProvider).call('sellPackage', {'clinicId': clinicId, 'guardianUid': child['guardianUid']}),
+                      done: l10n.dashPackageSold,
+                    );
+                    if (ok) reload();
+                  },
+                  child: Text(l10n.dashSellPackage),
+                ),
+            ],
+            if (visited.isNotEmpty) StatusPill(l10n.dashClinicsVisited(visited.join(l10n.listSeparator)), PillKind.info, dot: false),
+            OutlinedButton.icon(
+              key: const Key('edit-basics'),
+              onPressed: () => dialog(_BasicsDialog(childId: childId, child: child)),
+              icon: const Icon(Icons.edit_outlined, size: 18),
+              label: Text(l10n.dashEditBasics),
             ),
-            const SizedBox(height: 8),
-            ...children,
-          ],
-        ),
+          ]),
+        ],
       ),
     );
 
-    return DashPage(
-      title: '${child['name']}',
-      actions: [
-        OutlinedButton.icon(
-          key: const Key('edit-basics'),
-          onPressed: () async {
-            if (await showDialog<bool>(
-                  context: context,
-                  builder: (_) => _BasicsDialog(childId: childId, child: child),
-                ) ==
-                true) {
-              reload();
-              }
-          },
-          icon: const Icon(Icons.edit_outlined),
-          label: Text(l10n.dashEditBasics),
-        ),
-      ],
-      children: [
-        section(l10n.dashBasics, [
-          Text(
-            '${arabicAge('${child['birthDate']}', l10n)} · ${child['sex'] == 'female' ? l10n.sexFemale : l10n.sexMale} · ${child['birthDate']}',
+    final history = DashCard(
+      title: l10n.dashMeasurementHistory,
+      icon: Icons.straighten,
+      padding: EdgeInsets.zero,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (measurements.isEmpty)
+          Padding(padding: const EdgeInsets.all(20), child: Text(l10n.noMeasurements, style: TextStyle(color: c.muted)))
+        else
+          DashTable(
+            headers: [l10n.dashColDate, l10n.measureWeight, l10n.measureLength, l10n.measureHead, l10n.dashColClinic, l10n.dashColRecorder, ''],
+            flex: const [3, 2, 2, 2, 2, 3, 4],
+            rows: [
+              for (final m in measurements)
+                DashRow(key: Key('measurement-${m['id']}'), cells: [
+                  Text('${m['measuredOn']}'),
+                  Text(value(m['weightKg'], l10n.unitKg), style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text(value(m['lengthCm'], l10n.unitCm)),
+                  Text(value(m['headCm'], l10n.unitCm)),
+                  Text(clinicName(m['clinicId'])),
+                  recorder(m),
+                  correction(m, 'measurement', () => _MeasurementDialog(childId: childId, clinicId: clinicId, existing: m)),
+                ]),
+            ],
           ),
-          Text(l10n.dashGuardianPhone('${child['guardianPhone'] ?? ''}')),
-          if (child['allergies'] != null) Text(l10n.detailsAllergies('${child['allergies']}')),
-          const SizedBox(height: 8),
-          if (package != null)
-            Text(l10n.packageActiveUntil('${package['endsOn']}'), key: const Key('child-package'))
-          else if (child['guardianUid'] != null && clinicId != null)
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: OutlinedButton(
-                key: const Key('sell-package'),
-                onPressed: () async {
-                  final ok = await runAction(
-                    context,
-                    () => ref.read(dashboardApiProvider).call('sellPackage', {
-                      'clinicId': clinicId,
-                      'guardianUid': child['guardianUid'],
-                    }),
-                    done: l10n.dashPackageSold,
-                  );
-                  if (ok) reload();
-                },
-                child: Text(l10n.dashSellPackage),
-              ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+          child: Text(l10n.dashNumbersOnly, style: TextStyle(fontSize: 12, color: c.muted)),
+        ),
+      ]),
+    );
+
+    final measurementsTab = LayoutBuilder(builder: (context, box) {
+      final form = _NewMeasurement(childId: childId, clinicId: clinicId, onSaved: reload);
+      if (box.maxWidth < 900) return Column(children: [form, const SizedBox(height: 16), history]);
+      return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SizedBox(width: 320, child: form),
+        const SizedBox(width: 16),
+        Expanded(child: history),
+      ]);
+    });
+
+    final dosesTab = DashCard(
+      title: l10n.dashDoses,
+      icon: Icons.vaccines_outlined,
+      tone: Tone.green,
+      padding: EdgeInsets.zero,
+      action: FilledButton.icon(
+        key: const Key('add-dose'),
+        onPressed: () => dialog(_DoseDialog(childId: childId, clinicId: clinicId)),
+        icon: const Icon(Icons.add),
+        label: Text(l10n.dashAddDose),
+      ),
+      child: doses.isEmpty
+          ? Padding(padding: const EdgeInsets.all(20), child: Text(l10n.dashNothingYet, style: TextStyle(color: c.muted)))
+          : DashTable(
+              headers: [l10n.dashColVaccine, l10n.dashColDose, l10n.dashColDate, l10n.dashColLot, l10n.dashColClinic, l10n.dashColRecorder, ''],
+              flex: const [4, 2, 3, 2, 2, 3, 4],
+              rows: [
+                for (final d in doses)
+                  DashRow(key: Key('dose-${d['id']}'), cells: [
+                    Text(catalogue[d['vaccineId']]?.name ?? '${d['vaccineId']}', style: const TextStyle(fontWeight: FontWeight.w600)),
+                    Text(arabicDigits(d['dose'] as num? ?? 1)),
+                    Text('${d['givenOn']}'),
+                    Text('${d['lot'] ?? '—'}', textDirection: TextDirection.ltr),
+                    Text(clinicName(d['clinicId'])),
+                    recorder(d),
+                    correction(d, 'dose', () => _DoseDialog(childId: childId, clinicId: clinicId, existing: d)),
+                  ]),
+              ],
             ),
-        ]),
-        const SizedBox(height: 12),
-        section(
-          l10n.dashMeasurements,
-          [
-            if (measurements.isEmpty) Text(l10n.noMeasurements, style: TextStyle(color: c.muted)),
-            for (final m in measurements)
-              ListTile(
-                key: Key('measurement-${m['id']}'),
-                dense: true,
-                title: Text(
-                  [
-                    if (m['weightKg'] != null)
-                      '${l10n.measureWeight} ${measureValue((m['weightKg'] as num).toDouble())} ${l10n.unitKg}',
-                    if (m['lengthCm'] != null)
-                      '${l10n.measureLength} ${measureValue((m['lengthCm'] as num).toDouble())} ${l10n.unitCm}',
-                    if (m['headCm'] != null)
-                      '${l10n.measureHead} ${measureValue((m['headCm'] as num).toDouble())} ${l10n.unitCm}',
-                  ].join(' · '),
-                ),
-                subtitle: Text('${m['measuredOn']} · ${clinicName(m['clinicId'])}'),
-                trailing: isDoctor
-                    ? IconButton(
-                        key: Key('correct-measurement-${m['id']}'),
-                        tooltip: l10n.dashCorrect,
-                        icon: const Icon(Icons.edit_note),
-                        onPressed: () async {
-                          if (await showDialog<bool>(
-                                context: context,
-                                builder: (_) => _MeasurementDialog(childId: childId, clinicId: clinicId, existing: m),
-                              ) ==
-                              true) {
-                            reload();
-                          }
-                        },
-                      )
-                    : null,
-              ),
-          ],
-          action: TextButton.icon(
-            key: const Key('add-measurement'),
-            onPressed: () async {
-              if (await showDialog<bool>(
-                    context: context,
-                    builder: (_) => _MeasurementDialog(childId: childId, clinicId: clinicId),
-                  ) ==
-                  true) {
-                reload();
-                }
-            },
-            icon: const Icon(Icons.add),
-            label: Text(l10n.dashAdd),
-          ),
-        ),
-        const SizedBox(height: 12),
-        section(
-          l10n.dashDoses,
-          [
-            for (final d in doses)
-              ListTile(
-                key: Key('dose-${d['id']}'),
-                dense: true,
-                title: Text(
-                  '${catalogue[d['vaccineId']]?.name ?? d['vaccineId']} · ${l10n.doseNumber(arabicDigits(d['dose'] as num? ?? 1))}',
-                ),
-                subtitle: Text(
-                  [
-                    '${d['givenOn']}',
-                    if (d['lot'] != null) l10n.doseLot('${d['lot']}'),
-                    clinicName(d['clinicId']),
-                  ].join(' · '),
-                ),
-                trailing: isDoctor
-                    ? IconButton(
-                        key: Key('correct-dose-${d['id']}'),
-                        tooltip: l10n.dashCorrect,
-                        icon: const Icon(Icons.edit_note),
-                        onPressed: () async {
-                          if (await showDialog<bool>(
-                                context: context,
-                                builder: (_) => _DoseDialog(childId: childId, clinicId: clinicId, existing: d),
-                              ) ==
-                              true) {
-                            reload();
-                            }
-                        },
-                      )
-                    : null,
-              ),
-          ],
-          action: TextButton.icon(
-            key: const Key('add-dose'),
-            onPressed: () async {
-              if (await showDialog<bool>(
-                    context: context,
-                    builder: (_) => _DoseDialog(childId: childId, clinicId: clinicId),
-                  ) ==
-                  true) {
-                reload();
-                }
-            },
-            icon: const Icon(Icons.add),
-            label: Text(l10n.dashAdd),
-          ),
-        ),
-        const SizedBox(height: 12),
-        section(l10n.visitsTitle, [
-          if (visits.isEmpty) Text(l10n.visitsEmpty, style: TextStyle(color: c.muted)),
-          for (final v in visits)
-            ListTile(
-              key: Key('visit-${v['id']}'),
-              dense: true,
-              title: Text('${v['date']} · ${clinicName(v['clinicId'])}'),
-              // The doctor's note: sent to the doctor only (FR-016).
-              subtitle: isDoctor
-                  ? Text((v['note'] as String?)?.isNotEmpty == true ? '${v['note']}' : l10n.dashNoNote)
-                  : null,
-              trailing: isDoctor
-                  ? IconButton(
+    );
+
+    final visitsTab = DashCard(
+      title: l10n.dashVisits,
+      icon: Icons.event_available_outlined,
+      padding: EdgeInsets.zero,
+      child: visits.isEmpty
+          ? Padding(padding: const EdgeInsets.all(20), child: Text(l10n.visitsEmpty, style: TextStyle(color: c.muted)))
+          : DashTable(
+              headers: [l10n.dashColDate, l10n.dashColClinic],
+              flex: const [1, 1],
+              rows: [
+                for (final v in visits)
+                  DashRow(key: Key('visit-${v['id']}'), cells: [Text('${v['date']}'), Text(clinicName(v['clinicId']))]),
+              ],
+            ),
+    );
+
+    // The doctor's notes: sent to the doctor only (FR-016), so the tab is the doctor's only.
+    final notesTab = DashCard(
+      title: l10n.dashDoctorNotes,
+      hint: l10n.dashNoteHelp,
+      icon: Icons.lock_outline,
+      tone: Tone.navy,
+      padding: EdgeInsets.zero,
+      child: visits.isEmpty
+          ? Padding(padding: const EdgeInsets.all(20), child: Text(l10n.visitsEmpty, style: TextStyle(color: c.muted)))
+          : DashTable(
+              headers: [l10n.dashColDate, l10n.dashColClinic, l10n.dashColNote, ''],
+              flex: const [2, 2, 6, 2],
+              rows: [
+                for (final v in visits)
+                  DashRow(key: Key('note-row-${v['id']}'), cells: [
+                    Text('${v['date']}'),
+                    Text(clinicName(v['clinicId'])),
+                    Text((v['note'] as String?)?.isNotEmpty == true ? '${v['note']}' : l10n.dashNoNote),
+                    IconButton(
                       key: Key('note-${v['id']}'),
                       tooltip: l10n.dashNote,
                       icon: const Icon(Icons.sticky_note_2_outlined),
-                      onPressed: () async {
-                        if (await showDialog<bool>(
-                              context: context,
-                              builder: (_) => _NoteDialog(childId: childId, visit: v),
-                            ) ==
-                            true) {
-                          reload();
-                          }
-                      },
-                    )
-                  : null,
+                      onPressed: () => dialog(_NoteDialog(childId: childId, visit: v)),
+                    ),
+                  ]),
+              ],
             ),
-        ]),
-      ],
+    );
+
+    final tabs = [measurementsTab, dosesTab, visitsTab, if (isDoctor) notesTab];
+    final index = tab.clamp(0, tabs.length - 1);
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      header,
+      const SizedBox(height: 16),
+      DashTabs(
+        index: index,
+        onChanged: onTab,
+        tabs: [
+          Text(l10n.dashMeasurements),
+          Text(l10n.vaccinesTitle),
+          Text(l10n.dashVisits),
+          if (isDoctor)
+            Row(mainAxisSize: MainAxisSize.min, children: [
+              Text(l10n.dashDoctorNotes),
+              const SizedBox(width: 6),
+              Icon(Icons.lock_outline, size: 14, color: Theme.of(context).extension<AppColors>()!.muted),
+              const SizedBox(width: 4),
+              StatusPill(l10n.dashDoctorOnly, PillKind.info, dot: false),
+            ]),
+        ],
+      ),
+      const SizedBox(height: 16),
+      tabs[index],
+    ]);
+  }
+}
+
+/// "Record a new measurement" (`.side-form`): date from a picker, then at least one value.
+class _NewMeasurement extends ConsumerStatefulWidget {
+  const _NewMeasurement({required this.childId, required this.clinicId, required this.onSaved});
+
+  final String childId;
+  final String? clinicId;
+  final VoidCallback onSaved;
+
+  @override
+  ConsumerState<_NewMeasurement> createState() => _NewMeasurementState();
+}
+
+class _NewMeasurementState extends ConsumerState<_NewMeasurement> {
+  late String _date = ClinicTime.dateOf(ref.read(clockProvider)());
+  final _weight = TextEditingController();
+  final _length = TextEditingController();
+  final _head = TextEditingController();
+  bool _busy = false;
+
+  @override
+  void dispose() {
+    _weight.dispose();
+    _length.dispose();
+    _head.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDate() async {
+    final today = ClinicTime.asDate(ClinicTime.dateOf(ref.read(clockProvider)()));
+    final picked = await showDatePicker(
+      context: context,
+      firstDate: today.subtract(const Duration(days: 365 * 18)),
+      lastDate: today,
+      initialDate: ClinicTime.asDate(_date),
+    );
+    if (picked != null) setState(() => _date = DateFormat('yyyy-MM-dd').format(picked));
+  }
+
+  Future<void> _save() async {
+    final l10n = AppLocalizations.of(context);
+    setState(() => _busy = true);
+    final ok = await runAction(
+      context,
+      () => ref.read(dashboardApiProvider).call('saveMeasurement', {
+        'childId': widget.childId,
+        'clinicId': widget.clinicId,
+        'measuredOn': _date,
+        'weightKg': _num(_weight),
+        'lengthCm': _num(_length),
+        'headCm': _num(_head),
+      }),
+      done: l10n.dashSaved,
+    );
+    if (!mounted) return;
+    setState(() => _busy = false);
+    if (ok) {
+      for (final c in [_weight, _length, _head]) {
+        c.clear();
+      }
+      widget.onSaved();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final c = Theme.of(context).extension<AppColors>()!;
+    Widget value(String key, TextEditingController ctl, String label, String unit) => Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: DashField(
+        label: label,
+        child: TextField(
+          key: Key(key),
+          controller: ctl,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          decoration: dashInput(context, unit: unit),
+        ),
+      ),
+    );
+    return DashCard(
+      key: const Key('new-measurement'),
+      title: l10n.dashNewMeasurement,
+      icon: Icons.add_chart,
+      tone: Tone.green,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: DashField(
+            label: l10n.dashDate,
+            child: InkWell(
+              key: const Key('new-m-date'),
+              borderRadius: BorderRadius.circular(12),
+              onTap: _pickDate,
+              child: InputDecorator(
+                decoration: dashInput(context).copyWith(suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18)),
+                child: Text(dayLabel(_date)),
+              ),
+            ),
+          ),
+        ),
+        value('new-m-weight', _weight, l10n.measureWeight, l10n.unitKg),
+        value('new-m-length', _length, l10n.measureLength, l10n.unitCm),
+        value('new-m-head', _head, l10n.measureHead, l10n.unitCm),
+        FilledButton(key: const Key('add-measurement'), onPressed: _busy ? null : _save, child: Text(l10n.dashSaveMeasurement)),
+        const SizedBox(height: 10),
+        Text(l10n.dashMeasurementHint, style: TextStyle(fontSize: 12, color: c.muted)),
+      ]),
     );
   }
 }

@@ -47,3 +47,23 @@ Match colors, radii, spacing and component shapes; build the layout in Flutter (
 - List chevrons point right (›) in the Figma screens. In RTL they must point left (‹), as fixed in the app.
 
 On the home hero card, the photo placeholder's caption overlaps the "موجودين عشان نطمنك" pill. Fix in Flutter: place the caption above the pill or drop it once the real photo is in.
+
+## Clinic dashboard (web, desktop first)
+
+Redesign of the dashboard. Follow these over the current dashboard screens.
+
+| Screen | Mockup | Image |
+|---|---|---|
+| Today (hour strip, arrival queue, KPIs, walk-in, stop walk-ins) | `dashboard/Today.dc.html` | `dashboard/Today.png` |
+| Clinic settings (cards, hour ranges picked from a list, vaccine-day switches, holidays as date chips, vaccine prices with one "shown to guardian" switch, sticky save bar) | `dashboard/Clinic.dc.html` | `dashboard/Clinic.png` |
+| Child file (header card, tabs, new-measurement form, history table with clinic, recorder and correction log) | `dashboard/ChildFile.dc.html` | `dashboard/ChildFile.png` |
+
+Shared styles: `dashboard/dash.css` (same colour tokens as the app, plus a navy sidebar `#16324B`, white active nav item, cards with 18 px radius, 12 px inputs, status pills: confirmed blue, arrived yellow, done green, no-show red, walk-in purple).
+
+Rules:
+- Section titles never overlap fields: each section is a card with its own header row.
+- Working hours are chosen as ranges from a time picker (start → end), never typed as text; a day can have more than one range; empty = closed.
+- Holidays are picked from a calendar and shown as removable chips; saving warns about bookings on those days.
+- One switch per vaccine for "price shown to guardian"; when off, show «بالسعر في العيادة».
+- The save bar is sticky at the bottom and shows unsaved changes; the Save button is never clipped.
+- Clinic switcher in the top bar for the doctor; a secretary sees only her clinic (no switcher).

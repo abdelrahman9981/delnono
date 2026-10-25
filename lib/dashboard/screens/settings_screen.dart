@@ -5,6 +5,7 @@ import '../../app/l10n/app_localizations.dart';
 import '../../core/settings/settings_repository.dart';
 import '../data/dashboard_api.dart';
 import '../widgets/dash_page.dart';
+import '../widgets/dash_ui.dart';
 
 /// The settings documents as stored.
 final settingsDocProvider = StreamProvider.family<Map<String, dynamic>, String>(
@@ -81,49 +82,64 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     return DashPage(
       title: l10n.dashNavSettings,
+      subtitle: l10n.dashSettingsHint,
+      showClinic: false,
       children: [
-        for (final (title, fields) in sections)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(title, style: Theme.of(context).textTheme.titleMedium),
-                  for (final f in fields)
-                    TextField(
-                      key: Key('setting-${f.doc}-${f.field}'),
-                      controller: _ctl(f, docs[f.doc]!.value!),
-                      maxLines: f.long ? 6 : 1,
-                      keyboardType: f.number ? TextInputType.number : null,
-                      decoration: InputDecoration(labelText: f.label),
-                    ),
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: AlignmentDirectional.centerEnd,
-                    child: FilledButton(
-                      onPressed: () async {
-                        final byDoc = <String, Map<String, Object>>{};
-                        for (final f in fields) {
-                          final t = _c['${f.doc}.${f.field}']!.text.trim();
-                          byDoc.putIfAbsent(f.doc, () => {})[f.field] = f.number ? (int.tryParse(t) ?? 0) : t;
+        for (final (i, (title, fields)) in sections.indexed) ...[
+          if (i > 0) const SizedBox(height: 16),
+          DashCard(
+            title: title,
+            icon: Icons.tune,
+            tone: Tone.values[i % Tone.values.length],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 14,
+                  children: [
+                    for (final f in fields)
+                      SizedBox(
+                        width: f.long ? double.infinity : 300,
+                        child: DashField(
+                          label: f.label,
+                          child: TextField(
+                            key: Key('setting-${f.doc}-${f.field}'),
+                            controller: _ctl(f, docs[f.doc]!.value!),
+                            maxLines: f.long ? 6 : 1,
+                            keyboardType: f.number ? TextInputType.number : null,
+                            decoration: dashInput(context),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: FilledButton(
+                    onPressed: () async {
+                      final byDoc = <String, Map<String, Object>>{};
+                      for (final f in fields) {
+                        final t = _c['${f.doc}.${f.field}']!.text.trim();
+                        byDoc.putIfAbsent(f.doc, () => {})[f.field] = f.number ? (int.tryParse(t) ?? 0) : t;
+                      }
+                      await runAction(context, () async {
+                        for (final e in byDoc.entries) {
+                          await ref.read(dashboardApiProvider).call('updateSettings', {
+                            'doc': e.key,
+                            'fields': e.value,
+                          });
                         }
-                        await runAction(context, () async {
-                          for (final e in byDoc.entries) {
-                            await ref.read(dashboardApiProvider).call('updateSettings', {
-                              'doc': e.key,
-                              'fields': e.value,
-                            });
-                          }
-                        }, done: l10n.dashSaved);
-                      },
-                      child: Text(l10n.save),
-                    ),
+                      }, done: l10n.dashSaved);
+                    },
+                    child: Text(l10n.save),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
+        ],
       ],
     );
   }

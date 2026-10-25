@@ -3201,6 +3201,486 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'نقل الحجز لميعاد تاني'**
   String get dashMoveForFamily;
+
+  /// No description provided for @dashBrand.
+  ///
+  /// In ar, this message translates to:
+  /// **'دكتور النونو'**
+  String get dashBrand;
+
+  /// No description provided for @dashAdminSection.
+  ///
+  /// In ar, this message translates to:
+  /// **'إدارة'**
+  String get dashAdminSection;
+
+  /// No description provided for @dashUnsaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيه تغييرات مش محفوظة'**
+  String get dashUnsaved;
+
+  /// No description provided for @dashAllSaved.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل التغييرات محفوظة'**
+  String get dashAllSaved;
+
+  /// No description provided for @dashDiscard.
+  ///
+  /// In ar, this message translates to:
+  /// **'تراجع'**
+  String get dashDiscard;
+
+  /// No description provided for @dashSaveChanges.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ التغييرات'**
+  String get dashSaveChanges;
+
+  /// No description provided for @dashPickRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري الفترة'**
+  String get dashPickRange;
+
+  /// No description provided for @dashEgp.
+  ///
+  /// In ar, this message translates to:
+  /// **'جنيه'**
+  String get dashEgp;
+
+  /// No description provided for @dashKpiBookings.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحجوزات'**
+  String get dashKpiBookings;
+
+  /// No description provided for @dashKpiCapacity.
+  ///
+  /// In ar, this message translates to:
+  /// **'من {count} مكان'**
+  String dashKpiCapacity(String count);
+
+  /// No description provided for @dashKpiArrived.
+  ///
+  /// In ar, this message translates to:
+  /// **'وصلوا'**
+  String get dashKpiArrived;
+
+  /// No description provided for @dashKpiDone.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم الكشف'**
+  String get dashKpiDone;
+
+  /// No description provided for @dashKpiNoShow.
+  ///
+  /// In ar, this message translates to:
+  /// **'لم يحضر'**
+  String get dashKpiNoShow;
+
+  /// No description provided for @dashKpiCash.
+  ///
+  /// In ar, this message translates to:
+  /// **'كاش النهارده'**
+  String get dashKpiCash;
+
+  /// No description provided for @dashKpiCashNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشوفات بس، من غير الباقات'**
+  String get dashKpiCashNote;
+
+  /// No description provided for @dashHourOver.
+  ///
+  /// In ar, this message translates to:
+  /// **'خلصت'**
+  String get dashHourOver;
+
+  /// No description provided for @dashHourNow.
+  ///
+  /// In ar, this message translates to:
+  /// **'دلوقتي'**
+  String get dashHourNow;
+
+  /// No description provided for @dashTodayBookings.
+  ///
+  /// In ar, this message translates to:
+  /// **'حجوزات النهارده'**
+  String get dashTodayBookings;
+
+  /// No description provided for @dashAllHours.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل الساعات'**
+  String get dashAllHours;
+
+  /// No description provided for @dashColNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'#'**
+  String get dashColNumber;
+
+  /// No description provided for @dashColChild.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطفل'**
+  String get dashColChild;
+
+  /// No description provided for @dashColVisit.
+  ///
+  /// In ar, this message translates to:
+  /// **'الزيارة'**
+  String get dashColVisit;
+
+  /// No description provided for @dashColStatus.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحالة'**
+  String get dashColStatus;
+
+  /// No description provided for @dashColPayment.
+  ///
+  /// In ar, this message translates to:
+  /// **'الدفع'**
+  String get dashColPayment;
+
+  /// No description provided for @dashColAction.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجراء'**
+  String get dashColAction;
+
+  /// No description provided for @dashOpenFile.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف'**
+  String get dashOpenFile;
+
+  /// No description provided for @dashPayPackage.
+  ///
+  /// In ar, this message translates to:
+  /// **'باقة'**
+  String get dashPayPackage;
+
+  /// No description provided for @dashPayCash.
+  ///
+  /// In ar, this message translates to:
+  /// **'{amount} ج'**
+  String dashPayCash(String amount);
+
+  /// No description provided for @dashClinicContact.
+  ///
+  /// In ar, this message translates to:
+  /// **'بيانات العيادة والتواصل'**
+  String get dashClinicContact;
+
+  /// No description provided for @dashPricesBooking.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأسعار والحجز'**
+  String get dashPricesBooking;
+
+  /// No description provided for @dashHoursAndVaccineDays.
+  ///
+  /// In ar, this message translates to:
+  /// **'مواعيد العمل وأيام التطعيم'**
+  String get dashHoursAndVaccineDays;
+
+  /// No description provided for @dashHoursHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري فترات كل يوم من القائمة. يوم من غير فترات = مقفول.'**
+  String get dashHoursHint;
+
+  /// No description provided for @dashAddRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'فترة'**
+  String get dashAddRange;
+
+  /// No description provided for @dashDayClosed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقفول'**
+  String get dashDayClosed;
+
+  /// No description provided for @dashHolidayHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'الأيام دي العيادة مقفولة فيها ومش بتظهر في الحجز.'**
+  String get dashHolidayHint;
+
+  /// No description provided for @dashAddHoliday.
+  ///
+  /// In ar, this message translates to:
+  /// **'إجازة'**
+  String get dashAddHoliday;
+
+  /// No description provided for @dashHolidayWarn.
+  ///
+  /// In ar, this message translates to:
+  /// **'لو فيه حجوزات مؤكدة في يوم إجازة، الحفظ هيتوقف لحد ما تنقليها أو تلغيها.'**
+  String get dashHolidayWarn;
+
+  /// No description provided for @dashNoHolidays.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش إجازات جاية.'**
+  String get dashNoHolidays;
+
+  /// No description provided for @dashVaccinePricesClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'أسعار التطعيمات في العيادة'**
+  String get dashVaccinePricesClinic;
+
+  /// No description provided for @dashOffered.
+  ///
+  /// In ar, this message translates to:
+  /// **'متاح'**
+  String get dashOffered;
+
+  /// No description provided for @dashShownToGuardian.
+  ///
+  /// In ar, this message translates to:
+  /// **'يظهر للأم'**
+  String get dashShownToGuardian;
+
+  /// No description provided for @dashPriceAtClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'بالسعر في العيادة'**
+  String get dashPriceAtClinic;
+
+  /// No description provided for @dashUnitMonths.
+  ///
+  /// In ar, this message translates to:
+  /// **'شهر'**
+  String get dashUnitMonths;
+
+  /// No description provided for @dashUnitHours.
+  ///
+  /// In ar, this message translates to:
+  /// **'ساعة'**
+  String get dashUnitHours;
+
+  /// No description provided for @dashUnitPerHour.
+  ///
+  /// In ar, this message translates to:
+  /// **'طفل/ساعة'**
+  String get dashUnitPerHour;
+
+  /// No description provided for @dashChildFileTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملف الطفل'**
+  String get dashChildFileTitle;
+
+  /// No description provided for @dashChildFileAudited.
+  ///
+  /// In ar, this message translates to:
+  /// **'فتح الملف ده اتسجل في سجل التدقيق'**
+  String get dashChildFileAudited;
+
+  /// No description provided for @dashBack.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجوع'**
+  String get dashBack;
+
+  /// No description provided for @dashVisits.
+  ///
+  /// In ar, this message translates to:
+  /// **'الزيارات'**
+  String get dashVisits;
+
+  /// No description provided for @dashDoctorNotes.
+  ///
+  /// In ar, this message translates to:
+  /// **'ملاحظات الدكتور'**
+  String get dashDoctorNotes;
+
+  /// No description provided for @dashDoctorOnly.
+  ///
+  /// In ar, this message translates to:
+  /// **'للدكتور بس'**
+  String get dashDoctorOnly;
+
+  /// No description provided for @dashNewMeasurement.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل قياس جديد'**
+  String get dashNewMeasurement;
+
+  /// No description provided for @dashSaveMeasurement.
+  ///
+  /// In ar, this message translates to:
+  /// **'حفظ القياس'**
+  String get dashSaveMeasurement;
+
+  /// No description provided for @dashMeasurementHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اكتبي قيمة واحدة على الأقل. التصحيح بعد الحفظ للدكتور بس.'**
+  String get dashMeasurementHint;
+
+  /// No description provided for @dashMeasurementHistory.
+  ///
+  /// In ar, this message translates to:
+  /// **'القياسات المتسجلة'**
+  String get dashMeasurementHistory;
+
+  /// No description provided for @dashNumbersOnly.
+  ///
+  /// In ar, this message translates to:
+  /// **'القياسات معروضة بالأرقام بس، من غير أي حكم طبي.'**
+  String get dashNumbersOnly;
+
+  /// No description provided for @dashColDate.
+  ///
+  /// In ar, this message translates to:
+  /// **'التاريخ'**
+  String get dashColDate;
+
+  /// No description provided for @dashColClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'العيادة'**
+  String get dashColClinic;
+
+  /// No description provided for @dashColRecorder.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّله'**
+  String get dashColRecorder;
+
+  /// No description provided for @dashColVaccine.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيم'**
+  String get dashColVaccine;
+
+  /// No description provided for @dashColDose.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجرعة'**
+  String get dashColDose;
+
+  /// No description provided for @dashColLot.
+  ///
+  /// In ar, this message translates to:
+  /// **'التشغيلة'**
+  String get dashColLot;
+
+  /// No description provided for @dashColNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملاحظة'**
+  String get dashColNote;
+
+  /// No description provided for @dashCorrectShort.
+  ///
+  /// In ar, this message translates to:
+  /// **'تصحيح'**
+  String get dashCorrectShort;
+
+  /// No description provided for @dashCorrected.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتصحح'**
+  String get dashCorrected;
+
+  /// No description provided for @dashGuardian.
+  ///
+  /// In ar, this message translates to:
+  /// **'ولي الأمر'**
+  String get dashGuardian;
+
+  /// No description provided for @dashClinicsVisited.
+  ///
+  /// In ar, this message translates to:
+  /// **'زار: {clinics}'**
+  String dashClinicsVisited(String clinics);
+
+  /// No description provided for @dashNoPackage.
+  ///
+  /// In ar, this message translates to:
+  /// **'من غير باقة'**
+  String get dashNoPackage;
+
+  /// No description provided for @dashResultsCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} نتيجة'**
+  String dashResultsCount(String count);
+
+  /// No description provided for @dashReportFilters.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفترة والعيادة'**
+  String get dashReportFilters;
+
+  /// No description provided for @dashReportResult.
+  ///
+  /// In ar, this message translates to:
+  /// **'النتيجة'**
+  String get dashReportResult;
+
+  /// No description provided for @dashStaffList.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحسابات'**
+  String get dashStaffList;
+
+  /// No description provided for @dashActive.
+  ///
+  /// In ar, this message translates to:
+  /// **'شغال'**
+  String get dashActive;
+
+  /// No description provided for @dashAuditHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل فتح لملف طفل وكل تصحيح بيتسجل هنا. السجل للقراءة بس.'**
+  String get dashAuditHint;
+
+  /// No description provided for @dashContentList.
+  ///
+  /// In ar, this message translates to:
+  /// **'النصايح والفيديوهات'**
+  String get dashContentList;
+
+  /// No description provided for @dashFollowUpBands.
+  ///
+  /// In ar, this message translates to:
+  /// **'قوايم المتابعة حسب السن'**
+  String get dashFollowUpBands;
+
+  /// No description provided for @dashDangerSigns.
+  ///
+  /// In ar, this message translates to:
+  /// **'علامات الخطر'**
+  String get dashDangerSigns;
+
+  /// No description provided for @dashCatalogue.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات في التطبيق'**
+  String get dashCatalogue;
+
+  /// No description provided for @dashSettingsHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعدادات للعيلة كلها في العيادتين.'**
+  String get dashSettingsHint;
+
+  /// No description provided for @dashClinicArea.
+  ///
+  /// In ar, this message translates to:
+  /// **'عيادة {area}'**
+  String dashClinicArea(String area);
 }
 
 class _AppLocalizationsDelegate
