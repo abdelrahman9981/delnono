@@ -27,6 +27,7 @@ Match colors, radii, spacing and component shapes; build the layout in Flutter (
 | 9 | Content library | `screens/Content.dc.html` | 005 |
 | 10 | Notifications page + settings | `screens/Notifications.dc.html` | 007 |
 | 11 | Account (change number, delete account) | `screens/Account.dc.html` | 001 |
+| 12 | «حسابي» — 5th tab (account card, my children + add child, package status, then settings: theme light/dark/system, text size, language with English "coming soon", notifications link, preferred clinic, WhatsApp, privacy, rate app, version) | `screens/Settings.dc.html`, `screens/Settings.png` | new |
 | — | Home | `figma/home.jpg` | 002 |
 | — | Booking | `figma/booking.jpg` | 002 |
 | — | Booking success | `figma/booking-success.jpg` | 002 |
@@ -39,23 +40,14 @@ Match colors, radii, spacing and component shapes; build the layout in Flutter (
 - Text sizes: Figma's prototype uses 7–9 px labels, which are too small on a phone. Use the BRD scale: body 13–15, small 11, titles 20–30.
 - No automatic medical judgments ("normal", "on track"). Show values and charts only.
 - Any medical text (danger signs, follow-up items, video titles) is placeholder in brackets until the doctor approves it from the dashboard.
-- Bottom nav: Home, Booking, My child, Content; leave room for the Phase 2 "Ask" tab, but build nothing behind it.
-- The doctor's photo is real (no longer a placeholder); see Photos and icon below.
+- Bottom nav: 5 tabs — الرئيسية، حجز، طفلي، محتوى، حسابي. The account icon in the top bar moves into the «حسابي» tab. Phase 2 "Ask the doctor" will be a button on Home, not a 6th tab.
+- Doctor photo is a placeholder until the real photo arrives.
 
 ## Known issues in Figma
 
 - List chevrons point right (›) in the Figma screens. In RTL they must point left (‹), as fixed in the app.
 
-- Fixed: on the home hero card the photo placeholder's caption overlapped the "موجودين عشان نطمنك" pill. The real photo has no caption; the pill sits alone in the top corner over the wall, the name and title at the bottom.
-
-## Photos and icon
-
-| Asset | Where |
-|---|---|
-| `assets/images/doctor_hero.jpg` | Home hero card and Welcome hero, cropped to keep the face in frame, under a dark bottom gradient so the white text stays readable |
-| `assets/images/doctor_avatar.jpg` | Round, on each clinic card on Home and on the dashboard sign-in |
-| `assets/images/clinic_waiting_room.jpg` | Top of the main clinic's card on Home (it is that clinic's room) and a card on Welcome |
-| `assets/icon/app_icon_1024.png`, `app_icon_foreground.png` | App icon: Android adaptive (background `#CBE7EE`), iOS and web; the web favicon is also the dashboard's. Regenerate with `dart run flutter_launcher_icons` (`flutter_launcher_icons.yaml`) |
+On the home hero card, the photo placeholder's caption overlaps the "موجودين عشان نطمنك" pill. Fix in Flutter: place the caption above the pill or drop it once the real photo is in.
 
 ## Clinic dashboard (web, desktop first)
 
@@ -76,3 +68,9 @@ Rules:
 - One switch per vaccine for "price shown to guardian"; when off, show «بالسعر في العيادة».
 - The save bar is sticky at the bottom and shows unsaved changes; the Save button is never clipped.
 - Clinic switcher in the top bar for the doctor; a secretary sees only her clinic (no switcher).
+
+## Splash and brand
+
+- `brand/splash_preview.gif` / `.mp4`: target animation (2.2 s, background `#F7F4EE`): icon scales in with a small bounce, heart pops in (~0.7 s), baby blinks (~1 s), app name and doctor line fade in (~1.1 s).
+- Native splash (flutter_native_splash): static, background `#F7F4EE` (dark `#0F1E2B`) + `assets/icon/app_icon_foreground.png`. Then the in-app animated intro, max 2.2 s, skippable by tap, skipped when the OS "reduce motion" is on, and only shown on cold start.
+- `assets/images/clinic2_illustration.jpg`: placeholder illustration for the second clinic until a real photo arrives. `clinic_waiting_room.jpg` belongs to the Moqattam clinic.
