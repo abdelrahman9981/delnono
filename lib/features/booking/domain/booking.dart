@@ -25,6 +25,9 @@ class Booking {
     required this.startsAt,
     required this.status,
     required this.price,
+    this.createdAt,
+    this.updatedAt,
+    this.cancelledAt,
   });
 
   factory Booking.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snap) {
@@ -53,6 +56,9 @@ class Booking {
         _ => BookingStatus.confirmed,
       },
       price: PriceSnapshot.fromMap(Map<String, dynamic>.from(d['price'] as Map)),
+      createdAt: (d['createdAt'] as Timestamp?)?.toDate(),
+      updatedAt: (d['updatedAt'] as Timestamp?)?.toDate(),
+      cancelledAt: (d['cancelledAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -68,6 +74,12 @@ class Booking {
   final DateTime startsAt;
   final BookingStatus status;
   final PriceSnapshot price;
+
+  /// When it was made, last changed and cancelled (server times; null while pending), for the
+  /// notifications page (007).
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final DateTime? cancelledAt;
 
   bool get isActive => status == BookingStatus.confirmed || status == BookingStatus.arrived;
 }

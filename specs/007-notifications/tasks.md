@@ -5,15 +5,15 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Add flutter_local_notifications and shared_preferences (`flutter pub add`); Android: core library desugaring in android/app/build.gradle(.kts), POST_NOTIFICATIONS and the plugin's receivers in android/app/src/main/AndroidManifest.xml; iOS: notification delegate in ios/Runner/AppDelegate.swift
-- [ ] T002 [P] Arabic strings for reminders, the page, the switches and the permission note in l10n/app_ar.arb
+- [X] T001 Add flutter_local_notifications and shared_preferences (`flutter pub add`); Android: core library desugaring in android/app/build.gradle(.kts), POST_NOTIFICATIONS and the plugin's receivers in android/app/src/main/AndroidManifest.xml; iOS: notification delegate in ios/Runner/AppDelegate.swift
+- [X] T002 [P] Arabic strings for reminders, the page, the switches and the permission note in l10n/app_ar.arb
 
 ## Phase 2: Foundational
 
-- [ ] T003 Tests first in test/features/notifications/reminders_test.dart: booking 24 h and 1 h (past skipped, cancelled/done none), vaccine 3 days and day at 09:00 Cairo for not-given basic doses, next dose of a started additional series by interval, none for unstarted additional or given doses, stable keys and ids, 50 nearest only, switches filter scheduling but not the feed; feed has confirmations and cancellations
-- [ ] T004 Implement lib/features/notifications/domain/reminders.dart (`planReminders`, `feedItems`, `reminderId`)
-- [ ] T005 [P] lib/features/notifications/data/notification_prefs.dart (shared_preferences; defaults per data-model.md) with tests
-- [ ] T006 [P] lib/features/notifications/data/local_notifier.dart: interface, `PluginNotifier` (Cairo `TZDateTime`, inexact, payload = route), `NoopNotifier` on web
+- [X] T003 Tests first in test/features/notifications/reminders_test.dart: booking 24 h and 1 h (past skipped, cancelled/done none), vaccine 3 days and day at 09:00 Cairo for not-given basic doses, next dose of a started additional series by interval, none for unstarted additional or given doses, stable keys and ids, 50 nearest only, switches filter scheduling but not the feed; feed has confirmations and cancellations
+- [X] T004 Implement lib/features/notifications/domain/reminders.dart (`planReminders`, `feedItems`, `reminderId`)
+- [X] T005 [P] lib/features/notifications/data/notification_prefs.dart (shared_preferences; defaults per data-model.md) with tests
+- [X] T006 [P] lib/features/notifications/data/local_notifier.dart: interface, `PluginNotifier` (Cairo `TZDateTime`, inexact, payload = route), `NoopNotifier` on web
 
 ## Phase 3: User Story 1 + 2 — Reminders on the phone (P1)
 

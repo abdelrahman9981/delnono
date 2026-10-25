@@ -3903,6 +3903,150 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'مكان مريح للأطفال وأهاليهم'**
   String get welcomeWaitingRoomCaption;
+
+  /// No description provided for @notifTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإشعارات'**
+  String get notifTitle;
+
+  /// No description provided for @notifNew.
+  ///
+  /// In ar, this message translates to:
+  /// **'الجديد'**
+  String get notifNew;
+
+  /// No description provided for @notifEarlier.
+  ///
+  /// In ar, this message translates to:
+  /// **'قبل كده'**
+  String get notifEarlier;
+
+  /// No description provided for @notifMarkAllRead.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعليم الكل كمقروء'**
+  String get notifMarkAllRead;
+
+  /// No description provided for @notifEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش إشعارات لسه. هنفكرك بمواعيد الحجز والتطعيمات هنا.'**
+  String get notifEmpty;
+
+  /// No description provided for @notifSettings.
+  ///
+  /// In ar, this message translates to:
+  /// **'إعدادات الإشعارات'**
+  String get notifSettings;
+
+  /// No description provided for @notifBookingSwitch.
+  ///
+  /// In ar, this message translates to:
+  /// **'تذكير الحجز'**
+  String get notifBookingSwitch;
+
+  /// No description provided for @notifBookingSwitchSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'قبل الميعاد بيوم وبساعة'**
+  String get notifBookingSwitchSub;
+
+  /// No description provided for @notifVaccineSwitch.
+  ///
+  /// In ar, this message translates to:
+  /// **'ميعاد التطعيم'**
+  String get notifVaccineSwitch;
+
+  /// No description provided for @notifVaccineSwitchSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'قبلها بـ ٣ أيام وفي يومها'**
+  String get notifVaccineSwitchSub;
+
+  /// No description provided for @notifOffNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'لو قفلتي نوع، هتلاقي التذكير برضه هنا في الصفحة دي.'**
+  String get notifOffNote;
+
+  /// No description provided for @notifDenied.
+  ///
+  /// In ar, this message translates to:
+  /// **'الموبايل مش سامح للتطبيق يعرض إشعارات، فالتذكيرات هتفضل هنا في الصفحة بس.'**
+  String get notifDenied;
+
+  /// No description provided for @notifOpenSettings.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتحي إعدادات الموبايل'**
+  String get notifOpenSettings;
+
+  /// No description provided for @notifAskBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'نفكرك قبل الميعاد بيوم وبساعة؟'**
+  String get notifAskBody;
+
+  /// No description provided for @notifAskButton.
+  ///
+  /// In ar, this message translates to:
+  /// **'فعّلي التذكيرات'**
+  String get notifAskButton;
+
+  /// No description provided for @notifUnreadCount.
+  ///
+  /// In ar, this message translates to:
+  /// **'{count} إشعارات جديدة'**
+  String notifUnreadCount(String count);
+
+  /// No description provided for @remindBookingDay.
+  ///
+  /// In ar, this message translates to:
+  /// **'ميعادك بكرة'**
+  String get remindBookingDay;
+
+  /// No description provided for @remindBookingHour.
+  ///
+  /// In ar, this message translates to:
+  /// **'ميعادك بعد ساعة'**
+  String get remindBookingHour;
+
+  /// No description provided for @remindVaccineSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطعيم {child} بعد ٣ أيام'**
+  String remindVaccineSoon(String child);
+
+  /// No description provided for @remindVaccineToday.
+  ///
+  /// In ar, this message translates to:
+  /// **'تطعيم {child} النهارده'**
+  String remindVaccineToday(String child);
+
+  /// No description provided for @remindVaccineBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'{vaccine} · {date}'**
+  String remindVaccineBody(String vaccine, String date);
+
+  /// No description provided for @remindVaccineDose.
+  ///
+  /// In ar, this message translates to:
+  /// **'{vaccine} · الجرعة {dose}'**
+  String remindVaccineDose(String vaccine, String dose);
+
+  /// No description provided for @eventBookingConfirmed.
+  ///
+  /// In ar, this message translates to:
+  /// **'تم تأكيد حجزك'**
+  String get eventBookingConfirmed;
+
+  /// No description provided for @eventBookingCancelled.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتلغى حجزك'**
+  String get eventBookingCancelled;
 }
 
 class _AppLocalizationsDelegate

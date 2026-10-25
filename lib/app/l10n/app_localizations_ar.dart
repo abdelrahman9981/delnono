@@ -2149,4 +2149,89 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get welcomeWaitingRoomCaption => 'مكان مريح للأطفال وأهاليهم';
+
+  @override
+  String get notifTitle => 'الإشعارات';
+
+  @override
+  String get notifNew => 'الجديد';
+
+  @override
+  String get notifEarlier => 'قبل كده';
+
+  @override
+  String get notifMarkAllRead => 'تعليم الكل كمقروء';
+
+  @override
+  String get notifEmpty =>
+      'مفيش إشعارات لسه. هنفكرك بمواعيد الحجز والتطعيمات هنا.';
+
+  @override
+  String get notifSettings => 'إعدادات الإشعارات';
+
+  @override
+  String get notifBookingSwitch => 'تذكير الحجز';
+
+  @override
+  String get notifBookingSwitchSub => 'قبل الميعاد بيوم وبساعة';
+
+  @override
+  String get notifVaccineSwitch => 'ميعاد التطعيم';
+
+  @override
+  String get notifVaccineSwitchSub => 'قبلها بـ ٣ أيام وفي يومها';
+
+  @override
+  String get notifOffNote =>
+      'لو قفلتي نوع، هتلاقي التذكير برضه هنا في الصفحة دي.';
+
+  @override
+  String get notifDenied =>
+      'الموبايل مش سامح للتطبيق يعرض إشعارات، فالتذكيرات هتفضل هنا في الصفحة بس.';
+
+  @override
+  String get notifOpenSettings => 'افتحي إعدادات الموبايل';
+
+  @override
+  String get notifAskBody => 'نفكرك قبل الميعاد بيوم وبساعة؟';
+
+  @override
+  String get notifAskButton => 'فعّلي التذكيرات';
+
+  @override
+  String notifUnreadCount(String count) {
+    return '$count إشعارات جديدة';
+  }
+
+  @override
+  String get remindBookingDay => 'ميعادك بكرة';
+
+  @override
+  String get remindBookingHour => 'ميعادك بعد ساعة';
+
+  @override
+  String remindVaccineSoon(String child) {
+    return 'تطعيم $child بعد ٣ أيام';
+  }
+
+  @override
+  String remindVaccineToday(String child) {
+    return 'تطعيم $child النهارده';
+  }
+
+  @override
+  String remindVaccineBody(String vaccine, String date) {
+    return '$vaccine · $date';
+  }
+
+  @override
+  String remindVaccineDose(String vaccine, String dose) {
+    return '$vaccine · الجرعة $dose';
+  }
+
+  @override
+  String get eventBookingConfirmed => 'تم تأكيد حجزك';
+
+  @override
+  String get eventBookingCancelled => 'اتلغى حجزك';
 }
