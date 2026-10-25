@@ -4,6 +4,7 @@ import { db } from "../../lib/admin";
 import { writeAudit } from "../../lib/audit";
 import { DATE_PATTERN, cairoDate } from "../../lib/booking/time";
 import { nameKey } from "../../lib/nameKey";
+import { phoneE164 } from "../../lib/phone";
 import { REGION } from "../../lib/region";
 import { requireClinic, requireStaff, num, str, type Staff } from "../../lib/staff";
 
@@ -16,14 +17,6 @@ function plain(v: unknown): unknown {
 }
 
 const withId = (d: DocumentSnapshot) => ({ id: d.id, ...(plain(d.data()) as Record<string, unknown>) });
-
-/** Egyptian mobile numbers as typed at the desk: 01xxxxxxxxx, +201xxxxxxxxx or 201xxxxxxxxx. */
-function phoneE164(q: string): string | null {
-  const digits = q.replace(/\D/g, "");
-  if (/^01\d{9}$/.test(digits)) return `+2${digits}`;
-  if (/^201\d{9}$/.test(digits)) return `+${digits}`;
-  return null;
-}
 
 /** Finds children by guardian phone or name start (005 FR-013). Basic data only; no audit yet. */
 export const searchChildren = onCall({ region: REGION }, async (request) => {

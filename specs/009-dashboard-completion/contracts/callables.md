@@ -4,7 +4,8 @@ All require an active staff account (`requireStaff`); errors use `HttpsError` wi
 
 ## registerFamily
 
-Request: `{ clinicId, phone, children: [{ name, birthDate, sex, birthWeightKg?, allergies? }] }` (1–6 children).
+Request: `{ clinicId, phone, guardianName, relation, children: [{ name, birthDate, sex, birthWeightKg?, allergies? }] }` (1–6 children; `relation` is `mother` | `father` | `other`, as in 001).
+- Writes `clinicGuardians/{phone}` `{fullName, relation, createdAt, createdBy}` (merged if present); server only.
 - `clinicId` must be the caller's clinic (secretary) or any clinic (doctor) — `requireClinic`.
 - `phone`: 01xxxxxxxxx, +201xxxxxxxxx or 201xxxxxxxxx; else `invalid-argument` `{field: "phone"}`.
 - Each child validated (`invalid-argument` `{field, index}`).
@@ -29,9 +30,13 @@ Request: `{ childId }` (any unlinked open child on the number).
 
 Response: `{ linked: [{childId, name}] }`. Clears `linkAttempts/{phone}` and `clinicChildrenPending`. Audit `children.linked_by_staff`.
 
+## unlockReverify
+
+Request: `{ childId }` (a linked child; the lock is its guardian's). Clears `reverifyAttempts/{guardianUid}`. Not locked: `failed-precondition` `{reason: "not_locked"}`. Audit `account.reverify_unlocked_by_staff`.
+
 ## openChildFile (changed)
 
-A closed file returns `{ merged: { into, name } }` and nothing else. An open, unlinked child also gets `accountOnNumber: boolean` (a guardian account exists on its number), so the dashboard offers the staff link only when it can work.
+A closed file returns `{ merged: { into, name } }` and nothing else. An open, unlinked child also gets `accountOnNumber: boolean` (a guardian account exists on its number), so the dashboard offers the staff link only when it can work. A linked child gets `reverifyLocked: boolean`. Staff also get `clinicGuardian: {fullName, relation}` when the desk stored one.
 
 ## searchChildren (unchanged)
 

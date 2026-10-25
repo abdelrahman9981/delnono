@@ -18,13 +18,13 @@
 - Q: When two files are merged and their basic data differ (name spelling, allergies), which wins? → A: The kept file's basic data stays as it is; nothing is copied from the closed file. The doctor corrects the kept file afterwards if needed, and the merge record keeps the closed file's name and birth date.
 - Q: Which bookings move to the kept child in a merge? → A: Only upcoming confirmed bookings; past, cancelled and done bookings keep the child they were made for, so history and reports do not change.
 - Q: Who may link children to a guardian's account from the dashboard after a locked link? → A: Any active staff member, after checking the guardian in person; the action asks for confirmation and is in the audit log (001 FR-021a says "staff").
-- Q: Should desk registration also store the guardian's name? → A: No. Only the number; the guardian gives their own details in the app, and nothing from the clinic's record is shown before the birth-date check (001 acceptance scenario 3).
+- Q: Should desk registration also store the guardian's name? → A: Yes, the guardian's name and relation, for staff only, in the clinic's guardian record planned in 001 (FR-64 registers "a guardian and child"). It is never shown in the app: the guardian enters their own details there, and nothing from the clinic's record is shown before the birth-date check (001 acceptance scenario 3). (Revised during planning; first answer was "number only".)
 
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - The secretary registers a family at the desk (Priority: P1)
 
-A family arrives without the app, for example as a walk-in. The secretary enters the guardian's mobile number and each child's name, birth date and sex (birth weight and allergies optional), the same data a guardian gives in the app (FR-63). The children get files at once, so measurements and doses can be recorded today. When the guardian later signs in to the app with that number, the app offers these children and links them after the birth-date check (001 FR-021).
+A family arrives without the app, for example as a walk-in. The secretary enters the guardian's mobile number, name and relation, and each child's name, birth date and sex (birth weight and allergies optional), the same data a guardian gives in the app (FR-63). The children get files at once, so measurements and doses can be recorded today. When the guardian later signs in to the app with that number, the app offers these children and links them after the birth-date check (001 FR-021).
 
 **Why this priority**: Without it, walk-in children have no file, and nothing can be recorded for them (FR-64).
 
@@ -73,9 +73,9 @@ When two files exist for one child anyway (for example, different spellings of t
 
 ---
 
-### User Story 4 - Staff link children after a locked link (Priority: P3)
+### User Story 4 - Staff lift a guardian's lock (Priority: P3)
 
-A guardian who entered three wrong birth dates is told to contact the clinic (001 FR-021a). At the desk, after checking who the guardian is in person, staff link the number's unlinked children to that guardian's account and clear the lock.
+A guardian who entered three wrong birth dates is told to contact the clinic (001 FR-021a). At the desk, after checking who the guardian is in person, staff link the number's unlinked children to that guardian's account and clear the lock. Likewise, a guardian locked out of re-verification (001) is unlocked by staff.
 
 **Why this priority**: Promised to guardians in 001; rare.
 
@@ -85,6 +85,7 @@ A guardian who entered three wrong birth dates is told to contact the clinic (00
 
 1. **Given** an unlinked child whose number has a guardian account, **When** staff choose "link to the guardian's account" and confirm, **Then** all unlinked children on that number are linked to that account, the lock (if any) is cleared, and the audit log records who linked them.
 2. **Given** a number with no guardian account, **Then** no link action is offered (the guardian links in the app after signing in).
+3. **Given** a linked child whose guardian is locked out of re-verification, **When** staff choose "unlock" and confirm, **Then** the guardian can re-verify again, and the audit log records who unlocked.
 
 ### Edge Cases
 
@@ -108,7 +109,9 @@ A guardian who entered three wrong birth dates is told to contact the clinic (00
 - **FR-006**: A merge MUST move every measurement, dose and visit (with their change logs and staff notes) to the kept file unchanged, repoint the closed child in upcoming confirmed bookings to the kept child (refusing the merge while an upcoming booking lists both children; past, cancelled and done bookings are not changed), keep the kept file's basic data unchanged, and mark the closed file as merged into the kept one, all at once or not at all.
 - **FR-007**: Closed (merged) files MUST NOT appear in staff search, the guardian's app, or the duplicate check, and opening one MUST say which file it was merged into.
 - **FR-008**: Any active staff member, after confirming, MUST be able to link a number's unlinked children to the guardian account on that number, which clears a linking lock (001 FR-021a).
-- **FR-009**: Every registration, merge and staff link MUST be written to the audit log with the staff member, the number and the children (D-13).
+- **FR-008a**: Any active staff member, after confirming, MUST be able to clear a guardian's re-verification lock (001).
+- **FR-001a**: Desk registration MUST also store the guardian's name and relation for staff, never shown in the guardian app.
+- **FR-009**: Every registration, merge, staff link and unlock MUST be written to the audit log with the staff member, the number and the children (D-13).
 - **FR-010**: The new screens MUST follow the dashboard design rules (cards, labelled fields, dates from a date picker, RTL) and lay out without overflow at desktop and tablet widths, light and dark, normal and large text.
 
 ### Key Entities
@@ -129,7 +132,7 @@ A guardian who entered three wrong birth dates is told to contact the clinic (00
 ## Assumptions
 
 - The guardian app's linking flow (001 FR-021, FR-021a) is unchanged; desk-registered children are ordinary unlinked children on a number.
-- The guardian's own name is not stored at the desk: the guardian enters their details in the app at first sign-in (001), and nothing from the clinic's record is shown before the birth-date check.
+- The guardian's name and relation stored at the desk are for staff only; the guardian enters their details in the app at first sign-in (001), and nothing from the clinic's record is shown in the app.
 - Staff check the guardian's identity in person before linking under FR-008; the dashboard records who linked.
 - Un-merging is out of scope; corrections after a merge are record corrections by the doctor.
 - Walk-ins stay as they are; registering a walk-in's family creates child files but does not change the walk-in entry.

@@ -4,7 +4,7 @@
 
 ## Summary
 
-Three staff callables and their dashboard screens: `registerFamily` (FR-64: children on a number, unlinked, with the server-side duplicate check of FR-65), `mergeChildren` (FR-65: doctor only, moves records in one transaction and closes the other file) and `staffLinkChildren` (001 FR-021a). The guardian app does not change: desk-registered children are ordinary unlinked children on a number, which 001's linking flow already offers after the birth-date check.
+Four staff callables and their dashboard screens: `registerFamily` (FR-64: the guardian's name for staff and children on a number, unlinked, with the server-side duplicate check of FR-65), `mergeChildren` (FR-65: doctor only, moves records in one transaction and closes the other file), `staffLinkChildren` (001 FR-021a) and `unlockReverify` (001's re-verification lock). The guardian app does not change: desk-registered children are ordinary unlinked children on a number, which 001's linking flow already offers after the birth-date check.
 
 ## Technical Context
 
@@ -27,14 +27,14 @@ Three staff callables and their dashboard screens: `registerFamily` (FR-64: chil
 | III. Configurable | No new settings; validation reuses the app's limits. ✅ |
 | IV. Arabic RTL, accessible | New dialogs and cards follow the dashboard rules; layout test covers them. ✅ |
 | V. Test-first, emulator-tested | Functions tests per callable, rules unchanged and retested, widget and layout tests, e2e still green. ✅ |
-| VI. Simple | Three callables, no new collections; closing a file reuses existing queries by clearing its number and link. ✅ |
+| VI. Simple | Four callables, no new collections; closing a file reuses existing queries by clearing its number and link. ✅ |
 | VII. Cost | No new paid services; emulator only (Blaze-dependent deploy stays "blocked: Blaze"). ✅ |
 | Roles (D-11, D-29, D-47) | Merge is doctor only; registration and staff link are any active staff; every action audited (D-13). ✅ |
 
 ## Project Structure
 
 ```text
-functions/src/callables/staff/family.ts      # registerFamily, mergeChildren, staffLinkChildren
+functions/src/callables/staff/family.ts      # registerFamily, mergeChildren, staffLinkChildren, unlockReverify
 functions/src/lib/phone.ts                   # phoneE164 shared with searchChildren
 functions/src/index.ts                       # exports
 functions/test/functions/staff/family.test.ts
