@@ -10,6 +10,16 @@
 
 **Design**: `docs/design/screens/Notifications.dc.html`: header «الإشعارات», «الجديد» and «قبل كده» groups, «تعليم الكل كمقروء», then «إعدادات الإشعارات» with two switches (booking reminders "قبل الميعاد بيوم وبساعة", vaccine reminders "قبلها بـ ٣ أيام وفي يومها") and the note "لو قفلتي نوع، هتلاقي التذكير برضه هنا في الصفحة دي." Home: a bell with an unread count (`figma/home.jpg`). Arabic RTL; forward chevrons ‹, back ›.
 
+## Clarifications
+
+### Session 2026-10-25
+
+- Q: Besides reminders, which booking events appear on the notifications page? → A: Confirmations ("تم تأكيد حجزك") and cancellations ("اتلغى حجزك"), from the guardian's bookings; a change appears as the confirmation of the new time. No server notifications store in Phase 1 (D-42).
+- Q: When does the app ask for the phone's notification permission? → A: In context: on the booking success screen the first time, and when the guardian turns a type on; never at app start.
+- Q: Where are read markers and the two switches kept? → A: On the device, like the reminders themselves; a second phone starts with everything unread and both types on.
+- Q: How many reminders are kept scheduled on the phone? → A: The 50 nearest (iOS allows 64 pending), rebuilt each time the app syncs.
+- Q: Do vaccine-only bookings get booking reminders too? → A: Yes; every confirmed booking gets the day-before and hour-before reminders, whatever its visit type.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Booking reminders on the phone (Priority: P1)
@@ -59,7 +69,7 @@ The Home bell shows how many reminders the guardian has not read. The page lists
 
 **Acceptance Scenarios**:
 
-1. **Given** a booking confirmed, **Then** the page shows "تم تأكيد حجزك" with the child and date.
+1. **Given** a booking confirmed, **Then** the page shows "تم تأكيد حجزك" with the child and date; a cancelled booking shows "اتلغى حجزك".
 2. **Given** a reminder time that has passed, **Then** the page shows it, even if that type is turned off on the phone.
 3. **Given** unread items, **Then** the bell shows their count (up to "٩+"); with none, no count.
 4. **Given** the guardian opens an item, **Then** it is marked read and opens My bookings or the child profile.
@@ -99,8 +109,8 @@ On the notifications page the guardian turns booking reminders and vaccine remin
 - **FR-003**: The scheduled reminders MUST always match the current data: rebuilt when the app starts, when bookings or doses change, and when settings change; each reminder MUST have a stable identity, so nothing is scheduled twice (D-18).
 - **FR-004**: Cancelled, changed and done bookings, and given doses, MUST leave no stale reminder.
 - **FR-005**: Each type (booking, vaccine) MUST be switchable on and off on the device; the choices MUST persist.
-- **FR-006**: The app MUST ask for notification permission when first needed (turning a type on, or after a booking), at most once per type change, and explain if refused.
-- **FR-007**: The app MUST show a notifications page with reminders whose time has come and booking confirmations, grouped new and earlier, with "mark all as read", per the design.
+- **FR-006**: The app MUST ask for notification permission in context (the first booking success screen, or turning a type on), never at app start, and explain if refused.
+- **FR-007**: The app MUST show a notifications page with reminders whose time has come, booking confirmations and cancellations, grouped new and earlier, with "mark all as read", per the design.
 - **FR-008**: Home MUST show a bell with the unread count for signed-in guardians.
 - **FR-009**: Tapping a reminder or a page item MUST open My bookings (booking) or the child's profile (vaccine).
 - **FR-010**: Signing out or deleting the account MUST remove every scheduled reminder.
