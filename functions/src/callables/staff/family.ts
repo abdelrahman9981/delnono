@@ -202,3 +202,56 @@ export const mergeChildren = onCall({ region: REGION }, async (request) => {
 
   return { moved };
 });
+
+/** An open child and its number, for the staff link and unlock below. */
+async function openChild(data: unknown) {
+  const childId = (data as { childId?: unknown } | undefined)?.childId;
+  if (typeof childId !== "string" || !childId) throw new HttpsError("invalid-argument", "childId is required", { field: "childId" });
+  const child = await db.doc(`children/${childId}`).get();
+  if (!child.exists || child.get("merged") != null) throw new HttpsError("not-found", "Child not found.");
+  return child;
+}
+
+/**
+ * Links a number's unlinked children to the guardian account on that number, after staff checked
+ * the guardian in person (009 FR-008, 001 FR-021a), and clears the linking lock.
+ * contracts/callables.md#stafflinkchildren
+ */
+export const staffLinkChildren = onCall({ region: REGION }, async (request) => {
+  const staff = await requireStaff(request);
+  const child = await openChild(request.data);
+  if (child.get("guardianUid") != null) refuse("already_linked", "The child is already linked.");
+  const phone = child.get("guardianPhone") as string;
+
+  const linked = await db.runTransaction(async (tx) => {
+    const account = await tx.get(db.collection("guardians").where("phone", "==", phone).limit(1));
+    if (account.empty) refuse("no_account", "No app account on this number.");
+    const uid = account.docs[0].id;
+    const children = await tx.get(db.collection("children").where("guardianPhone", "==", phone).where("guardianUid", "==", null));
+    const now = FieldValue.serverTimestamp();
+    for (const c of children.docs) tx.update(c.ref, { guardianUid: uid, updatedAt: now, updatedBy: staff.uid });
+    tx.update(account.docs[0].ref, { clinicChildrenPending: false });
+    tx.delete(db.doc(`linkAttempts/${phone}`));
+    await writeAudit(
+      { action: "children.linked_by_staff", actorUid: staff.uid, subjectPhone: phone, childIds: children.docs.map((c) => c.id) },
+      tx,
+    );
+    return children.docs.map((c) => ({ childId: c.id, name: c.get("name") as string }));
+  });
+  return { linked };
+});
+
+/** Lifts a guardian's re-verification lock (009 FR-008a, 001). contracts/callables.md#unlockreverify */
+export const unlockReverify = onCall({ region: REGION }, async (request) => {
+  const staff = await requireStaff(request);
+  const child = await openChild(request.data);
+  const uid = child.get("guardianUid") as string | null;
+  const ref = db.doc(`reverifyAttempts/${uid ?? "-"}`);
+  await db.runTransaction(async (tx) => {
+    const attempts = uid ? await tx.get(ref) : null;
+    if (!attempts?.exists || attempts.get("lockedAt") == null) refuse("not_locked", "The guardian is not locked.");
+    tx.delete(ref);
+    await writeAudit({ action: "account.reverify_unlocked_by_staff", actorUid: staff.uid, subjectPhone: child.get("guardianPhone") }, tx);
+  });
+  return { ok: true };
+});

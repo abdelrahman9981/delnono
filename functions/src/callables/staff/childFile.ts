@@ -59,6 +59,14 @@ export const openChildFile = onCall({ region: REGION }, async (request) => {
       ? db.collection("packages").where("guardianUid", "==", child.get("guardianUid")).get()
       : Promise.resolve(null),
   ]);
+  // What staff can do for the family (009 FR-008, FR-008a) and the desk's guardian record (FR-001a).
+  const phone = child.get("guardianPhone") as string;
+  const uid = child.get("guardianUid") as string | null;
+  const [account, reverify, clinicGuardian] = await Promise.all([
+    uid ? Promise.resolve(null) : db.collection("guardians").where("phone", "==", phone).limit(1).get(),
+    uid ? db.doc(`reverifyAttempts/${uid}`).get() : Promise.resolve(null),
+    db.doc(`clinicGuardians/${phone}`).get(),
+  ]);
   const notes = staff.role === "doctor"
     ? await Promise.all(visits.docs.map((v) => v.ref.collection("staff").doc("notes").get()))
     : [];
@@ -78,6 +86,9 @@ export const openChildFile = onCall({ region: REGION }, async (request) => {
     // The note field is sent to the doctor only (D-11).
     visits: visits.docs.map((v, i) => (staff.role === "doctor" ? { ...withId(v), note: notes[i]?.get("text") ?? null } : withId(v))),
     packages: packages?.docs.map(withId) ?? [],
+    accountOnNumber: uid != null || !(account?.empty ?? true),
+    reverifyLocked: reverify?.get("lockedAt") != null,
+    clinicGuardian: clinicGuardian.exists ? { fullName: clinicGuardian.get("fullName"), relation: clinicGuardian.get("relation") } : null,
   };
 });
 

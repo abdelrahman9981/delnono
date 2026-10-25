@@ -19,4 +19,4 @@ export { openChildFile, saveDose, saveMeasurement, saveVisitNote, searchChildren
 export { publishFollowUp, saveContent, saveFollowUpDraft, updateCatalogue, updateClinic, updateSettings } from "./callables/staff/admin";
 export { report } from "./callables/staff/report";
 // Dashboard completion (009).
-export { mergeChildren, registerFamily } from "./callables/staff/family";
+export { mergeChildren, registerFamily, staffLinkChildren, unlockReverify } from "./callables/staff/family";

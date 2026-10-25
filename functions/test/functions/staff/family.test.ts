@@ -202,3 +202,56 @@ describe("merging duplicate files (009 US3, BRD FR-65)", () => {
     assert.equal((await adminDb().collection("auditLog").where("action", "==", "children.merged").get()).size, 1);
   });
 });
+
+describe("staff lift a guardian's lock (009 US4, 001 FR-021a)", () => {
+  beforeEach(async () => {
+    await clearEmulators();
+    await seedSettings();
+    await seedBookingSettings();
+    await seedGuardian("g1", { phone: PHONE, clinicChildrenPending: true });
+    await seedChild("a", { name: "يوسف", nameKey: "يوسف", guardianPhone: PHONE });
+    await seedChild("b", { name: "مريم", nameKey: "مريم", guardianPhone: PHONE });
+    await seedChild("linked", { name: "سلمى", nameKey: "سلمى", guardianPhone: PHONE, guardianUid: "g1" });
+    await seedChild("nobody", { name: "علي", nameKey: "علي", guardianPhone: "+201000000011" });
+    await adminDb().doc(`linkAttempts/${PHONE}`).set({ failedCount: 3, lockedAt: new Date() });
+  });
+
+  it("links every unlinked child on the number to the account there and clears the lock", async () => {
+    const res = await callFunction<{ linked: { childId: string; name: string }[] }>("staffLinkChildren", { childId: "a" }, await secretary1());
+    assert.ok(res.result, JSON.stringify(res.error));
+    assert.deepEqual(res.result.linked.map((c) => c.childId).sort(), ["a", "b"]);
+    for (const id of ["a", "b"]) assert.equal((await adminDb().doc(`children/${id}`).get()).get("guardianUid"), "g1");
+    assert.equal((await adminDb().doc(`linkAttempts/${PHONE}`).get()).exists, false);
+    assert.equal((await adminDb().doc("guardians/g1").get()).get("clinicChildrenPending"), false);
+    const audit = await adminDb().collection("auditLog").where("action", "==", "children.linked_by_staff").get();
+    assert.equal(audit.size, 1);
+    assert.equal(audit.docs[0].get("actorUid"), "sec1");
+  });
+
+  it("refuses with no account on the number, or for a linked child", async () => {
+    const s = await secretary1();
+    assert.equal((await callFunction("staffLinkChildren", { childId: "nobody" }, s)).error?.details?.reason, "no_account");
+    assert.equal((await callFunction("staffLinkChildren", { childId: "linked" }, s)).error?.details?.reason, "already_linked");
+  });
+
+  it("unlocks a guardian locked out of re-verification", async () => {
+    const s = await secretary1();
+    assert.equal((await callFunction("unlockReverify", { childId: "linked" }, s)).error?.details?.reason, "not_locked");
+    await adminDb().doc("reverifyAttempts/g1").set({ failedCount: 3, lockedAt: new Date() });
+    assert.ok((await callFunction("unlockReverify", { childId: "linked" }, s)).result);
+    assert.equal((await adminDb().doc("reverifyAttempts/g1").get()).exists, false);
+    assert.equal((await adminDb().collection("auditLog").where("action", "==", "account.reverify_unlocked_by_staff").get()).size, 1);
+  });
+
+  it("the child file tells staff what they can do", async () => {
+    await adminDb().doc(`clinicGuardians/${PHONE}`).set({ fullName: "[أم يوسف]", relation: "mother" });
+    await adminDb().doc("reverifyAttempts/g1").set({ failedCount: 3, lockedAt: new Date() });
+    const s = await secretary1();
+    type F = { accountOnNumber?: boolean; reverifyLocked?: boolean; clinicGuardian?: { fullName: string } };
+    const a = (await callFunction<F>("openChildFile", { childId: "a" }, s)).result!;
+    assert.equal(a.accountOnNumber, true);
+    assert.equal(a.clinicGuardian?.fullName, "[أم يوسف]");
+    assert.equal((await callFunction<F>("openChildFile", { childId: "nobody" }, s)).result!.accountOnNumber, false);
+    assert.equal((await callFunction<F>("openChildFile", { childId: "linked" }, s)).result!.reverifyLocked, true);
+  });
+});

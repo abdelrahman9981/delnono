@@ -2137,4 +2137,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashErrAlreadyLinked => 'الطفل مربوط بالفعل.';
+
+  @override
+  String get dashUnlockReverify => 'فك قفل التحقق';
+
+  @override
+  String get dashUnlockConfirm =>
+      'اتأكدي من شخصية ولي الأمر الأول. بعد كده يقدر يتحقق من تاني في التطبيق.';
+
+  @override
+  String get dashUnlocked => 'اتفك القفل.';
+
+  @override
+  String get dashErrNotLocked => 'الحساب مش مقفول.';
 }

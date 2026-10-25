@@ -3879,6 +3879,30 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'الطفل مربوط بالفعل.'**
   String get dashErrAlreadyLinked;
+
+  /// No description provided for @dashUnlockReverify.
+  ///
+  /// In ar, this message translates to:
+  /// **'فك قفل التحقق'**
+  String get dashUnlockReverify;
+
+  /// No description provided for @dashUnlockConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتأكدي من شخصية ولي الأمر الأول. بعد كده يقدر يتحقق من تاني في التطبيق.'**
+  String get dashUnlockConfirm;
+
+  /// No description provided for @dashUnlocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتفك القفل.'**
+  String get dashUnlocked;
+
+  /// No description provided for @dashErrNotLocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحساب مش مقفول.'**
+  String get dashErrNotLocked;
 }
 
 class _AppLocalizationsDelegate

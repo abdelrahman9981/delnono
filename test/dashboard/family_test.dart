@@ -151,4 +151,113 @@ void main() {
       expect(router.state.uri.path, '/children/kept');
     });
   });
+
+  group('staff lift a lock (009 US4)', () {
+    final unlinked = {
+      ...file,
+      'child': {...file['child']! as Map, 'guardianUid': null},
+      'accountOnNumber': true,
+      'clinicGuardian': {'fullName': '[أم يوسف]', 'relation': 'mother'},
+    };
+
+    testWidgets('an unlinked child with an account on the number can be linked, after confirming', (tester) async {
+      final api = FakeDashboardApi()..responses['openChildFile'] = unlinked;
+      await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid', overrides: dashboardOverrides(api: api));
+      expect(find.byKey(const Key('child-unlinked')), findsOneWidget);
+      expect(find.textContaining('[أم يوسف]'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('staff-link')));
+      await tester.pumpAndSettle();
+      expect(api.calls.where((c) => c.$1 == 'staffLinkChildren'), isEmpty, reason: 'asks first');
+      await tester.tap(find.byKey(const Key('confirm-yes')));
+      await tester.pumpAndSettle();
+      expect(api.calls.where((c) => c.$1 == 'staffLinkChildren').single.$2, {'childId': 'kid'});
+    });
+
+    testWidgets('no link without an account; unlock only when locked', (tester) async {
+      final api = FakeDashboardApi()..responses['openChildFile'] = {...unlinked, 'accountOnNumber': false};
+      await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid', overrides: dashboardOverrides(api: api));
+      expect(find.byKey(const Key('staff-link')), findsNothing);
+      expect(find.byKey(const Key('unlock-reverify')), findsNothing);
+    });
+
+    testWidgets('a locked guardian is unlocked after confirming', (tester) async {
+      final api = FakeDashboardApi()..responses['openChildFile'] = {...file, 'reverifyLocked': true};
+      await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid', overrides: dashboardOverrides(api: api));
+      await tester.tap(find.byKey(const Key('unlock-reverify')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('confirm-yes')));
+      await tester.pumpAndSettle();
+      expect(api.calls.where((c) => c.$1 == 'unlockReverify').single.$2, {'childId': 'kid'});
+    });
+  });
+
+  // T016: the new dialogs and states lay out at desktop and tablet width, light and dark, normal and
+  // large text (FR-010).
+  group('layout', () {
+    for (final size in const [Size(1440, 900), Size(820, 1180)]) {
+      for (final b in Brightness.values) {
+        for (final scale in [1.0, 1.5]) {
+          final label = '${size.width.toInt()} · ${b.name} · ×$scale';
+          testWidgets('registration and merge dialogs, unlinked file · $label', (tester) async {
+            final api = FakeDashboardApi()
+              ..responses['openChildFile'] = {
+                ...file,
+                'child': {...file['child']! as Map, 'guardianUid': null},
+                'accountOnNumber': true,
+                'reverifyLocked': true,
+                'clinicGuardian': {'fullName': '[اسم ولي أمر طويل شوية للتجربة]', 'relation': 'mother'},
+              }
+              ..responses['searchChildren'] = {
+                'children': [
+                  {'id': 'kid', 'name': 'يوسف', 'birthDate': '2024-03-15', 'sex': 'male', 'guardianPhone': '+201000000001'},
+                  {'id': 'dup', 'name': 'يوسف أحمد محمود عبد الرحمن', 'birthDate': '2024-03-15', 'sex': 'male', 'guardianPhone': '+201000000001'},
+                ],
+              };
+            await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid', size: size, brightness: b, textScale: scale,
+                overrides: dashboardOverrides(api: api, session: doctorSession));
+            expect(tester.takeException(), isNull);
+            await tester.tap(find.byKey(const Key('merge-file')));
+            await tester.pumpAndSettle();
+            await tester.tap(find.byKey(const Key('merge-pick-dup')));
+            await tester.pumpAndSettle();
+            expect(tester.takeException(), isNull);
+            await tester.tap(find.text(MaterialLocalizations.of(tester.element(find.byType(AlertDialog))).closeButtonLabel).evaluate().isEmpty
+                ? find.text('إغلاق')
+                : find.text(MaterialLocalizations.of(tester.element(find.byType(AlertDialog))).closeButtonLabel));
+            await tester.pumpAndSettle();
+          });
+
+          testWidgets('registration dialog with two children and a duplicate · $label', (tester) async {
+            final api = FakeDashboardApi()
+              ..error = const StaffActionRefused('already-exists', 'duplicate', {
+                'duplicates': [{'index': 1, 'childId': 'kid', 'name': 'يوسف أحمد محمود'}],
+              });
+            await pumpDashboard(tester, const ChildrenSearchScreen(), path: '/children', size: size, brightness: b, textScale: scale,
+                overrides: dashboardOverrides(api: api));
+            await tester.tap(find.byKey(const Key('register-family')));
+            await tester.pumpAndSettle();
+            await tester.ensureVisible(find.byKey(const Key('family-add-child')));
+            await tester.pumpAndSettle();
+            await tester.tap(find.byKey(const Key('family-add-child')));
+            await tester.pumpAndSettle();
+            await tester.enterText(find.byKey(const Key('family-phone')), '01000000077');
+            await tester.enterText(find.byKey(const Key('family-name')), '[أم يوسف]');
+            for (final i in [0, 1]) {
+              await tester.ensureVisible(find.byKey(Key('family-child-name-$i')));
+              await tester.pumpAndSettle();
+              await tester.enterText(find.byKey(Key('family-child-name-$i')), 'يوسف');
+              await tester.ensureVisible(find.byKey(Key('family-child-birth-$i')));
+              await tester.pumpAndSettle();
+              await pickDate(tester, Key('family-child-birth-$i'));
+            }
+            await tester.ensureVisible(find.byKey(const Key('family-save')));
+            await tester.tap(find.byKey(const Key('family-save')));
+            await tester.pumpAndSettle();
+            expect(find.byKey(const Key('family-duplicates')), findsOneWidget);
+            expect(tester.takeException(), isNull);
+          });
+        }
+      }
+    }
+  });
 }

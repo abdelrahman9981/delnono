@@ -255,7 +255,8 @@ class SegmentSwitch<T> extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(color: c.canvas, border: Border.all(color: c.border), borderRadius: BorderRadius.circular(14)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
+      // A Wrap, so long labels or many options take a second line instead of overflowing.
+      child: Wrap(runSpacing: 4, children: [
         for (final (v, label) in options)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2),

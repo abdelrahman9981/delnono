@@ -25,8 +25,19 @@ async function todayBooking(guardianUid: string, childIds: string[], hour: numbe
 
 const currentHour = () => Number(new Intl.DateTimeFormat("en-GB", { timeZone: "Africa/Cairo", hour: "2-digit", hourCycle: "h23" }).format(new Date()));
 
+/**
+ * Tests here act on the current hour; one that starts in the hour's last seconds would see the hour
+ * end mid-test (the server then refuses it). Near the turn of the hour, wait for the next one.
+ * Cairo has whole-hour offsets, so the hour turns when UTC minutes and seconds are zero.
+ */
+async function awayFromHourEnd(marginMs = 45_000): Promise<void> {
+  const left = 3_600_000 - (Date.now() % 3_600_000);
+  if (left < marginMs) await new Promise((r) => setTimeout(r, left + 1_000));
+}
+
 describe("today: queue, walk-ins, payments, packages (005 US2, US3)", () => {
   beforeEach(async () => {
+    await awayFromHourEnd();
     await clearEmulators();
     await seedSettings();
     await seedBookingSettings({ workingHours: always });

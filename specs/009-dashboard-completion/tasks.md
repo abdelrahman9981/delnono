@@ -37,15 +37,15 @@
 
 **Goal**: FR-008, FR-009.
 
-- [ ] T013 [US4] Tests first in functions/test/functions/staff/family.test.ts: links all unlinked children on the number to the guardian account, clears `linkAttempts` and `clinicChildrenPending`, audit `children.linked_by_staff`; `no_account`, `already_linked`
-- [ ] T014 [US4] Implement `staffLinkChildren` and `unlockReverify` in functions/src/callables/staff/family.ts (tests first: clears `reverifyAttempts/{uid}`, `not_locked`, audit); `openChildFile` returns `accountOnNumber`, `reverifyLocked` and `clinicGuardian`
-- [ ] T015 [US4] "ربط بحساب ولي الأمر" for an unlinked child with an account on the number and "فك قفل التحقق" for a locked guardian, each with a confirmation, in the child file header, in lib/dashboard/screens/child_file_screen.dart; widget test in test/dashboard/family_test.dart
+- [X] T013 [US4] Tests first in functions/test/functions/staff/family.test.ts: links all unlinked children on the number to the guardian account, clears `linkAttempts` and `clinicChildrenPending`, audit `children.linked_by_staff`; `no_account`, `already_linked`
+- [X] T014 [US4] Implement `staffLinkChildren` and `unlockReverify` in functions/src/callables/staff/family.ts (tests first: clears `reverifyAttempts/{uid}`, `not_locked`, audit); `openChildFile` returns `accountOnNumber`, `reverifyLocked` and `clinicGuardian`
+- [X] T015 [US4] "ربط بحساب ولي الأمر" for an unlinked child with an account on the number and "فك قفل التحقق" for a locked guardian, each with a confirmation, in the child file header, in lib/dashboard/screens/child_file_screen.dart; widget test in test/dashboard/family_test.dart
 
 ## Phase 6: Polish
 
-- [ ] T016 Add the new dialogs and states to test/dashboard/layout_test.dart (desktop and tablet, light and dark, normal and large text)
-- [ ] T017 Rules tests: staff still cannot write `children` directly; a closed file is not readable by its former guardian (functions/test/rules/staff.test.ts)
-- [ ] T018 Mark tasks done, update specs/009-dashboard-completion/quickstart.md if anything changed; run analyze, flutter test, functions and rules tests; e2e at merge
+- [X] T016 Add the new dialogs and states to test/dashboard/layout_test.dart (desktop and tablet, light and dark, normal and large text)
+- [X] T017 Rules tests: staff still cannot write `children` directly; a closed file is not readable by its former guardian (functions/test/rules/staff.test.ts)
+- [X] T018 Mark tasks done, update specs/009-dashboard-completion/quickstart.md if anything changed; run analyze, flutter test, functions and rules tests; e2e at merge
 
 ## Dependencies
 

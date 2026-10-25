@@ -57,7 +57,10 @@ class _ChildFileScreenState extends ConsumerState<ChildFileScreen> {
       ),
       children: [
         file.when(
-          loading: () => const Padding(padding: EdgeInsets.all(40), child: Center(child: CircularProgressIndicator())),
+          loading: () => const Padding(
+            padding: EdgeInsets.all(40),
+            child: Center(child: CircularProgressIndicator()),
+          ),
           error: (e, _) => Center(child: Text(dashErrorText(l10n, e))),
           data: (f) => f['merged'] is Map
               ? _ClosedFile(merged: Map<String, dynamic>.from(f['merged'] as Map))
@@ -95,7 +98,10 @@ class _File extends ConsumerWidget {
     final visits = _list('visits')..sort((a, b) => '${b['date']}'.compareTo('${a['date']}'));
     final today = ClinicTime.dateOf(ref.watch(clockProvider)());
     final package = _list('packages')
-        .where((p) => p['active'] == true && '${p['startsOn']}'.compareTo(today) <= 0 && today.compareTo('${p['endsOn']}') <= 0)
+        .where(
+          (p) =>
+              p['active'] == true && '${p['startsOn']}'.compareTo(today) <= 0 && today.compareTo('${p['endsOn']}') <= 0,
+        )
         .firstOrNull;
     final visited = {
       for (final r in [...measurements, ...doses, ...visits])
@@ -104,6 +110,32 @@ class _File extends ConsumerWidget {
     void reload() => ref.invalidate(childFileProvider(childId));
     Future<void> dialog(Widget d) async {
       if (await showDialog<bool>(context: context, builder: (_) => d) == true) reload();
+    }
+
+    Future<void> confirmThen(String title, String body, String callable, String done) async {
+      final yes = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: SizedBox(width: 420, child: Text(body)),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.dashClose)),
+            FilledButton(
+              key: const Key('confirm-yes'),
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(title),
+            ),
+          ],
+        ),
+      );
+      if (yes != true || !context.mounted) return;
+      if (await runAction(
+        context,
+        () => ref.read(dashboardApiProvider).call(callable, {'childId': childId}),
+        done: done,
+      )) {
+        reload();
+      }
     }
 
     String value(Object? v, String unit) => v == null ? '—' : '${measureValue((v as num).toDouble())} $unit';
@@ -132,68 +164,113 @@ class _File extends ConsumerWidget {
         alignment: WrapAlignment.spaceBetween,
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Row(mainAxisSize: MainAxisSize.min, children: [
-            InitialAvatar('${child['name']}', tone: child['sex'] == 'female' ? Tone.pink : Tone.blue, size: 56),
-            const SizedBox(width: 14),
-            Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-              Text('${child['name']}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-              Text(
-                '${arabicAge('${child['birthDate']}', l10n)} · ${child['sex'] == 'female' ? l10n.sexFemale : l10n.sexMale} · ${child['birthDate']}',
-                style: TextStyle(color: c.muted),
-              ),
-              Text('${l10n.dashGuardian}: ${child['guardianPhone'] ?? ''}', style: TextStyle(color: c.muted)),
-              if (child['allergies'] != null && '${child['allergies']}'.isNotEmpty)
-                Text(l10n.detailsAllergies('${child['allergies']}'), style: TextStyle(color: c.dangerText)),
-            ]),
-          ]),
-          Wrap(spacing: 8, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-            if (package != null)
-              StatusPill(l10n.packageActiveUntil('${package['endsOn']}'), PillKind.ok, key: const Key('child-package'))
-            else ...[
-              StatusPill(l10n.dashNoPackage, PillKind.info, dot: false),
-              if (child['guardianUid'] != null && clinicId != null)
-                OutlinedButton(
-                  key: const Key('sell-package'),
-                  onPressed: () async {
-                    final ok = await runAction(
-                      context,
-                      () => ref.read(dashboardApiProvider).call('sellPackage', {'clinicId': clinicId, 'guardianUid': child['guardianUid']}),
-                      done: l10n.dashPackageSold,
-                    );
-                    if (ok) reload();
-                  },
-                  child: Text(l10n.dashSellPackage),
-                ),
-            ],
-            if (visited.isNotEmpty) StatusPill(l10n.dashClinicsVisited(visited.join(l10n.listSeparator)), PillKind.info, dot: false),
-            if (isDoctor)
-              OutlinedButton.icon(
-                key: const Key('merge-file'),
-                onPressed: () async {
-                  final keepId = await showDialog<String>(
-                    context: context,
-                    builder: (_) => MergeDialog(
-                      child: {...child, 'id': childId},
-                      counts: (measurements.length, doses.length, visits.length),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              InitialAvatar('${child['name']}', tone: child['sex'] == 'female' ? Tone.pink : Tone.blue, size: 56),
+              const SizedBox(width: 14),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('${child['name']}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    Text(
+                      '${arabicAge('${child['birthDate']}', l10n)} · ${child['sex'] == 'female' ? l10n.sexFemale : l10n.sexMale} · ${child['birthDate']}',
+                      style: TextStyle(color: c.muted),
                     ),
-                  );
-                  if (keepId == null || !context.mounted) return;
-                  if (keepId == childId) {
-                    reload();
-                  } else {
-                    context.go('${DashRoutes.children}/$keepId');
-                  }
-                },
-                icon: const Icon(Icons.merge_type, size: 18),
-                label: Text(l10n.dashMergeFile),
+                    Text(
+                      [
+                        '${l10n.dashGuardian}: ${child['guardianPhone'] ?? ''}',
+                        if (file['clinicGuardian'] case {'fullName': final String name}) name,
+                      ].join(' · '),
+                      style: TextStyle(color: c.muted),
+                    ),
+                    if (child['allergies'] != null && '${child['allergies']}'.isNotEmpty)
+                      Text(l10n.detailsAllergies('${child['allergies']}'), style: TextStyle(color: c.dangerText)),
+                  ],
+                ),
               ),
-            OutlinedButton.icon(
-              key: const Key('edit-basics'),
-              onPressed: () => dialog(_BasicsDialog(childId: childId, child: child)),
-              icon: const Icon(Icons.edit_outlined, size: 18),
-              label: Text(l10n.dashEditBasics),
-            ),
-          ]),
+            ],
+          ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              if (package != null)
+                StatusPill(
+                  l10n.packageActiveUntil('${package['endsOn']}'),
+                  PillKind.ok,
+                  key: const Key('child-package'),
+                )
+              else ...[
+                StatusPill(l10n.dashNoPackage, PillKind.info, dot: false),
+                if (child['guardianUid'] != null && clinicId != null)
+                  OutlinedButton(
+                    key: const Key('sell-package'),
+                    onPressed: () async {
+                      final ok = await runAction(
+                        context,
+                        () => ref.read(dashboardApiProvider).call('sellPackage', {
+                          'clinicId': clinicId,
+                          'guardianUid': child['guardianUid'],
+                        }),
+                        done: l10n.dashPackageSold,
+                      );
+                      if (ok) reload();
+                    },
+                    child: Text(l10n.dashSellPackage),
+                  ),
+              ],
+              if (child['guardianUid'] == null)
+                StatusPill(l10n.dashNotLinked, PillKind.warn, key: const Key('child-unlinked')),
+              // Staff lift a guardian's lock after checking them in person (009 FR-008, FR-008a).
+              if (child['guardianUid'] == null && file['accountOnNumber'] == true)
+                OutlinedButton(
+                  key: const Key('staff-link'),
+                  onPressed: () =>
+                      confirmThen(l10n.dashLinkToAccount, l10n.dashLinkConfirm, 'staffLinkChildren', l10n.dashLinked),
+                  child: Text(l10n.dashLinkToAccount),
+                ),
+              if (file['reverifyLocked'] == true)
+                OutlinedButton(
+                  key: const Key('unlock-reverify'),
+                  onPressed: () =>
+                      confirmThen(l10n.dashUnlockReverify, l10n.dashUnlockConfirm, 'unlockReverify', l10n.dashUnlocked),
+                  child: Text(l10n.dashUnlockReverify),
+                ),
+              if (visited.isNotEmpty)
+                StatusPill(l10n.dashClinicsVisited(visited.join(l10n.listSeparator)), PillKind.info, dot: false),
+              if (isDoctor)
+                OutlinedButton.icon(
+                  key: const Key('merge-file'),
+                  onPressed: () async {
+                    final keepId = await showDialog<String>(
+                      context: context,
+                      builder: (_) => MergeDialog(
+                        child: {...child, 'id': childId},
+                        counts: (measurements.length, doses.length, visits.length),
+                      ),
+                    );
+                    if (keepId == null || !context.mounted) return;
+                    if (keepId == childId) {
+                      reload();
+                    } else {
+                      context.go('${DashRoutes.children}/$keepId');
+                    }
+                  },
+                  icon: const Icon(Icons.merge_type, size: 18),
+                  label: Text(l10n.dashMergeFile),
+                ),
+              OutlinedButton.icon(
+                key: const Key('edit-basics'),
+                onPressed: () => dialog(_BasicsDialog(childId: childId, child: child)),
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                label: Text(l10n.dashEditBasics),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -202,42 +279,68 @@ class _File extends ConsumerWidget {
       title: l10n.dashMeasurementHistory,
       icon: Icons.straighten,
       padding: EdgeInsets.zero,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        if (measurements.isEmpty)
-          Padding(padding: const EdgeInsets.all(20), child: Text(l10n.noMeasurements, style: TextStyle(color: c.muted)))
-        else
-          DashTable(
-            headers: [l10n.dashColDate, l10n.measureWeight, l10n.measureLength, l10n.measureHead, l10n.dashColClinic, l10n.dashColRecorder, ''],
-            flex: const [3, 2, 2, 2, 2, 3, 4],
-            rows: [
-              for (final m in measurements)
-                DashRow(key: Key('measurement-${m['id']}'), cells: [
-                  Text('${m['measuredOn']}'),
-                  Text(value(m['weightKg'], l10n.unitKg), style: const TextStyle(fontWeight: FontWeight.w600)),
-                  Text(value(m['lengthCm'], l10n.unitCm)),
-                  Text(value(m['headCm'], l10n.unitCm)),
-                  Text(clinicName(m['clinicId'])),
-                  recorder(m),
-                  correction(m, 'measurement', () => _MeasurementDialog(childId: childId, clinicId: clinicId, existing: m)),
-                ]),
-            ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (measurements.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(l10n.noMeasurements, style: TextStyle(color: c.muted)),
+            )
+          else
+            DashTable(
+              headers: [
+                l10n.dashColDate,
+                l10n.measureWeight,
+                l10n.measureLength,
+                l10n.measureHead,
+                l10n.dashColClinic,
+                l10n.dashColRecorder,
+                '',
+              ],
+              flex: const [3, 2, 2, 2, 2, 3, 4],
+              rows: [
+                for (final m in measurements)
+                  DashRow(
+                    key: Key('measurement-${m['id']}'),
+                    cells: [
+                      Text('${m['measuredOn']}'),
+                      Text(value(m['weightKg'], l10n.unitKg), style: const TextStyle(fontWeight: FontWeight.w600)),
+                      Text(value(m['lengthCm'], l10n.unitCm)),
+                      Text(value(m['headCm'], l10n.unitCm)),
+                      Text(clinicName(m['clinicId'])),
+                      recorder(m),
+                      correction(
+                        m,
+                        'measurement',
+                        () => _MeasurementDialog(childId: childId, clinicId: clinicId, existing: m),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+            child: Text(l10n.dashNumbersOnly, style: TextStyle(fontSize: 12, color: c.muted)),
           ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-          child: Text(l10n.dashNumbersOnly, style: TextStyle(fontSize: 12, color: c.muted)),
-        ),
-      ]),
+        ],
+      ),
     );
 
-    final measurementsTab = LayoutBuilder(builder: (context, box) {
-      final form = _NewMeasurement(childId: childId, clinicId: clinicId, onSaved: reload);
-      if (box.maxWidth < 900) return Column(children: [form, const SizedBox(height: 16), history]);
-      return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        SizedBox(width: 320, child: form),
-        const SizedBox(width: 16),
-        Expanded(child: history),
-      ]);
-    });
+    final measurementsTab = LayoutBuilder(
+      builder: (context, box) {
+        final form = _NewMeasurement(childId: childId, clinicId: clinicId, onSaved: reload);
+        if (box.maxWidth < 900) return Column(children: [form, const SizedBox(height: 16), history]);
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(width: 320, child: form),
+            const SizedBox(width: 16),
+            Expanded(child: history),
+          ],
+        );
+      },
+    );
 
     final dosesTab = DashCard(
       title: l10n.dashDoses,
@@ -251,21 +354,38 @@ class _File extends ConsumerWidget {
         label: Text(l10n.dashAddDose),
       ),
       child: doses.isEmpty
-          ? Padding(padding: const EdgeInsets.all(20), child: Text(l10n.dashNothingYet, style: TextStyle(color: c.muted)))
+          ? Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(l10n.dashNothingYet, style: TextStyle(color: c.muted)),
+            )
           : DashTable(
-              headers: [l10n.dashColVaccine, l10n.dashColDose, l10n.dashColDate, l10n.dashColLot, l10n.dashColClinic, l10n.dashColRecorder, ''],
+              headers: [
+                l10n.dashColVaccine,
+                l10n.dashColDose,
+                l10n.dashColDate,
+                l10n.dashColLot,
+                l10n.dashColClinic,
+                l10n.dashColRecorder,
+                '',
+              ],
               flex: const [4, 2, 3, 2, 2, 3, 4],
               rows: [
                 for (final d in doses)
-                  DashRow(key: Key('dose-${d['id']}'), cells: [
-                    Text(catalogue[d['vaccineId']]?.name ?? '${d['vaccineId']}', style: const TextStyle(fontWeight: FontWeight.w600)),
-                    Text(arabicDigits(d['dose'] as num? ?? 1)),
-                    Text('${d['givenOn']}'),
-                    Text('${d['lot'] ?? '—'}', textDirection: TextDirection.ltr),
-                    Text(clinicName(d['clinicId'])),
-                    recorder(d),
-                    correction(d, 'dose', () => _DoseDialog(childId: childId, clinicId: clinicId, existing: d)),
-                  ]),
+                  DashRow(
+                    key: Key('dose-${d['id']}'),
+                    cells: [
+                      Text(
+                        catalogue[d['vaccineId']]?.name ?? '${d['vaccineId']}',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      Text(arabicDigits(d['dose'] as num? ?? 1)),
+                      Text('${d['givenOn']}'),
+                      Text('${d['lot'] ?? '—'}', textDirection: TextDirection.ltr),
+                      Text(clinicName(d['clinicId'])),
+                      recorder(d),
+                      correction(d, 'dose', () => _DoseDialog(childId: childId, clinicId: clinicId, existing: d)),
+                    ],
+                  ),
               ],
             ),
     );
@@ -275,7 +395,10 @@ class _File extends ConsumerWidget {
       icon: Icons.event_available_outlined,
       padding: EdgeInsets.zero,
       child: visits.isEmpty
-          ? Padding(padding: const EdgeInsets.all(20), child: Text(l10n.visitsEmpty, style: TextStyle(color: c.muted)))
+          ? Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(l10n.visitsEmpty, style: TextStyle(color: c.muted)),
+            )
           : DashTable(
               headers: [l10n.dashColDate, l10n.dashColClinic],
               flex: const [1, 1],
@@ -294,52 +417,64 @@ class _File extends ConsumerWidget {
       tone: Tone.navy,
       padding: EdgeInsets.zero,
       child: visits.isEmpty
-          ? Padding(padding: const EdgeInsets.all(20), child: Text(l10n.visitsEmpty, style: TextStyle(color: c.muted)))
+          ? Padding(
+              padding: const EdgeInsets.all(20),
+              child: Text(l10n.visitsEmpty, style: TextStyle(color: c.muted)),
+            )
           : DashTable(
               headers: [l10n.dashColDate, l10n.dashColClinic, l10n.dashColNote, ''],
               flex: const [2, 2, 6, 2],
               rows: [
                 for (final v in visits)
-                  DashRow(key: Key('note-row-${v['id']}'), cells: [
-                    Text('${v['date']}'),
-                    Text(clinicName(v['clinicId'])),
-                    Text((v['note'] as String?)?.isNotEmpty == true ? '${v['note']}' : l10n.dashNoNote),
-                    IconButton(
-                      key: Key('note-${v['id']}'),
-                      tooltip: l10n.dashNote,
-                      icon: const Icon(Icons.sticky_note_2_outlined),
-                      onPressed: () => dialog(_NoteDialog(childId: childId, visit: v)),
-                    ),
-                  ]),
+                  DashRow(
+                    key: Key('note-row-${v['id']}'),
+                    cells: [
+                      Text('${v['date']}'),
+                      Text(clinicName(v['clinicId'])),
+                      Text((v['note'] as String?)?.isNotEmpty == true ? '${v['note']}' : l10n.dashNoNote),
+                      IconButton(
+                        key: Key('note-${v['id']}'),
+                        tooltip: l10n.dashNote,
+                        icon: const Icon(Icons.sticky_note_2_outlined),
+                        onPressed: () => dialog(_NoteDialog(childId: childId, visit: v)),
+                      ),
+                    ],
+                  ),
               ],
             ),
     );
 
     final tabs = [measurementsTab, dosesTab, visitsTab, if (isDoctor) notesTab];
     final index = tab.clamp(0, tabs.length - 1);
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      header,
-      const SizedBox(height: 16),
-      DashTabs(
-        index: index,
-        onChanged: onTab,
-        tabs: [
-          Text(l10n.dashMeasurements),
-          Text(l10n.vaccinesTitle),
-          Text(l10n.dashVisits),
-          if (isDoctor)
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              Text(l10n.dashDoctorNotes),
-              const SizedBox(width: 6),
-              Icon(Icons.lock_outline, size: 14, color: Theme.of(context).extension<AppColors>()!.muted),
-              const SizedBox(width: 4),
-              StatusPill(l10n.dashDoctorOnly, PillKind.info, dot: false),
-            ]),
-        ],
-      ),
-      const SizedBox(height: 16),
-      tabs[index],
-    ]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        header,
+        const SizedBox(height: 16),
+        DashTabs(
+          index: index,
+          onChanged: onTab,
+          tabs: [
+            Text(l10n.dashMeasurements),
+            Text(l10n.vaccinesTitle),
+            Text(l10n.dashVisits),
+            if (isDoctor)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n.dashDoctorNotes),
+                  const SizedBox(width: 6),
+                  Icon(Icons.lock_outline, size: 14, color: Theme.of(context).extension<AppColors>()!.muted),
+                  const SizedBox(width: 4),
+                  StatusPill(l10n.dashDoctorOnly, PillKind.info, dot: false),
+                ],
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        tabs[index],
+      ],
+    );
   }
 }
 
@@ -357,14 +492,19 @@ class _ClosedFile extends StatelessWidget {
       title: l10n.dashFileClosed,
       icon: Icons.merge_type,
       tone: Tone.yellow,
-      child: Wrap(spacing: 12, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
-        Text('${merged['name'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
-        FilledButton(
-          key: const Key('open-kept'),
-          onPressed: () => context.go('${DashRoutes.children}/${merged['into']}'),
-          child: Text(l10n.dashOpenKept),
-        ),
-      ]),
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 8,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text('${merged['name'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
+          FilledButton(
+            key: const Key('open-kept'),
+            onPressed: () => context.go('${DashRoutes.children}/${merged['into']}'),
+            child: Text(l10n.dashOpenKept),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -453,29 +593,37 @@ class _NewMeasurementState extends ConsumerState<_NewMeasurement> {
       title: l10n.dashNewMeasurement,
       icon: Icons.add_chart,
       tone: Tone.green,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: DashField(
-            label: l10n.dashDate,
-            child: InkWell(
-              key: const Key('new-m-date'),
-              borderRadius: BorderRadius.circular(12),
-              onTap: _pickDate,
-              child: InputDecorator(
-                decoration: dashInput(context).copyWith(suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18)),
-                child: Text(dayLabel(_date)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: DashField(
+              label: l10n.dashDate,
+              child: InkWell(
+                key: const Key('new-m-date'),
+                borderRadius: BorderRadius.circular(12),
+                onTap: _pickDate,
+                child: InputDecorator(
+                  decoration: dashInput(context)
+                      .copyWith(suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18)),
+                  child: Text(dayLabel(_date)),
+                ),
               ),
             ),
           ),
-        ),
-        value('new-m-weight', _weight, l10n.measureWeight, l10n.unitKg),
-        value('new-m-length', _length, l10n.measureLength, l10n.unitCm),
-        value('new-m-head', _head, l10n.measureHead, l10n.unitCm),
-        FilledButton(key: const Key('add-measurement'), onPressed: _busy ? null : _save, child: Text(l10n.dashSaveMeasurement)),
-        const SizedBox(height: 10),
-        Text(l10n.dashMeasurementHint, style: TextStyle(fontSize: 12, color: c.muted)),
-      ]),
+          value('new-m-weight', _weight, l10n.measureWeight, l10n.unitKg),
+          value('new-m-length', _length, l10n.measureLength, l10n.unitCm),
+          value('new-m-head', _head, l10n.measureHead, l10n.unitCm),
+          FilledButton(
+            key: const Key('add-measurement'),
+            onPressed: _busy ? null : _save,
+            child: Text(l10n.dashSaveMeasurement),
+          ),
+          const SizedBox(height: 10),
+          Text(l10n.dashMeasurementHint, style: TextStyle(fontSize: 12, color: c.muted)),
+        ],
+      ),
     );
   }
 }

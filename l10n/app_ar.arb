@@ -722,5 +722,9 @@
   "dashErrNoAccount": "مفيش حساب في التطبيق على الرقم ده لسه.",
   "dashErrAlreadyLinked": "الطفل مربوط بالفعل.",
   "@dashChildN": {"placeholders": {"n": {"type": "String"}}},
-  "@dashRecordCounts": {"placeholders": {"m": {"type": "String"}, "d": {"type": "String"}, "v": {"type": "String"}}}
+  "@dashRecordCounts": {"placeholders": {"m": {"type": "String"}, "d": {"type": "String"}, "v": {"type": "String"}}},
+  "dashUnlockReverify": "فك قفل التحقق",
+  "dashUnlockConfirm": "اتأكدي من شخصية ولي الأمر الأول. بعد كده يقدر يتحقق من تاني في التطبيق.",
+  "dashUnlocked": "اتفك القفل.",
+  "dashErrNotLocked": "الحساب مش مقفول."
 }
