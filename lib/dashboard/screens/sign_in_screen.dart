@@ -7,6 +7,7 @@ import '../../app/theme.dart';
 import '../../core/widgets/notice.dart';
 import '../../features/auth/data/auth_repository.dart';
 import '../data/staff_session.dart';
+import '../widgets/dash_ui.dart';
 
 /// Staff sign-in with email and password (005 FR-001). A signed-in account that is not an active
 /// staff member is told so and signed out.
@@ -62,12 +63,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         ref.watch(staffSessionProvider).hasValue &&
         ref.watch(staffSessionProvider).value == null;
 
+    // The side bar's navy behind a single card (docs/design/dashboard).
     return Scaffold(
+      backgroundColor: Dash.navy,
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
           child: Card(
             margin: const EdgeInsets.all(24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: AutofillGroup(

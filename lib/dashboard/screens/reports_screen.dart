@@ -12,6 +12,7 @@ import '../../features/clinics/data/clinics_repository.dart';
 import '../data/dashboard_api.dart';
 import '../data/staff_session.dart';
 import '../widgets/dash_page.dart';
+import '../widgets/dash_ui.dart';
 
 const reportColumns = ['bookings', 'arrivals', 'noShows', 'walkIns', 'cash', 'packagesSold', 'packageRevenue'];
 
@@ -36,8 +37,8 @@ class ReportsScreen extends ConsumerStatefulWidget {
 
 class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   late final String _today = ClinicTime.dateOf(ref.read(clockProvider)());
-  late final _from = TextEditingController(text: '${_today.substring(0, 8)}01');
-  late final _to = TextEditingController(text: _today);
+  late String _from = '${_today.substring(0, 8)}01';
+  late String _to = _today;
   bool _byMonth = false;
   bool _allClinics = false;
   Map<String, dynamic>? _result;
@@ -45,8 +46,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
   Future<void> _run(String clinicId) => runAction(context, () async {
     final r = await ref.read(dashboardApiProvider).call('report', {
       'clinicId': _allClinics ? 'all' : clinicId,
-      'from': _from.text.trim(),
-      'to': _to.text.trim(),
+      'from': _from,
+      'to': _to,
       'groupBy': _byMonth ? 'month' : 'day',
     });
     setState(() => _result = r);
@@ -72,6 +73,8 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     final rows = [for (final r in (_result?['rows'] as List? ?? const [])) Map<String, dynamic>.from(r as Map)];
     final total = _result == null ? null : Map<String, dynamic>.from(_result!['total'] as Map);
     final clinicLabel = _allClinics ? l10n.dashAllClinics : (clinic?.name ?? '');
+    final today = ClinicTime.asDate(_today);
+    String n(Map<String, dynamic> r, String k) => arabicDigits((r[k] as num?) ?? 0);
 
     return DashPage(
       title: l10n.dashNavReports,
@@ -91,71 +94,100 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           ),
       ],
       children: [
-        Wrap(
-          spacing: 12,
-          runSpacing: 8,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            SizedBox(
-              width: 160,
-              child: TextField(
-                key: const Key('report-from'),
-                controller: _from,
-                textDirection: TextDirection.ltr,
-                decoration: InputDecoration(labelText: l10n.dashFrom),
+        DashCard(
+          title: l10n.dashReportFilters,
+          icon: Icons.filter_alt_outlined,
+          child: Wrap(
+            spacing: 16,
+            runSpacing: 14,
+            crossAxisAlignment: WrapCrossAlignment.end,
+            children: [
+              SizedBox(
+                width: 240,
+                child: DashField(
+                  label: l10n.dashFrom,
+                  child: DateField(
+                    key: const Key('report-from'),
+                    value: _from,
+                    first: DateTime(2025),
+                    last: today,
+                    onChanged: (d) => setState(() => _from = d),
+                  ),
+                ),
               ),
-            ),
-            SizedBox(
-              width: 160,
-              child: TextField(
-                key: const Key('report-to'),
-                controller: _to,
-                textDirection: TextDirection.ltr,
-                decoration: InputDecoration(labelText: l10n.dashTo),
+              SizedBox(
+                width: 240,
+                child: DashField(
+                  label: l10n.dashTo,
+                  child: DateField(
+                    key: const Key('report-to'),
+                    value: _to,
+                    first: DateTime(2025),
+                    last: today,
+                    onChanged: (d) => setState(() => _to = d),
+                  ),
+                ),
               ),
-            ),
-            SegmentedButton<bool>(
-              segments: [
-                ButtonSegment(value: false, label: Text(l10n.dashDaily)),
-                ButtonSegment(value: true, label: Text(l10n.dashMonthly)),
-              ],
-              selected: {_byMonth},
-              onSelectionChanged: (s) => setState(() => _byMonth = s.first),
-            ),
-            if (isDoctor)
-              FilterChip(
-                key: const Key('report-all'),
-                label: Text(l10n.dashAllClinics),
-                selected: _allClinics,
-                onSelected: (v) => setState(() => _allClinics = v),
+              SegmentSwitch<bool>(
+                key: const Key('report-group'),
+                options: [(false, l10n.dashDaily), (true, l10n.dashMonthly)],
+                value: _byMonth,
+                onChanged: (v) => setState(() => _byMonth = v),
               ),
-            FilledButton(
-              key: const Key('report-run'),
-              onPressed: clinicId == null ? null : () => _run(clinicId),
-              child: Text(l10n.dashShowReport),
-            ),
-          ],
+              if (isDoctor)
+                FilterChip(
+                  key: const Key('report-all'),
+                  label: Text(l10n.dashAllClinics),
+                  selected: _allClinics,
+                  onSelected: (v) => setState(() => _allClinics = v),
+                ),
+              FilledButton(
+                key: const Key('report-run'),
+                onPressed: clinicId == null ? null : () => _run(clinicId),
+                child: Text(l10n.dashShowReport),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 16),
-        if (total != null)
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              key: const Key('report-table'),
-              columns: [
-                for (final h in [headers[0], ...headers.skip(2)]) DataColumn(label: Text(h)),
-              ],
+        if (total != null) ...[
+          const SizedBox(height: 16),
+          TileGrid(
+            columns: 6,
+            minTileWidth: 150,
+            children: [
+              KpiTile(label: l10n.dashRepBookings, value: n(total, 'bookings')),
+              KpiTile(label: l10n.dashRepArrivals, value: n(total, 'arrivals')),
+              KpiTile(label: l10n.dashRepNoShows, value: n(total, 'noShows')),
+              KpiTile(label: l10n.dashRepWalkIns, value: n(total, 'walkIns')),
+              KpiTile(label: l10n.dashRepCash, value: n(total, 'cash'), unit: l10n.dashEgp),
+              KpiTile(
+                label: l10n.dashRepPackageRevenue,
+                value: n(total, 'packageRevenue'),
+                unit: l10n.dashEgp,
+                note: '${l10n.dashRepPackages}: ${n(total, 'packagesSold')}',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          DashCard(
+            key: const Key('report-table'),
+            title: l10n.dashReportResult,
+            hint: clinicLabel,
+            icon: Icons.bar_chart_outlined,
+            padding: EdgeInsets.zero,
+            child: DashTable(
+              headers: [headers[0], ...headers.skip(2)],
+              flex: const [3, 2, 2, 2, 2, 2, 2, 2],
               rows: [
                 for (final r in [...rows, total])
-                  DataRow(
-                    cells: [
-                      DataCell(Text(r == total ? l10n.dashTotal : '${r['key']}')),
-                      for (final c in reportColumns) DataCell(Text(arabicDigits((r[c] as num?) ?? 0))),
-                    ],
-                  ),
+                  DashRow(cells: [
+                    Text(r == total ? l10n.dashTotal : '${r['key']}', style: r == total ? const TextStyle(fontWeight: FontWeight.w700) : null),
+                    for (final c in reportColumns) Text(n(r, c), style: r == total ? const TextStyle(fontWeight: FontWeight.w700) : null),
+                  ]),
               ],
             ),
           ),
+        ],
       ],
     );
   }

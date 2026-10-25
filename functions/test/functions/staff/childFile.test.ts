@@ -60,6 +60,9 @@ describe("child file (005 US4)", () => {
     assert.deepEqual(changes.docs[0].get("from"), { weightKg: 9.4 });
     assert.deepEqual(changes.docs[0].get("to"), { weightKg: 9.6 });
     assert.equal((await adminDb().collection("auditLog").where("action", "==", "medical.corrected").get()).size, 1);
+    const file = await callFunction<{ measurements: { recordedByName: string | null; correctedBy?: string }[] }>("openChildFile", { childId: "kid" }, d);
+    assert.equal(file.result?.measurements[0].recordedByName, "[sec1]", "the history shows who recorded it");
+    assert.equal(file.result?.measurements[0].correctedBy, "doc");
   });
 
   it("values are checked; future dates are refused", async () => {

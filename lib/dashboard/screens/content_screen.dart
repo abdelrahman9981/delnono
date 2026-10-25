@@ -6,6 +6,7 @@ import '../../core/settings/settings_repository.dart';
 import '../data/dashboard_api.dart';
 import '../data/staff_session.dart';
 import '../widgets/dash_page.dart';
+import '../widgets/dash_ui.dart';
 
 /// Every content item with its status; staff read drafts (rules).
 final contentItemsProvider = StreamProvider<List<Map<String, dynamic>>>(
@@ -54,50 +55,64 @@ class ContentScreen extends ConsumerWidget {
           label: Text(l10n.dashNewItem),
         ),
       ],
+      showClinic: false,
       children: [
-        if (items.isEmpty) Text(l10n.dashNothingYet),
-        for (final item in items)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: ActionRow(
-                key: Key('content-${item['id']}'),
-                title: '${item['title']}',
-                subtitle: '${categoryLabel(l10n, '${item['category']}')} · ${statusLabel(l10n, '${item['status']}')}',
-                actions: [
-                  if (item['status'] == 'draft' || isDoctor)
-                    IconButton(
-                      tooltip: l10n.dashEdit,
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: () => showDialog<void>(
-                        context: context,
-                        builder: (_) => ContentDialog(item: item),
+        DashCard(
+          title: l10n.dashContentList,
+          hint: l10n.dashDraftNote,
+          icon: Icons.menu_book_outlined,
+          tone: Tone.pink,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (items.isEmpty) Text(l10n.dashNothingYet),
+              for (final (i, item) in items.indexed) ...[
+                if (i > 0) const Divider(height: 1),
+                ActionRow(
+                  key: Key('content-${item['id']}'),
+                  title: '${item['title']}',
+                  subtitle: categoryLabel(l10n, '${item['category']}'),
+                  actions: [
+                    StatusPill(statusLabel(l10n, '${item['status']}'), switch (item['status']) {
+                      'published' => PillKind.ok,
+                      'archived' => PillKind.noShow,
+                      _ => PillKind.warn,
+                    }),
+                    if (item['status'] == 'draft' || isDoctor)
+                      IconButton(
+                        tooltip: l10n.dashEdit,
+                        icon: const Icon(Icons.edit_outlined),
+                        onPressed: () => showDialog<void>(
+                          context: context,
+                          builder: (_) => ContentDialog(item: item),
+                        ),
                       ),
-                    ),
-                  if (isDoctor && item['status'] != 'published')
-                    FilledButton.tonal(
-                      key: Key('publish-${item['id']}'),
-                      onPressed: () => runAction(
-                        context,
-                        () => ref.read(dashboardApiProvider).call('saveContent', {...item, 'status': 'published'}),
-                        done: l10n.dashPublished,
+                    if (isDoctor && item['status'] != 'published')
+                      FilledButton.tonal(
+                        key: Key('publish-${item['id']}'),
+                        onPressed: () => runAction(
+                          context,
+                          () => ref.read(dashboardApiProvider).call('saveContent', {...item, 'status': 'published'}),
+                          done: l10n.dashPublished,
+                        ),
+                        child: Text(l10n.dashPublish),
                       ),
-                      child: Text(l10n.dashPublish),
-                    ),
-                  if (isDoctor && item['status'] == 'published')
-                    OutlinedButton(
-                      key: Key('archive-${item['id']}'),
-                      onPressed: () => runAction(
-                        context,
-                        () => ref.read(dashboardApiProvider).call('saveContent', {...item, 'status': 'archived'}),
-                        done: l10n.dashArchived,
+                    if (isDoctor && item['status'] == 'published')
+                      OutlinedButton(
+                        key: Key('archive-${item['id']}'),
+                        onPressed: () => runAction(
+                          context,
+                          () => ref.read(dashboardApiProvider).call('saveContent', {...item, 'status': 'archived'}),
+                          done: l10n.dashArchived,
+                        ),
+                        child: Text(l10n.dashArchive),
                       ),
-                      child: Text(l10n.dashArchive),
-                    ),
-                ],
-              ),
-            ),
+                  ],
+                ),
+              ],
+            ],
           ),
+        ),
       ],
     );
   }

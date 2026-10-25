@@ -10,7 +10,7 @@ void main() {
   testWidgets('a secretary sees her clinic and no doctor-only screens (D-47)', (tester) async {
     await pumpDashboard(tester, const TodayScreen(), overrides: dashboardOverrides(api: FakeDashboardApi()));
     expect(find.byKey(const Key('dash-clinic-name')), findsOneWidget);
-    expect(find.text(clinic1.name), findsWidgets);
+    expect(find.text('عيادة ${clinic1.area}'), findsOneWidget);
     expect(find.byKey(const Key('dash-clinic-picker')), findsNothing);
     expect(find.text('الموظفين'), findsNothing);
     expect(find.text('سجل التدقيق'), findsNothing);
@@ -20,11 +20,18 @@ void main() {
     await pumpDashboard(tester, const TodayScreen(), overrides: dashboardOverrides(api: FakeDashboardApi(), session: doctorSession));
     expect(find.text('الموظفين'), findsOneWidget);
     expect(find.text('سجل التدقيق'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('dash-clinic-picker')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(clinic2.name).last);
+    await tester.tap(find.descendant(of: find.byKey(const Key('dash-clinic-picker')), matching: find.text('عيادة ${clinic2.area}')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('hour-row-10')), findsOneWidget, reason: "clinic 2's morning hours");
+  });
+
+  testWidgets('the side bar opens screens and signs out (docs/design/dashboard)', (tester) async {
+    final router = await pumpDashboard(tester, const TodayScreen(), overrides: dashboardOverrides(api: FakeDashboardApi()));
+    expect(find.byKey(const Key('dash-nav')), findsOneWidget);
+    expect(find.byKey(const Key('dash-sign-out')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('nav-/children')));
+    await tester.pumpAndSettle();
+    expect(router.state.uri.path, '/children');
   });
 
   testWidgets('on a tablet the navigation is a drawer', (tester) async {

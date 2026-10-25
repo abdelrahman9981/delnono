@@ -6,6 +6,7 @@ import '../../app/l10n/app_localizations.dart';
 import '../../core/widgets/notice.dart';
 import '../data/dashboard_api.dart';
 import '../data/staff_session.dart';
+import '../widgets/dash_ui.dart';
 
 /// First sign-in: the temporary password is replaced by the staff member's own (005 FR-001).
 class PasswordScreen extends ConsumerStatefulWidget {
@@ -50,12 +51,15 @@ class _PasswordScreenState extends ConsumerState<PasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // The side bar's navy behind a single card (docs/design/dashboard).
     return Scaffold(
+      backgroundColor: Dash.navy,
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),
           child: Card(
             margin: const EdgeInsets.all(24),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Column(

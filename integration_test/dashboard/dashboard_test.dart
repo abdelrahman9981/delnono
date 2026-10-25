@@ -1,6 +1,7 @@
 // The clinic dashboard end to end in a browser against the emulators (005 quickstart scenarios 1, 2,
 // 5 and 6): a secretary signs in and sees only her clinic, marks a booking arrived and done, records a
-// measurement; the doctor signs in and corrects it. Run with scripts/dashboard_e2e.sh.
+// measurement from the child file's form; the doctor signs in and corrects it. Run with
+// scripts/dashboard_e2e.sh.
 
 import 'package:delnono/core/firebase/firebase_init.dart';
 import 'package:delnono/dashboard/app.dart';
@@ -76,30 +77,30 @@ void main() {
     await settle(tester, () => !shows(find.byKey(const Key('done-e2e-clinic1'))));
     expect(find.byKey(const Key('done-e2e-clinic1')), findsNothing);
 
-    // A measurement at her clinic (D-29); she cannot correct it.
+    // A measurement at her clinic from the file's form (D-29); she cannot correct it.
     await openYoussef(tester);
+    await tester.enterText(find.byKey(const Key('new-m-weight')), '13.4');
     await tapAndSettle(tester, find.byKey(const Key('add-measurement')));
-    await settle(tester, () => shows(find.byKey(const Key('m-weight'))));
-    await tester.enterText(find.byKey(const Key('m-weight')), '13.4');
-    await tapAndSettle(tester, find.byKey(const Key('dialog-save')));
-    await settle(tester, () => shows(find.textContaining('١٣٫٤')));
-    expect(find.textContaining('الوزن ١٣٫٤ كجم'), findsOneWidget);
+    await settle(tester, () => shows(find.text('١٣٫٤ كجم')));
+    expect(find.text('١٣٫٤ كجم'), findsOneWidget);
     expect(find.byIcon(Icons.edit_note), findsNothing, reason: 'only the doctor corrects');
 
-    // The doctor signs in and corrects it (FR-015).
+    // The doctor signs in and corrects it (FR-015); the row is tagged corrected.
     await tapAndSettle(tester, find.byKey(const Key('dash-sign-out')));
     await signIn(tester, 'doctor@demo.delnono');
     await settle(tester, () => shows(find.byKey(const Key('dash-clinic-picker'))));
     expect(find.byKey(const Key('dash-clinic-picker')), findsOneWidget);
     await openYoussef(tester);
-    await settle(tester, () => shows(find.textContaining('الوزن ١٣٫٤ كجم')));
-    final row = find.ancestor(of: find.textContaining('الوزن ١٣٫٤ كجم'), matching: find.byType(ListTile));
-    await tapAndSettle(tester, find.descendant(of: row, matching: find.byIcon(Icons.edit_note)));
+    await settle(tester, () => shows(find.text('١٣٫٤ كجم')));
+    final row = find.ancestor(of: find.text('١٣٫٤ كجم'), matching: find.byWidgetPredicate((w) => '${w.key}'.contains("'measurement-")));
+    await tapAndSettle(tester, find.descendant(of: row.first, matching: find.byIcon(Icons.edit_note)));
     await settle(tester, () => shows(find.byKey(const Key('m-weight'))));
     await tester.enterText(find.byKey(const Key('m-weight')), '13.6');
     await tapAndSettle(tester, find.byKey(const Key('dialog-save')));
-    await settle(tester, () => shows(find.textContaining('الوزن ١٣٫٦ كجم')));
-    expect(find.textContaining('الوزن ١٣٫٦ كجم'), findsOneWidget);
-    expect(find.textContaining('الوزن ١٣٫٤ كجم'), findsNothing);
+    await settle(tester, () => shows(find.text('١٣٫٦ كجم')));
+    expect(find.text('١٣٫٦ كجم'), findsOneWidget);
+    expect(find.text('١٣٫٤ كجم'), findsNothing);
+    final corrected = find.ancestor(of: find.text('١٣٫٦ كجم'), matching: find.byWidgetPredicate((w) => '${w.key}'.contains("'measurement-")));
+    expect(find.descendant(of: corrected.first, matching: find.text('اتصحح')), findsOneWidget);
   });
 }

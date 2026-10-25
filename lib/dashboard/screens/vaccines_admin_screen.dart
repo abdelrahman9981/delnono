@@ -6,6 +6,7 @@ import '../../core/format/arabic_digits.dart';
 import '../../features/child_profile/data/vaccine_schedule_repository.dart';
 import '../data/dashboard_api.dart';
 import '../widgets/dash_page.dart';
+import '../widgets/dash_ui.dart';
 
 /// The doctor's vaccine list and basic schedule (005 US5, FR-040, Principle II). Approving sets the
 /// review date shown to families and clears the placeholder marks.
@@ -68,30 +69,55 @@ class _VaccinesAdminScreenState extends ConsumerState<VaccinesAdminScreen> {
           child: Text(l10n.dashApprove),
         ),
       ],
+      showClinic: false,
       children: [
-        TextField(
-          key: const Key('vaccines-source'),
-          controller: _source,
-          decoration: InputDecoration(labelText: l10n.dashScheduleSource),
+        DashCard(
+          title: l10n.dashScheduleSource,
+          hint: info?.reviewedOn == null ? null : l10n.vaccinesReviewed('${info!.reviewedOn}'),
+          icon: Icons.verified_outlined,
+          tone: Tone.green,
+          child: TextField(key: const Key('vaccines-source'), controller: _source, decoration: dashInput(context)),
         ),
-        if (info?.reviewedOn != null) Text(l10n.vaccinesReviewed('${info!.reviewedOn}')),
         const SizedBox(height: 16),
-        Text(l10n.dashVaccineList, style: Theme.of(context).textTheme.titleMedium),
-        for (final v in catalogue.values)
-          ListTile(
-            key: Key('vaccine-${v.id}'),
-            title: TextField(controller: _names[v.id]),
-            subtitle: Text(v.kind == VaccineKind.additional ? l10n.additionalBadge : l10n.vaccinesBasic),
+        DashCard(
+          title: l10n.dashCatalogue,
+          icon: Icons.vaccines_outlined,
+          padding: EdgeInsets.zero,
+          child: DashTable(
+            headers: [l10n.dashColVaccine, l10n.dashCategory],
+            flex: const [3, 1],
+            rows: [
+              for (final v in catalogue.values)
+                DashRow(key: Key('vaccine-${v.id}'), cells: [
+                  TextField(controller: _names[v.id], decoration: dashInput(context)),
+                  StatusPill(
+                    v.kind == VaccineKind.additional ? l10n.additionalBadge : l10n.vaccinesBasic,
+                    v.kind == VaccineKind.additional ? PillKind.walkIn : PillKind.info,
+                    dot: false,
+                  ),
+                ]),
+            ],
           ),
+        ),
         const SizedBox(height: 16),
-        Text(l10n.vaccinesBasic, style: Theme.of(context).textTheme.titleMedium),
-        for (final e in schedule)
-          ListTile(
-            key: Key('schedule-${e.id}'),
-            dense: true,
-            title: Text('${catalogue[e.vaccineId]?.name ?? e.vaccineId} · ${l10n.doseNumber(arabicDigits(e.dose))}'),
-            subtitle: Text('${e.ageLabel} · ${l10n.dashDueMonths(arabicDigits(e.dueAge.months))}'),
+        DashCard(
+          title: l10n.vaccinesBasic,
+          icon: Icons.event_repeat_outlined,
+          tone: Tone.yellow,
+          padding: EdgeInsets.zero,
+          child: DashTable(
+            headers: [l10n.dashColVaccine, l10n.dashColDose, l10n.dashColDate],
+            flex: const [3, 1, 3],
+            rows: [
+              for (final e in schedule)
+                DashRow(key: Key('schedule-${e.id}'), cells: [
+                  Text(catalogue[e.vaccineId]?.name ?? e.vaccineId, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text(arabicDigits(e.dose)),
+                  Text('${e.ageLabel} · ${l10n.dashDueMonths(arabicDigits(e.dueAge.months))}'),
+                ]),
+            ],
           ),
+        ),
       ],
     );
   }

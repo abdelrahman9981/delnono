@@ -1,35 +1,94 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/l10n/app_localizations.dart';
 import '../../app/messenger.dart';
+import '../../features/clinics/data/clinics_repository.dart';
 import '../data/dashboard_api.dart';
+import '../data/staff_session.dart';
+import 'dash_ui.dart';
 
-/// A dashboard page: a title row with actions, then the content in a scrolling column.
+/// A dashboard page (docs/design/dashboard): the page's top bar with its title, the clinic switch
+/// and actions, then the content in a scrolling column on the canvas, and an optional sticky
+/// [bottom] bar (the save bar).
 class DashPage extends StatelessWidget {
-  const DashPage({super.key, required this.title, this.actions = const [], required this.children});
+  const DashPage({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.leading,
+    this.actions = const [],
+    this.showClinic = true,
+    this.bottom,
+    required this.children,
+  });
 
   final String title;
+  final String? subtitle;
+  final Widget? leading;
   final List<Widget> actions;
+  final bool showClinic;
+  final Widget? bottom;
   final List<Widget> children;
 
+  static const maxContentWidth = 1240.0;
+
   @override
-  Widget build(BuildContext context) => ListView(
-    padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: 12,
-        runSpacing: 8,
-        children: [
-          Text(title, style: Theme.of(context).textTheme.headlineSmall),
-          Wrap(spacing: 8, runSpacing: 8, children: actions),
-        ],
+      DashTopBar(
+        title: title,
+        subtitle: subtitle,
+        leading: leading,
+        actions: [if (showClinic) const ClinicSwitch(), ...actions],
       ),
-      const SizedBox(height: 16),
-      ...children,
+      Expanded(
+        child: LayoutBuilder(
+          builder: (context, box) {
+            final gutter = box.maxWidth < 900 ? 16.0 : 28.0;
+            final end = (box.maxWidth - maxContentWidth - gutter).clamp(gutter, double.infinity);
+            // Every card is built (pages are short), so a field is found even before it is scrolled to.
+            return SingleChildScrollView(
+              key: const Key('dash-page-scroll'),
+              padding: EdgeInsetsDirectional.fromSTEB(gutter, 22, end, 40),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: children),
+            );
+          },
+        ),
+      ),
+      ?bottom,
     ],
   );
+}
+
+/// The clinic in the top bar (D-47): a segmented switch for the doctor, the clinic's name for a
+/// secretary.
+class ClinicSwitch extends ConsumerWidget {
+  const ClinicSwitch({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final staff = ref.watch(staffSessionProvider).value;
+    final clinics = ref.watch(allClinicsProvider).value ?? const <Clinic>[];
+    final currentId = ref.watch(currentClinicIdProvider);
+    final current = clinics.where((c) => c.id == currentId).firstOrNull;
+    if (staff == null || current == null) return const SizedBox.shrink();
+    String label(Clinic c) => c.area.isEmpty ? c.name : l10n.dashClinicArea(c.area);
+    if (!staff.isDoctor) {
+      return StatusPill(label(current), PillKind.info, key: const Key('dash-clinic-name'), dot: false);
+    }
+    return Tooltip(
+      message: l10n.dashSwitchClinic,
+      child: SegmentSwitch<String>(
+        key: const Key('dash-clinic-picker'),
+        options: [for (final c in clinics) (c.id, label(c))],
+        value: current.id,
+        onChanged: (id) => ref.read(selectedClinicIdProvider.notifier).select(id),
+      ),
+    );
+  }
 }
 
 /// Arabic text for a refused staff action (contracts/callables.md reasons).

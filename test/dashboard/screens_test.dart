@@ -37,40 +37,69 @@ void main() {
       return api;
     }
 
-    testWidgets('opens through openChildFile (audited) and shows records with their clinic', (tester) async {
+    Future<void> tab(WidgetTester tester, int i) async {
+      await tester.tap(find.byKey(Key('tab-$i')));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('opens through openChildFile (audited) and shows records with their clinic in tabs', (tester) async {
       final api = await open(tester);
       expect(api.calls.first.$1, 'openChildFile');
-      expect(find.textContaining('الوزن ١٢٫٩ كجم'), findsOneWidget);
-      expect(find.textContaining('رقم التشغيلة: L-1'), findsOneWidget);
+      expect(find.byKey(const Key('child-header')), findsOneWidget);
+      expect(find.descendant(of: find.byKey(const Key('measurement-m1')), matching: find.text('١٢٫٩ كجم')), findsOneWidget);
+      expect(find.text('القياسات معروضة بالأرقام بس، من غير أي حكم طبي.'), findsOneWidget);
+      await tab(tester, 1);
+      expect(find.descendant(of: find.byKey(const Key('dose-d1')), matching: find.text('L-1')), findsOneWidget);
+      expect(find.descendant(of: find.byKey(const Key('dose-d1')), matching: find.text('مدينة نصر')), findsOneWidget);
     });
 
     testWidgets('the secretary adds but cannot correct, and sees no notes (D-29, FR-016)', (tester) async {
       await open(tester);
       expect(find.byKey(const Key('add-measurement')), findsOneWidget);
       expect(find.byKey(const Key('correct-measurement-m1')), findsNothing);
-      expect(find.byKey(const Key('note-v1')), findsNothing);
-      expect(find.text('[ملاحظة]'), findsNothing);
+      expect(find.byKey(const Key('tab-3')), findsNothing, reason: 'no notes tab');
+      for (final i in [1, 2]) {
+        await tab(tester, i);
+        expect(find.byKey(const Key('note-v1')), findsNothing);
+        expect(find.text('[ملاحظة]'), findsNothing);
+      }
     });
 
     testWidgets('the doctor corrects and reads and writes notes', (tester) async {
       await open(tester, doctor: true);
       expect(find.byKey(const Key('correct-measurement-m1')), findsOneWidget);
+      await tab(tester, 1);
       expect(find.byKey(const Key('correct-dose-d1')), findsOneWidget);
+      await tab(tester, 3);
       expect(find.text('[ملاحظة]'), findsOneWidget);
+      expect(find.byKey(const Key('note-v1')), findsOneWidget);
     });
 
-    testWidgets('adding a measurement sends it at the current clinic', (tester) async {
+    testWidgets('the new-measurement form sends it at the current clinic', (tester) async {
       final api = await open(tester);
+      await tester.enterText(find.byKey(const Key('new-m-weight')), '13.1');
       await tester.tap(find.byKey(const Key('add-measurement')));
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('m-weight')), '13.1');
-      await tester.tap(find.byKey(const Key('dialog-save')));
       await tester.pumpAndSettle();
       final (name, data) = api.calls.firstWhere((c) => c.$1 == 'saveMeasurement');
       expect(name, 'saveMeasurement');
       expect(data['clinicId'], 'clinic-1');
+      expect(data['measuredOn'], '2026-11-15');
       expect(data['weightKg'], 13.1);
       expect(data.containsKey('id'), isFalse);
+    });
+
+    testWidgets('a corrected record is tagged and shows who recorded it', (tester) async {
+      final api = FakeDashboardApi()
+        ..responses['openChildFile'] = {
+          ...file,
+          'measurements': [
+            {'id': 'm1', 'measuredOn': '2026-10-01', 'weightKg': 12.9, 'clinicId': 'clinic-1', 'recordedByName': '[منى]', 'correctedBy': 'doc'},
+          ],
+        };
+      await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid', overrides: dashboardOverrides(api: api));
+      final row = find.byKey(const Key('measurement-m1'));
+      expect(find.descendant(of: row, matching: find.text('[منى]')), findsOneWidget);
+      expect(find.descendant(of: row, matching: find.text('اتصحح')), findsOneWidget);
     });
 
     testWidgets('a family without a package can buy one at this clinic (FR-012)', (tester) async {

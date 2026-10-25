@@ -63,6 +63,10 @@ export const openChildFile = onCall({ region: REGION }, async (request) => {
   const notes = staff.role === "doctor"
     ? await Promise.all(visits.docs.map((v) => v.ref.collection("staff").doc("notes").get()))
     : [];
+  // Who recorded each value, by name, for the file's history tables.
+  const recorders = [...new Set([...measurements.docs, ...doses.docs].map((r) => r.get("recordedBy")).filter((u): u is string => typeof u === "string"))];
+  const names = new Map((await Promise.all(recorders.map((u) => db.doc(`staff/${u}`).get()))).map((s) => [s.id, s.get("name") ?? null]));
+  const withRecorder = (r: DocumentSnapshot) => ({ ...withId(r), recordedByName: names.get(r.get("recordedBy")) ?? null });
   await writeAudit({ action: "child.opened", actorUid: staff.uid, subjectPhone: child.get("guardianPhone"), childIds: [childId] });
   const d = child.data()!;
   return {
@@ -70,8 +74,8 @@ export const openChildFile = onCall({ region: REGION }, async (request) => {
       id: child.id, name: d.name, birthDate: d.birthDate, sex: d.sex, allergies: d.allergies ?? null,
       birthWeightKg: d.birthWeightKg ?? null, guardianPhone: d.guardianPhone, guardianUid: d.guardianUid ?? null,
     },
-    measurements: measurements.docs.map(withId),
-    doses: doses.docs.map(withId),
+    measurements: measurements.docs.map(withRecorder),
+    doses: doses.docs.map(withRecorder),
     // The note field is sent to the doctor only (D-11).
     visits: visits.docs.map((v, i) => (staff.role === "doctor" ? { ...withId(v), note: notes[i]?.get("text") ?? null } : withId(v))),
     packages: packages?.docs.map(withId) ?? [],
