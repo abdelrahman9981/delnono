@@ -2029,4 +2029,125 @@ class AppLocalizationsAr extends AppLocalizations {
   String dashClinicArea(String area) {
     return 'عيادة $area';
   }
+
+  @override
+  String get dashRegisterFamily => 'تسجيل أسرة';
+
+  @override
+  String get dashRegisterFamilyHint =>
+      'رقم ولي الأمر وبيانات الأطفال. ولي الأمر يربطهم بحسابه من التطبيق بعد التحقق.';
+
+  @override
+  String get dashRegisterWalkIn => 'تسجيل الأسرة';
+
+  @override
+  String dashChildN(String n) {
+    return 'الطفل $n';
+  }
+
+  @override
+  String get dashAddChild => 'طفل تاني';
+
+  @override
+  String get dashBirthWeight => 'وزن الولادة (اختياري)';
+
+  @override
+  String get dashAllergiesOptional => 'الحساسية (اختياري)';
+
+  @override
+  String get dashFamilyRegistered => 'اتسجلت الأسرة.';
+
+  @override
+  String get dashDuplicateTitle => 'الطفل ده متسجل قبل كده على نفس الرقم';
+
+  @override
+  String get dashDuplicateBody =>
+      'مفيش حاجة اتسجلت. شيلي الطفل المكرر من القايمة واحفظي تاني، أو افتحي ملفه.';
+
+  @override
+  String get dashOpenExisting => 'افتحي الملف';
+
+  @override
+  String get dashMergeFile => 'دمج ملف مكرر';
+
+  @override
+  String get dashMergeHint =>
+      'اختاري الملف التاني لنفس الطفل على نفس الرقم. القياسات والتطعيمات والزيارات بتتنقل للملف ده، والملف التاني بيتقفل.';
+
+  @override
+  String get dashMergeKeep => 'الملف اللي هيفضل';
+
+  @override
+  String get dashMergeClose => 'الملف اللي هيتقفل';
+
+  @override
+  String get dashMergeNoOthers => 'مفيش ملفات تانية مفتوحة على نفس الرقم.';
+
+  @override
+  String get dashMergeConfirm => 'دمج الملفين';
+
+  @override
+  String get dashMerged => 'اتدمج الملفين.';
+
+  @override
+  String dashRecordCounts(String m, String d, String v) {
+    return '$m قياس · $d جرعة · $v زيارة';
+  }
+
+  @override
+  String get dashFileClosed => 'الملف ده اتقفل واتدمج في ملف تاني.';
+
+  @override
+  String get dashOpenKept => 'افتحي الملف الأساسي';
+
+  @override
+  String get dashLinkToAccount => 'ربط بحساب ولي الأمر';
+
+  @override
+  String get dashLinkConfirm =>
+      'اتأكدي من شخصية ولي الأمر الأول. كل الأطفال غير المربوطين على الرقم ده هيظهروا في حسابه.';
+
+  @override
+  String get dashLinked => 'اتربط الأطفال بحساب ولي الأمر.';
+
+  @override
+  String get dashNotLinked => 'مش مربوط بالتطبيق';
+
+  @override
+  String get dashErrDuplicate => 'الطفل ده متسجل قبل كده على نفس الرقم.';
+
+  @override
+  String get dashErrSameFile => 'لازم تختاري ملف تاني.';
+
+  @override
+  String get dashErrOtherNumber => 'الملفين على أرقام مختلفة.';
+
+  @override
+  String get dashErrClosed => 'الملف ده اتقفل قبل كده.';
+
+  @override
+  String get dashErrBookedTogether =>
+      'فيه حجز جاي فيه الطفلين مع بعض. عدّليه أو الغيه الأول.';
+
+  @override
+  String get dashErrTooLarge => 'الملف كبير على الدمج مرة واحدة. كلمي الدعم.';
+
+  @override
+  String get dashErrNoAccount => 'مفيش حساب في التطبيق على الرقم ده لسه.';
+
+  @override
+  String get dashErrAlreadyLinked => 'الطفل مربوط بالفعل.';
+
+  @override
+  String get dashUnlockReverify => 'فك قفل التحقق';
+
+  @override
+  String get dashUnlockConfirm =>
+      'اتأكدي من شخصية ولي الأمر الأول. بعد كده يقدر يتحقق من تاني في التطبيق.';
+
+  @override
+  String get dashUnlocked => 'اتفك القفل.';
+
+  @override
+  String get dashErrNotLocked => 'الحساب مش مقفول.';
 }

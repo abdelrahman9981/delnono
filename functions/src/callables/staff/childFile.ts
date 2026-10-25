@@ -4,6 +4,7 @@ import { db } from "../../lib/admin";
 import { writeAudit } from "../../lib/audit";
 import { DATE_PATTERN, cairoDate } from "../../lib/booking/time";
 import { nameKey } from "../../lib/nameKey";
+import { phoneE164 } from "../../lib/phone";
 import { REGION } from "../../lib/region";
 import { requireClinic, requireStaff, num, str, type Staff } from "../../lib/staff";
 
@@ -16,14 +17,6 @@ function plain(v: unknown): unknown {
 }
 
 const withId = (d: DocumentSnapshot) => ({ id: d.id, ...(plain(d.data()) as Record<string, unknown>) });
-
-/** Egyptian mobile numbers as typed at the desk: 01xxxxxxxxx, +201xxxxxxxxx or 201xxxxxxxxx. */
-function phoneE164(q: string): string | null {
-  const digits = q.replace(/\D/g, "");
-  if (/^01\d{9}$/.test(digits)) return `+2${digits}`;
-  if (/^201\d{9}$/.test(digits)) return `+${digits}`;
-  return null;
-}
 
 /** Finds children by guardian phone or name start (005 FR-013). Basic data only; no audit yet. */
 export const searchChildren = onCall({ region: REGION }, async (request) => {
@@ -52,6 +45,12 @@ export const openChildFile = onCall({ region: REGION }, async (request) => {
   const childId = str((request.data ?? {}) as Record<string, unknown>, "childId");
   const child = await db.doc(`children/${childId}`).get();
   if (!child.exists) throw new HttpsError("not-found", "Child not found.");
+  // A closed (merged) file shows nothing but where it went (009 FR-007).
+  const merged = child.get("merged") as { into: string } | undefined;
+  if (merged) {
+    const kept = await db.doc(`children/${merged.into}`).get();
+    return { merged: { into: merged.into, name: kept.get("name") ?? null } };
+  }
   const [measurements, doses, visits, packages] = await Promise.all([
     child.ref.collection("measurements").get(),
     child.ref.collection("doses").get(),
@@ -59,6 +58,14 @@ export const openChildFile = onCall({ region: REGION }, async (request) => {
     child.get("guardianUid")
       ? db.collection("packages").where("guardianUid", "==", child.get("guardianUid")).get()
       : Promise.resolve(null),
+  ]);
+  // What staff can do for the family (009 FR-008, FR-008a) and the desk's guardian record (FR-001a).
+  const phone = child.get("guardianPhone") as string;
+  const uid = child.get("guardianUid") as string | null;
+  const [account, reverify, clinicGuardian] = await Promise.all([
+    uid ? Promise.resolve(null) : db.collection("guardians").where("phone", "==", phone).limit(1).get(),
+    uid ? db.doc(`reverifyAttempts/${uid}`).get() : Promise.resolve(null),
+    db.doc(`clinicGuardians/${phone}`).get(),
   ]);
   const notes = staff.role === "doctor"
     ? await Promise.all(visits.docs.map((v) => v.ref.collection("staff").doc("notes").get()))
@@ -79,6 +86,9 @@ export const openChildFile = onCall({ region: REGION }, async (request) => {
     // The note field is sent to the doctor only (D-11).
     visits: visits.docs.map((v, i) => (staff.role === "doctor" ? { ...withId(v), note: notes[i]?.get("text") ?? null } : withId(v))),
     packages: packages?.docs.map(withId) ?? [],
+    accountOnNumber: uid != null || !(account?.empty ?? true),
+    reverifyLocked: reverify?.get("lockedAt") != null,
+    clinicGuardian: clinicGuardian.exists ? { fullName: clinicGuardian.get("fullName"), relation: clinicGuardian.get("relation") } : null,
   };
 });
 

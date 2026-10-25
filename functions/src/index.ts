@@ -18,3 +18,5 @@ export { staffBookingAction } from "./callables/staff/staffBookingAction";
 export { openChildFile, saveDose, saveMeasurement, saveVisitNote, searchChildren, updateChildBasics } from "./callables/staff/childFile";
 export { publishFollowUp, saveContent, saveFollowUpDraft, updateCatalogue, updateClinic, updateSettings } from "./callables/staff/admin";
 export { report } from "./callables/staff/report";
+// Dashboard completion (009).
+export { mergeChildren, registerFamily, staffLinkChildren, unlockReverify } from "./callables/staff/family";

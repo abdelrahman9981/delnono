@@ -18,6 +18,7 @@ import '../data/today_repository.dart';
 import '../router.dart';
 import '../widgets/dash_page.dart';
 import '../widgets/dash_ui.dart';
+import 'register_family_dialog.dart';
 
 /// Today (005 US2, US3; docs/design/dashboard/Today): the day's numbers, the hour strip with places
 /// left, every booking and walk-in with its status, and the arrival queue by arrival time with
@@ -281,7 +282,15 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
         Text(w.familyName),
         _statusPill(l10n, w.status),
         _paymentCell(l10n, w.payment),
-        const SizedBox.shrink(),
+        // A walk-in family without files can be registered here (009 FR-003).
+        TextButton(
+          key: Key('register-walkin-${w.id}'),
+          onPressed: () => showDialog<List<String>>(
+            context: context,
+            builder: (_) => RegisterFamilyDialog(phone: w.phone, fullName: w.familyName, childNames: w.children),
+          ),
+          child: Text(l10n.dashRegisterWalkIn),
+        ),
       ],
     );
   }

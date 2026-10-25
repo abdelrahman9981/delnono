@@ -98,4 +98,18 @@ describe("rules: staff (005)", () => {
     await assertFails(setDoc(doc(docr(), "content/new"), { status: "published" }));
     await assertFails(setDoc(doc(docr(), "staff/x"), { role: "doctor" }));
   });
+
+  it("staff register, merge and link only through callables (009)", async () => {
+    await assertFails(setDoc(doc(sec1(), "children/new"), { name: "[طفل]", guardianPhone: "+201000000077", guardianUid: null }));
+    await assertFails(setDoc(doc(docr(), "children/kid"), { merged: { into: "other" } }, { merge: true }));
+    await assertFails(setDoc(doc(sec1(), "clinicGuardians/+201000000077"), { fullName: "[أم]" }));
+    await assertFails(getDoc(doc(sec1(), "clinicGuardians/+201000000099")));
+    await assertFails(setDoc(doc(sec1(), "linkAttempts/+201000000099"), { failedCount: 0 }));
+  });
+
+  it("a closed (merged) file is not readable by its former guardian (009 FR-007)", async () => {
+    await seedChild("closed", { guardianUid: null, guardianPhone: null, nameKey: null, merged: { into: "kid", guardianUid: "g1" } });
+    await assertFails(getDoc(doc(as("g1"), "children/closed")));
+    await assertSucceeds(getDoc(doc(as("g1"), "children/kid")));
+  });
 });

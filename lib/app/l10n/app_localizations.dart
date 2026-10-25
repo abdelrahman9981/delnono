@@ -3681,6 +3681,228 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'عيادة {area}'**
   String dashClinicArea(String area);
+
+  /// No description provided for @dashRegisterFamily.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل أسرة'**
+  String get dashRegisterFamily;
+
+  /// No description provided for @dashRegisterFamilyHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم ولي الأمر وبيانات الأطفال. ولي الأمر يربطهم بحسابه من التطبيق بعد التحقق.'**
+  String get dashRegisterFamilyHint;
+
+  /// No description provided for @dashRegisterWalkIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'تسجيل الأسرة'**
+  String get dashRegisterWalkIn;
+
+  /// No description provided for @dashChildN.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطفل {n}'**
+  String dashChildN(String n);
+
+  /// No description provided for @dashAddChild.
+  ///
+  /// In ar, this message translates to:
+  /// **'طفل تاني'**
+  String get dashAddChild;
+
+  /// No description provided for @dashBirthWeight.
+  ///
+  /// In ar, this message translates to:
+  /// **'وزن الولادة (اختياري)'**
+  String get dashBirthWeight;
+
+  /// No description provided for @dashAllergiesOptional.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحساسية (اختياري)'**
+  String get dashAllergiesOptional;
+
+  /// No description provided for @dashFamilyRegistered.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتسجلت الأسرة.'**
+  String get dashFamilyRegistered;
+
+  /// No description provided for @dashDuplicateTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطفل ده متسجل قبل كده على نفس الرقم'**
+  String get dashDuplicateTitle;
+
+  /// No description provided for @dashDuplicateBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش حاجة اتسجلت. شيلي الطفل المكرر من القايمة واحفظي تاني، أو افتحي ملفه.'**
+  String get dashDuplicateBody;
+
+  /// No description provided for @dashOpenExisting.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتحي الملف'**
+  String get dashOpenExisting;
+
+  /// No description provided for @dashMergeFile.
+  ///
+  /// In ar, this message translates to:
+  /// **'دمج ملف مكرر'**
+  String get dashMergeFile;
+
+  /// No description provided for @dashMergeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'اختاري الملف التاني لنفس الطفل على نفس الرقم. القياسات والتطعيمات والزيارات بتتنقل للملف ده، والملف التاني بيتقفل.'**
+  String get dashMergeHint;
+
+  /// No description provided for @dashMergeKeep.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف اللي هيفضل'**
+  String get dashMergeKeep;
+
+  /// No description provided for @dashMergeClose.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف اللي هيتقفل'**
+  String get dashMergeClose;
+
+  /// No description provided for @dashMergeNoOthers.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش ملفات تانية مفتوحة على نفس الرقم.'**
+  String get dashMergeNoOthers;
+
+  /// No description provided for @dashMergeConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'دمج الملفين'**
+  String get dashMergeConfirm;
+
+  /// No description provided for @dashMerged.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتدمج الملفين.'**
+  String get dashMerged;
+
+  /// No description provided for @dashRecordCounts.
+  ///
+  /// In ar, this message translates to:
+  /// **'{m} قياس · {d} جرعة · {v} زيارة'**
+  String dashRecordCounts(String m, String d, String v);
+
+  /// No description provided for @dashFileClosed.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف ده اتقفل واتدمج في ملف تاني.'**
+  String get dashFileClosed;
+
+  /// No description provided for @dashOpenKept.
+  ///
+  /// In ar, this message translates to:
+  /// **'افتحي الملف الأساسي'**
+  String get dashOpenKept;
+
+  /// No description provided for @dashLinkToAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'ربط بحساب ولي الأمر'**
+  String get dashLinkToAccount;
+
+  /// No description provided for @dashLinkConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتأكدي من شخصية ولي الأمر الأول. كل الأطفال غير المربوطين على الرقم ده هيظهروا في حسابه.'**
+  String get dashLinkConfirm;
+
+  /// No description provided for @dashLinked.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتربط الأطفال بحساب ولي الأمر.'**
+  String get dashLinked;
+
+  /// No description provided for @dashNotLinked.
+  ///
+  /// In ar, this message translates to:
+  /// **'مش مربوط بالتطبيق'**
+  String get dashNotLinked;
+
+  /// No description provided for @dashErrDuplicate.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطفل ده متسجل قبل كده على نفس الرقم.'**
+  String get dashErrDuplicate;
+
+  /// No description provided for @dashErrSameFile.
+  ///
+  /// In ar, this message translates to:
+  /// **'لازم تختاري ملف تاني.'**
+  String get dashErrSameFile;
+
+  /// No description provided for @dashErrOtherNumber.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملفين على أرقام مختلفة.'**
+  String get dashErrOtherNumber;
+
+  /// No description provided for @dashErrClosed.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف ده اتقفل قبل كده.'**
+  String get dashErrClosed;
+
+  /// No description provided for @dashErrBookedTogether.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيه حجز جاي فيه الطفلين مع بعض. عدّليه أو الغيه الأول.'**
+  String get dashErrBookedTogether;
+
+  /// No description provided for @dashErrTooLarge.
+  ///
+  /// In ar, this message translates to:
+  /// **'الملف كبير على الدمج مرة واحدة. كلمي الدعم.'**
+  String get dashErrTooLarge;
+
+  /// No description provided for @dashErrNoAccount.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش حساب في التطبيق على الرقم ده لسه.'**
+  String get dashErrNoAccount;
+
+  /// No description provided for @dashErrAlreadyLinked.
+  ///
+  /// In ar, this message translates to:
+  /// **'الطفل مربوط بالفعل.'**
+  String get dashErrAlreadyLinked;
+
+  /// No description provided for @dashUnlockReverify.
+  ///
+  /// In ar, this message translates to:
+  /// **'فك قفل التحقق'**
+  String get dashUnlockReverify;
+
+  /// No description provided for @dashUnlockConfirm.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتأكدي من شخصية ولي الأمر الأول. بعد كده يقدر يتحقق من تاني في التطبيق.'**
+  String get dashUnlockConfirm;
+
+  /// No description provided for @dashUnlocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتفك القفل.'**
+  String get dashUnlocked;
+
+  /// No description provided for @dashErrNotLocked.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحساب مش مقفول.'**
+  String get dashErrNotLocked;
 }
 
 class _AppLocalizationsDelegate

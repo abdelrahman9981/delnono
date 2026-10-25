@@ -1,5 +1,11 @@
 <!--
 Sync Impact Report
+- Version change: 1.3.0 → 1.3.1 (PATCH: feature order only), requested by the owner
+- Modified sections:
+  - Development Workflow: after 005 the order is 009 dashboard completion (BRD FR-64 desk
+    registration, FR-65 duplicate merge), then 007 notifications, 008 packages, 006 content library.
+    Feature numbers do not change.
+
 - Version change: 1.2.0 → 1.3.0 (MINOR: materially expanded guidance for two clinics; no principle removed)
 - Source: docs/BRD.md D-40 to D-49 (24 October 2026), requested by the owner
 - Modified principles:
@@ -95,7 +101,7 @@ The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Functions, Host
 
 ## Development Workflow
 
-- One spec per feature, in this order, closed test scope first (D-35): 001 account and registration, 002 booking (including visit and vaccine prices), 003 child profile and vaccines, 004 two clinics, 005 clinic dashboard, 006 content library, 007 notifications (local reminders, D-42), 008 packages.
+- One spec per feature, in this order, closed test scope first (D-35): 001 account and registration, 002 booking (including visit and vaccine prices), 003 child profile and vaccines, 004 two clinics, 005 clinic dashboard, 009 dashboard completion (FR-64 the secretary registers a guardian and child; FR-65 the doctor merges duplicate child files), 007 notifications (local reminders, D-42), 008 packages, 006 content library. Numbers name features; this list sets their order.
 - Each feature follows: specify, clarify, plan, tasks, analyze, implement.
 - Security Rules tests pass before a feature is considered done.
 - Every plan includes a Constitution Check against the principles above.
@@ -104,4 +110,4 @@ The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Functions, Host
 
 This constitution overrides other practices for this project. Amendments are agreed by the clinic owner (the doctor) and the lead developer, documented with a version bump (semantic versioning), and any dependent specs and plans are updated.
 
-**Version**: 1.3.0 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-24
+**Version**: 1.3.1 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-25

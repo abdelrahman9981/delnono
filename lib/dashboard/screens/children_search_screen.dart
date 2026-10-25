@@ -10,6 +10,7 @@ import '../data/dashboard_api.dart';
 import '../router.dart';
 import '../widgets/dash_page.dart';
 import '../widgets/dash_ui.dart';
+import 'register_family_dialog.dart';
 
 /// Find a child by name or the guardian's phone (005 FR-013). Opening the file is logged.
 class ChildrenSearchScreen extends ConsumerStatefulWidget {
@@ -48,6 +49,17 @@ class _ChildrenSearchScreenState extends ConsumerState<ChildrenSearchScreen> {
     return DashPage(
       title: l10n.dashNavChildren,
       subtitle: l10n.dashChildFileAudited,
+      actions: [
+        FilledButton.icon(
+          key: const Key('register-family'),
+          onPressed: () async {
+            final ids = await showDialog<List<String>>(context: context, builder: (_) => const RegisterFamilyDialog());
+            if (ids != null && ids.isNotEmpty && context.mounted) context.go('${DashRoutes.children}/${ids.first}');
+          },
+          icon: const Icon(Icons.person_add_alt),
+          label: Text(l10n.dashRegisterFamily),
+        ),
+      ],
       children: [
         DashCard(
           title: l10n.dashSearch,
