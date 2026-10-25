@@ -2,6 +2,7 @@ import 'package:delnono/core/clock.dart';
 import 'package:delnono/dashboard/data/dashboard_api.dart';
 import 'package:delnono/dashboard/data/staff_session.dart';
 import 'package:delnono/dashboard/data/today_repository.dart';
+import 'package:delnono/features/booking/data/booking_settings.dart';
 import 'package:delnono/features/booking/domain/booking.dart';
 import 'package:delnono/features/booking/domain/price_preview.dart';
 import 'package:delnono/features/child_profile/data/vaccine_schedule_repository.dart';
@@ -54,12 +55,13 @@ List<Override> dashboardOverrides({
   List<QueueBooking> bookings = const [],
   List<WalkIn> walkIns = const [],
   bool stopped = false,
+  BookingSettings? clinic1Settings,
 }) =>
     [
       clockProvider.overrideWithValue(() => now),
       staffSessionProvider.overrideWith((ref) => Stream.value(session)),
       dashboardApiProvider.overrideWithValue(api),
-      ...clinicOverrides(clinics: const [clinic1, clinic2], settings: const {'clinic-2': clinic2Settings}),
+      ...clinicOverrides(clinics: const [clinic1, clinic2], settings: {'clinic-2': clinic2Settings, 'clinic-1': ?clinic1Settings}),
       dayBookingsProvider.overrideWith((ref, day) => Stream.value(day.clinicId == 'clinic-1' ? bookings : const [])),
       dayWalkInsProvider.overrideWith((ref, day) => Stream.value(day.clinicId == 'clinic-1' ? walkIns : const [])),
       walkInsStoppedProvider.overrideWith((ref, day) => Stream.value(stopped)),

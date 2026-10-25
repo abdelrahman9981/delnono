@@ -46,7 +46,7 @@ Future<void> openYoussef(WidgetTester tester) async {
 }
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
     expect(useEmulator, isTrue, reason: 'Run with --dart-define=USE_EMULATOR=true');
@@ -55,6 +55,15 @@ void main() {
   });
 
   testWidgets('secretary: her clinic only, arrived and done, a measurement; doctor: corrects it', (tester) async {
+    // Keep each Flutter error in full for build/integration_response_data.json: the driver's report
+    // only counts them.
+    final errors = <String>[];
+    final report = FlutterError.onError;
+    FlutterError.onError = (details) {
+      errors.add(details.toString());
+      binding.reportData = {'errors': errors};
+      report?.call(details);
+    };
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1;
     await tester.pumpWidget(const ProviderScope(child: DashboardApp()));
@@ -86,6 +95,8 @@ void main() {
     expect(find.byIcon(Icons.edit_note), findsNothing, reason: 'only the doctor corrects');
 
     // The doctor signs in and corrects it (FR-015); the row is tagged corrected.
+    // The "saved" message sits over the side bar's foot, where sign-out is; let it go first.
+    await settle(tester, () => !shows(find.byType(SnackBar)));
     await tapAndSettle(tester, find.byKey(const Key('dash-sign-out')));
     await signIn(tester, 'doctor@demo.delnono');
     await settle(tester, () => shows(find.byKey(const Key('dash-clinic-picker'))));

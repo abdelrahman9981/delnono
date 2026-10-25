@@ -15,14 +15,25 @@ MESSAGE="${2:?merge message}"
 E2E="${3:-}"
 LOGS="$(mktemp -d)"
 
+# Builds touch generated platform files and file stamps; drop those, then go back to main as it was.
+undo() {
+  git checkout -- linux windows macos/Flutter 2>/dev/null
+  git update-index -q --refresh
+  if ! git reset --keep "$BEFORE"; then
+    echo "✗ Could not undo the merge automatically. main is NOT pushed. Run: git reset --keep $BEFORE"
+    exit 3
+  fi
+}
+
 fail() {
   echo "✗ $1 failed — see $LOGS/$2. Undoing the merge; main is NOT pushed."
-  git reset --keep ORIG_HEAD
+  undo
   exit 1
 }
 
 [ -z "$(git status --porcelain --untracked-files=no)" ] || { echo "Working tree has changes; commit or stash first."; exit 2; }
 git checkout main && git pull --ff-only || exit 2
+BEFORE="$(git rev-parse HEAD)"
 git merge --no-ff "$BRANCH" -m "$MESSAGE" || { git merge --abort 2>/dev/null; echo "Merge conflict; nothing pushed."; exit 2; }
 
 echo "· flutter analyze";   flutter analyze >"$LOGS/analyze.log" 2>&1           || fail "flutter analyze" analyze.log

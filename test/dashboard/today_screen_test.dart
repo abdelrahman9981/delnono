@@ -1,5 +1,6 @@
 import 'package:delnono/dashboard/data/today_repository.dart';
 import 'package:delnono/dashboard/screens/today_screen.dart';
+import 'package:delnono/features/booking/data/booking_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -120,5 +121,16 @@ void main() {
       'hour': 20,
       'children': [{'childId': 'c1', 'vaccines': <String>[]}],
     });
+  });
+
+  testWidgets('a clinic open all day fits: the hour filter scrolls, nothing overflows', (tester) async {
+    api = FakeDashboardApi();
+    await pumpDashboard(tester, const TodayScreen(), overrides: dashboardOverrides(
+      api: api,
+      clinic1Settings: const BookingSettings(workingHours: {7: [HourRange(0, 24)]}),
+    ));
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('hour-row-0')), findsOneWidget);
+    expect(find.byKey(const Key('hour-row-23')), findsOneWidget);
   });
 }

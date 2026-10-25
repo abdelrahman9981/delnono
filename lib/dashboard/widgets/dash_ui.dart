@@ -80,8 +80,10 @@ class DashCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = Theme.of(context).extension<AppColors>()!;
     final text = Theme.of(context).textTheme;
-    return Container(
-      decoration: BoxDecoration(color: c.surface, border: Border.all(color: c.border), borderRadius: BorderRadius.circular(18)),
+    // A Material, so list tiles and ink inside the card paint on it.
+    return Material(
+      color: c.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: BorderSide(color: c.border)),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,7 +100,16 @@ class DashCard extends StatelessWidget {
                     if (hint != null) Text(hint!, style: text.bodySmall?.copyWith(color: c.muted)),
                   ]),
                 ),
-                ?action,
+                // A wide action (e.g. many hour tabs) scrolls instead of pushing the title out.
+                if (action != null) ...[
+                  const SizedBox(width: 12),
+                  Flexible(
+                    child: Align(
+                      alignment: AlignmentDirectional.centerEnd,
+                      child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: action),
+                    ),
+                  ),
+                ],
               ]),
             ),
           Padding(padding: padding, child: child),
