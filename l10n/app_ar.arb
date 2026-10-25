@@ -559,7 +559,7 @@
   "dashRepArrivals": "الحضور",
   "dashRepNoShows": "لم يحضر",
   "dashRepWalkIns": "بدون حجز",
-  "dashRepCash": "المدفوع كاش",
+  "dashRepCash": "كاش الكشوفات",
   "dashRepPackages": "الباقات المباعة",
   "dashSetPolicy": "سياسة الخصوصية والشروط",
   "dashSetPolicyVersion": "رقم النسخة (زيادته بتطلب موافقة جديدة)",
@@ -600,5 +600,7 @@
   "dashErrOtherClinic": "دي بيانات عيادة تانية.",
   "dashErrHourClosed": "الساعة دي مش متاحة.",
   "dashErrNotAllowed": "مش مسموح.",
-  "dashErrAlreadyExists": "موجود بالفعل."
+  "dashErrAlreadyExists": "موجود بالفعل.",
+  "dashRepPackageRevenue": "إيراد الباقات",
+  "dashMoveForFamily": "نقل الحجز لميعاد تاني"
 }

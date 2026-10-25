@@ -6,7 +6,9 @@ import '../../app/theme.dart';
 import '../../core/clock.dart';
 import '../../core/format/arabic_digits.dart';
 import '../../features/booking/data/booking_settings.dart';
+import '../../features/booking/domain/booking.dart';
 import '../../features/booking/domain/clinic_time.dart';
+import '../../features/booking/domain/price_preview.dart' show VisitType;
 import '../../features/booking/domain/schedule.dart';
 import '../../features/booking/presentation/booking_format.dart';
 import '../data/dashboard_api.dart';
@@ -278,7 +280,9 @@ class _BookingRow extends ConsumerWidget {
           PopupMenuButton<String>(
             key: Key('booking-menu-${b.id}'),
             onSelected: (v) async {
-              if (v == 'cancel') {
+              if (v == 'move') {
+                await showDialog<void>(context: context, builder: (_) => MoveBookingDialog(booking: b));
+              } else if (v == 'cancel') {
                 await runAction(
                   context,
                   () => api.call('staffBookingAction', {'action': 'cancel', 'bookingId': b.id}),
@@ -286,7 +290,10 @@ class _BookingRow extends ConsumerWidget {
                 );
               }
             },
-            itemBuilder: (_) => [PopupMenuItem(value: 'cancel', child: Text(l10n.dashCancelForFamily))],
+            itemBuilder: (_) => [
+              PopupMenuItem(key: Key('move-${b.id}'), value: 'move', child: Text(l10n.dashMoveForFamily)),
+              PopupMenuItem(value: 'cancel', child: Text(l10n.dashCancelForFamily)),
+            ],
           ),
       ],
     );
@@ -449,6 +456,93 @@ class _WalkInDialogState extends ConsumerState<_WalkInDialog> {
                       'visitType': _vaccineOnly ? 'vaccine_only' : 'visit',
                     }),
                     done: l10n.dashWalkInAdded,
+                  );
+                  if (ok && context.mounted) Navigator.pop(context);
+                },
+          child: Text(l10n.save),
+        ),
+      ],
+    );
+  }
+}
+
+/// Moves a booking to another day or hour of its clinic for the family (005 FR-009). Capacity, hours
+/// and family limits apply on the server; the cancel window does not. Children, vaccines and fixed
+/// prices stay as booked.
+class MoveBookingDialog extends ConsumerStatefulWidget {
+  const MoveBookingDialog({super.key, required this.booking});
+
+  final Booking booking;
+
+  @override
+  ConsumerState<MoveBookingDialog> createState() => _MoveBookingDialogState();
+}
+
+class _MoveBookingDialogState extends ConsumerState<MoveBookingDialog> {
+  String? _date;
+  int? _hour;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final b = widget.booking;
+    final clinicId = b.clinicId ?? ref.watch(currentClinicIdProvider) ?? '';
+    final settings = ref.watch(bookingSettingsProvider(clinicId)).value ?? const BookingSettings();
+    final now = ref.watch(clockProvider)();
+    final needsVaccineDay = b.children.any((c) => c.vaccines.isNotEmpty);
+    final days = bookableDays(settings, now, vaccines: needsVaccineDay);
+    final date = _date ?? b.date;
+    final hours = days.contains(date) ? openHours(settings, date, now) : const <int>[];
+    final hour = hours.contains(_hour ?? b.hour) ? (_hour ?? b.hour) : hours.firstOrNull;
+
+    return AlertDialog(
+      title: Text(l10n.dashMoveForFamily),
+      content: SizedBox(
+        width: 400,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text('${l10n.bookingNumberValue(arabicDigits(b.number))} · ${b.children.map((c) => c.name).join(l10n.listSeparator)}'),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            isExpanded: true,
+            key: const Key('move-date'),
+            initialValue: days.contains(date) ? date : null,
+            items: [for (final d in days) DropdownMenuItem(value: d, child: Text(dayLabel(d)))],
+            onChanged: (d) => setState(() {
+              _date = d;
+              _hour = null;
+            }),
+            decoration: InputDecoration(labelText: l10n.dashDate),
+          ),
+          DropdownButtonFormField<int>(
+            isExpanded: true,
+            key: ValueKey('move-hour-$date'),
+            initialValue: hour,
+            items: [for (final h in hours) DropdownMenuItem(value: h, child: Text(hourRange(l10n, h)))],
+            onChanged: (h) => setState(() => _hour = h),
+            decoration: InputDecoration(labelText: l10n.labelHour),
+          ),
+        ]),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.dashClose)),
+        FilledButton(
+          key: const Key('move-save'),
+          onPressed: hour == null || (date == b.date && hour == b.hour)
+              ? null
+              : () async {
+                  final ok = await runAction(
+                    context,
+                    () => ref.read(dashboardApiProvider).call('staffBookingAction', {
+                      'action': 'change',
+                      'bookingId': b.id,
+                      'selection': {
+                        'visitType': b.visitType == VisitType.vaccineOnly ? 'vaccine_only' : 'visit',
+                        'date': date,
+                        'hour': hour,
+                        'children': [for (final c in b.children) {'childId': c.childId, 'vaccines': c.vaccines}],
+                      },
+                    }),
+                    done: l10n.bookingChanged,
                   );
                   if (ok && context.mounted) Navigator.pop(context);
                 },

@@ -98,4 +98,27 @@ void main() {
     expect(api.calls.single.$1, 'recordPayment');
     expect(api.calls.single.$2, {'bookingId': 'a', 'cash': 0, 'covered': true});
   });
+
+  testWidgets('moving a booking sends the new day and hour with the same children (FR-009)', (tester) async {
+    await open(tester, bookings: [queueBooking('a', 19)]);
+    await tester.tap(find.byKey(const Key('booking-menu-a')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('move-a')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('move-hour-2026-11-15')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('٨ لـ ٩ م').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('move-save')));
+    await tester.pumpAndSettle();
+    final (name, data) = api.calls.single;
+    expect(name, 'staffBookingAction');
+    expect(data['action'], 'change');
+    expect(data['selection'], {
+      'visitType': 'visit',
+      'date': '2026-11-15',
+      'hour': 20,
+      'children': [{'childId': 'c1', 'vaccines': <String>[]}],
+    });
+  });
 }
