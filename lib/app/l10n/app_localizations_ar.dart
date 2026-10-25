@@ -1645,7 +1645,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dashRepWalkIns => 'بدون حجز';
 
   @override
-  String get dashRepCash => 'المدفوع كاش';
+  String get dashRepCash => 'كاش الكشوفات';
 
   @override
   String get dashRepPackages => 'الباقات المباعة';
@@ -1767,4 +1767,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashErrAlreadyExists => 'موجود بالفعل.';
+
+  @override
+  String get dashRepPackageRevenue => 'إيراد الباقات';
+
+  @override
+  String get dashMoveForFamily => 'نقل الحجز لميعاد تاني';
 }

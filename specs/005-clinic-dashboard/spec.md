@@ -212,7 +212,7 @@ The doctor edits app texts and settings (policy text and version, sign-in limits
 
 **Reports**
 
-- **FR-022**: Reports MUST show, per day and per month in a date range: bookings, arrivals, no-shows, walk-ins, cash collected, packages sold, per clinic; the doctor can also see both clinics together (D-20).
+- **FR-022**: Reports MUST show, per day and per month in a date range: bookings, arrivals, no-shows, walk-ins, cash collected for visits, packages sold and package revenue (kept apart from visit cash), per clinic; the doctor can also see both clinics together (D-20).
 - **FR-023**: Reports MUST export to CSV with no child names, phones or medical data.
 
 **Settings, texts and audit**

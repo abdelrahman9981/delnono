@@ -13,9 +13,9 @@ import '../data/dashboard_api.dart';
 import '../data/staff_session.dart';
 import '../widgets/dash_page.dart';
 
-const reportColumns = ['bookings', 'arrivals', 'noShows', 'walkIns', 'cash', 'packagesSold'];
+const reportColumns = ['bookings', 'arrivals', 'noShows', 'walkIns', 'cash', 'packagesSold', 'packageRevenue'];
 
-/// The report as CSV: dates, clinic and the six numbers only, no names, phones or medical data
+/// The report as CSV: dates, clinic and the numbers only (visit cash and package revenue apart), no names, phones or medical data
 /// (D-20, 005 FR-023).
 String reportCsv(List<Map<String, dynamic>> rows, Map<String, dynamic> total, String clinic, List<String> headers) {
   final lines = <String>[
@@ -67,6 +67,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
       l10n.dashRepWalkIns,
       l10n.dashRepCash,
       l10n.dashRepPackages,
+      l10n.dashRepPackageRevenue,
     ];
     final rows = [for (final r in (_result?['rows'] as List? ?? const [])) Map<String, dynamic>.from(r as Map)];
     final total = _result == null ? null : Map<String, dynamic>.from(_result!['total'] as Map);

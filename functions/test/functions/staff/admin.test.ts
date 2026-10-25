@@ -95,7 +95,7 @@ describe("clinic, catalogue, content, follow-up, settings, reports (005 US5–US
       "report", { clinicId: CLINIC, from: "2026-11-01", to: "2026-11-30", groupBy: "day" }, s,
     );
     assert.ok(res.result, JSON.stringify(res.error));
-    assert.deepEqual(res.result.rows, [{ key: day, bookings: 3, arrivals: 1, noShows: 1, walkIns: 1, cash: 1950, packagesSold: 1 }]);
+    assert.deepEqual(res.result.rows, [{ key: day, bookings: 3, arrivals: 1, noShows: 1, walkIns: 1, cash: 450, packagesSold: 1, packageRevenue: 1500 }]);
     assert.equal((await callFunction("report", { clinicId: "all", from: "2026-11-01", to: "2026-11-30" }, s)).error?.status, "PERMISSION_DENIED");
     const s2 = await secretary2();
     assert.equal((await callFunction("report", { clinicId: CLINIC, from: "2026-11-01", to: "2026-11-30" }, s2)).error?.status, "PERMISSION_DENIED");

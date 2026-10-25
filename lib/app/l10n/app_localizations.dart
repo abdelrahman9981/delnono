@@ -2953,7 +2953,7 @@ abstract class AppLocalizations {
   /// No description provided for @dashRepCash.
   ///
   /// In ar, this message translates to:
-  /// **'المدفوع كاش'**
+  /// **'كاش الكشوفات'**
   String get dashRepCash;
 
   /// No description provided for @dashRepPackages.
@@ -3189,6 +3189,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'موجود بالفعل.'**
   String get dashErrAlreadyExists;
+
+  /// No description provided for @dashRepPackageRevenue.
+  ///
+  /// In ar, this message translates to:
+  /// **'إيراد الباقات'**
+  String get dashRepPackageRevenue;
+
+  /// No description provided for @dashMoveForFamily.
+  ///
+  /// In ar, this message translates to:
+  /// **'نقل الحجز لميعاد تاني'**
+  String get dashMoveForFamily;
 }
 
 class _AppLocalizationsDelegate
