@@ -29,7 +29,12 @@ export type AuditAction =
   | "status.undone"
   | "booking.staff_cancelled"
   | "booking.staff_changed"
-  | "package.sold";
+  | "package.sold"
+  // Dashboard completion (009).
+  | "family.registered"
+  | "children.merged"
+  | "children.linked_by_staff"
+  | "account.reverify_unlocked_by_staff";
 
 export interface AuditEntry {
   action: AuditAction;

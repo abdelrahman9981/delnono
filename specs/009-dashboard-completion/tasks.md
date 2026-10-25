@@ -5,23 +5,23 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Move `phoneE164` from functions/src/callables/staff/childFile.ts to functions/src/lib/phone.ts and import it in childFile.ts (no behaviour change)
-- [ ] T002 [P] Add Arabic strings for registration, duplicates, merge and staff link to l10n/app_ar.arb and run `flutter gen-l10n`
+- [X] T001 Move `phoneE164` from functions/src/callables/staff/childFile.ts to functions/src/lib/phone.ts and import it in childFile.ts (no behaviour change)
+- [X] T002 [P] Add Arabic strings for registration, duplicates, merge and staff link to l10n/app_ar.arb and run `flutter gen-l10n`
 
 ## Phase 2: Foundational
 
-- [ ] T003 Add `registerFamily`, `mergeChildren`, `staffLinkChildren` to the dashboard error reasons in lib/dashboard/widgets/dash_page.dart (`duplicate`, `same_file`, `other_number`, `closed`, `booked_together`, `too_large`, `no_account`, `already_linked`)
+- [X] T003 Add `registerFamily`, `mergeChildren`, `staffLinkChildren` to the dashboard error reasons in lib/dashboard/widgets/dash_page.dart (`duplicate`, `same_file`, `other_number`, `closed`, `booked_together`, `too_large`, `no_account`, `already_linked`)
 
 ## Phase 3: User Story 1 + 2 — Desk registration with the duplicate check (P1)
 
 **Goal**: Staff register a number and children; duplicates create nothing and point to the existing file (FR-001–FR-004, FR-009).
 **Independent test**: functions/test/functions/staff/family.test.ts "registerFamily" block; test/dashboard/family_test.dart registration tests.
 
-- [ ] T004 [US1] Write tests first in functions/test/functions/staff/family.test.ts: stores `clinicGuardians/{phone}` with name and relation; registers 2 children unlinked with `registeredBy: "staff"`, `registeredAt` and audit `family.registered`; phone formats; validation errors carry `{field, index}`; secretary of clinic 1 cannot register at clinic 2; the app's linking (`linkClinicChildren`) then links them; duplicates (existing file with other spelling, twice in one request) create nothing and return `duplicates`; same name on another number is not a duplicate
-- [ ] T005 [US1] Implement `registerFamily` in functions/src/callables/staff/family.ts (one transaction: duplicate query per child as `createChild`, then create) and export it in functions/src/index.ts
-- [ ] T006 [US1] Add `RegisterFamilyDialog` in lib/dashboard/screens/register_family_dialog.dart: number, guardian name and relation, child rows (name, birth date from a date picker, sex, optional birth weight and allergies), add/remove child, save; on `duplicate` show each duplicate with "افتحي الملف" (go to /children/{id}) and keep the form
-- [ ] T007 [US1] Open it from "+ تسجيل أسرة" in lib/dashboard/screens/children_search_screen.dart and from a walk-in row in lib/dashboard/screens/today_screen.dart (prefilled number and names)
-- [ ] T008 [US1] Widget tests in test/dashboard/family_test.dart: sends the request shape; walk-in prefill; duplicate warning lists the child and links to its file
+- [X] T004 [US1] Write tests first in functions/test/functions/staff/family.test.ts: stores `clinicGuardians/{phone}` with name and relation; registers 2 children unlinked with `registeredBy: "staff"`, `registeredAt` and audit `family.registered`; phone formats; validation errors carry `{field, index}`; secretary of clinic 1 cannot register at clinic 2; the app's linking (`linkClinicChildren`) then links them; duplicates (existing file with other spelling, twice in one request) create nothing and return `duplicates`; same name on another number is not a duplicate
+- [X] T005 [US1] Implement `registerFamily` in functions/src/callables/staff/family.ts (one transaction: duplicate query per child as `createChild`, then create) and export it in functions/src/index.ts
+- [X] T006 [US1] Add `RegisterFamilyDialog` in lib/dashboard/screens/register_family_dialog.dart: number, guardian name and relation, child rows (name, birth date from a date picker, sex, optional birth weight and allergies), add/remove child, save; on `duplicate` show each duplicate with "افتحي الملف" (go to /children/{id}) and keep the form
+- [X] T007 [US1] Open it from "+ تسجيل أسرة" in lib/dashboard/screens/children_search_screen.dart and from a walk-in row in lib/dashboard/screens/today_screen.dart (prefilled number and names)
+- [X] T008 [US1] Widget tests in test/dashboard/family_test.dart: sends the request shape; walk-in prefill; duplicate warning lists the child and links to its file
 
 ## Phase 4: User Story 3 — The doctor merges two files (P2)
 

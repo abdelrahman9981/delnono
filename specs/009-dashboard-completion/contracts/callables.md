@@ -4,7 +4,7 @@ All require an active staff account (`requireStaff`); errors use `HttpsError` wi
 
 ## registerFamily
 
-Request: `{ clinicId, phone, guardianName, relation, children: [{ name, birthDate, sex, birthWeightKg?, allergies? }] }` (1–6 children; `relation` is `mother` | `father` | `other`, as in 001).
+Request: `{ clinicId, phone, fullName, relation, children: [{ name, birthDate, sex, birthWeightKg?, allergies? }] }` (1–6 children; `relation` is `mother` | `father` | `other`, as in 001).
 - Writes `clinicGuardians/{phone}` `{fullName, relation, createdAt, createdBy}` (merged if present); server only.
 - `clinicId` must be the caller's clinic (secretary) or any clinic (doctor) — `requireClinic`.
 - `phone`: 01xxxxxxxxx, +201xxxxxxxxx or 201xxxxxxxxx; else `invalid-argument` `{field: "phone"}`.
