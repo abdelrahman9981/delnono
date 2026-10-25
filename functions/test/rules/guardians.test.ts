@@ -56,6 +56,13 @@ describe("rules: guardians", () => {
       await assertSucceeds(edit({ email: null }));
     });
 
+    it("the owner sets or clears the preferred clinic («حسابي»)", async () => {
+      await assertSucceeds(edit({ preferredClinicId: "clinic-2" }));
+      await assertSucceeds(edit({ preferredClinicId: null }));
+      await assertFails(edit({ preferredClinicId: 7 }));
+      await assertFails(edit({ preferredClinicId: "x".repeat(41) }));
+    });
+
     for (const field of ["phone", "consentVersion", "clinicChildrenPending", "lastActiveAt"]) {
       it(`changing ${field} is denied`, async () => {
         const value = field === "phone" ? "+201111111111" : field === "consentVersion" ? 99 : field === "lastActiveAt" ? new Date() : true;

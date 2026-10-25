@@ -8,8 +8,12 @@ import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:delnono/features/shell/shell_scaffold.dart';
+import 'package:delnono/app/splash_intro.dart';
 import 'package:delnono/features/notifications/data/local_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -43,6 +47,8 @@ GuardState with_({
 String? go(String location, GuardState s) => guardRedirect(Uri.parse(location), s);
 
 void main() {
+  setUp(() => SharedPreferencesAsyncPlatform.instance = InMemorySharedPreferencesAsync.empty());
+
   group('guard steps in order (contracts/routes.md)', () {
     test('1. signed out → sign-in, keeping from', () {
       expect(go('/booking', const GuardState()), '/sign-in?from=%2Fbooking');
@@ -191,6 +197,9 @@ void main() {
           ...clinicOverrides(),
           childrenProvider.overrideWith((ref) => Stream.value(const [])),
           localNotifierProvider.overrideWithValue(const NoopNotifier()),
+          splashEnabledProvider.overrideWithValue(false),
+          // The guard state is overridden; screens that read the session see no account.
+          authStateProvider.overrideWith((ref) => Stream.value(null)),
         ],
         child: const App(),
       ));
@@ -250,16 +259,57 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('shell has four tabs and an empty reserved slot', (tester) async {
+    testWidgets('«حسابي»: the theme applies to the whole app at once and is kept', (tester) async {
       await pumpApp(tester, ready);
-      expect(find.text('الرئيسية'), findsWidgets);
-      expect(find.text('حجز'), findsOneWidget);
-      expect(find.text('طفلي'), findsOneWidget);
-      expect(find.text('محتوى'), findsOneWidget);
-      final slot = find.byKey(ShellScaffold.reservedSlotKey);
-      expect(slot, findsOneWidget);
-      expect(find.descendant(of: slot, matching: find.byType(InkWell)), findsNothing);
-      expect(Directionality.of(tester.element(slot)), TextDirection.rtl);
+      final nav = find.byType(ShellScaffold);
+      await tester.tap(find.descendant(of: nav, matching: find.text('حسابي')).last);
+      await tester.pumpAndSettle();
+      Brightness brightness() => Theme.of(tester.element(nav)).brightness;
+      await tester.tap(find.descendant(of: find.byKey(const Key('me-theme')), matching: find.text('داكن')));
+      await tester.pumpAndSettle();
+      expect(brightness(), Brightness.dark);
+      await tester.tap(find.descendant(of: nav, matching: find.text('الرئيسية')).last);
+      await tester.pumpAndSettle();
+      expect(brightness(), Brightness.dark, reason: 'app-wide, not only «حسابي»');
+      expect(await SharedPreferencesAsync().getString('app.themeMode'), 'dark');
+      await tester.tap(find.descendant(of: nav, matching: find.text('حسابي')).last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.descendant(of: find.byKey(const Key('me-theme')), matching: find.text('فاتح')));
+      await tester.pumpAndSettle();
+      expect(brightness(), Brightness.light);
+    });
+
+    testWidgets('«حسابي»: text size small / normal / large scales the whole app (0.9 / 1 / 1.15)', (tester) async {
+      await pumpApp(tester, ready);
+      final nav = find.byType(ShellScaffold);
+      await tester.tap(find.descendant(of: nav, matching: find.text('حسابي')).last);
+      await tester.pumpAndSettle();
+      double scale() => MediaQuery.textScalerOf(tester.element(nav)).scale(10) / 10;
+      expect(scale(), closeTo(1, 1e-9));
+      await tester.scrollUntilVisible(find.byKey(const Key('me-text-size')), 120, scrollable: find.byType(Scrollable).first);
+      await tester.tap(find.descendant(of: find.byKey(const Key('me-text-size')), matching: find.text('كبير')));
+      await tester.pumpAndSettle();
+      expect(scale(), closeTo(1.15, 1e-9));
+      expect(tester.takeException(), isNull, reason: '«حسابي» at large text');
+      await tester.tap(find.descendant(of: find.byKey(const Key('me-text-size')), matching: find.text('صغير')));
+      await tester.pumpAndSettle();
+      expect(scale(), closeTo(.9, 1e-9));
+      expect(await SharedPreferencesAsync().getString('app.textSize'), 'small');
+    });
+
+    testWidgets('shell has five tabs, «حسابي» last, right to left (constitution 1.3.2)', (tester) async {
+      await pumpApp(tester, ready);
+      final labels = ['الرئيسية', 'حجز', 'طفلي', 'محتوى', 'حسابي'];
+      final nav = find.byType(ShellScaffold);
+      final xs = [
+        for (final l in labels) tester.getCenter(find.descendant(of: nav, matching: find.text(l)).last).dx,
+      ];
+      for (var i = 1; i < xs.length; i++) {
+        expect(xs[i], lessThan(xs[i - 1]), reason: '${labels[i]} is left of ${labels[i - 1]} in RTL');
+      }
+      await tester.tap(find.descendant(of: nav, matching: find.text('حسابي')).last);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('me-theme')), findsOneWidget);
     });
   });
 

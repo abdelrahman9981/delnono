@@ -99,9 +99,14 @@ service cloud.firestore {
       allow read: if isOwner(uid);
       allow update: if isOwner(uid)
         && request.resource.data.diff(resource.data).affectedKeys()
-             .hasOnly(['fullName', 'relation', 'email', 'updatedAt'])
+             .hasOnly(['fullName', 'relation', 'email', 'preferredClinicId', 'updatedAt'])
         && request.resource.data.updatedAt == request.time
-        && validGuardianDetails(request.resource.data);
+        && validGuardianDetails(request.resource.data)
+        // The clinic booking starts with («حسابي»): a clinic id or none.
+        && (!('preferredClinicId' in request.resource.data)
+            || request.resource.data.preferredClinicId == null
+            || (request.resource.data.preferredClinicId is string
+                && request.resource.data.preferredClinicId.size() <= 40));
       allow create, delete: if false;
 
       match /consents/{consentId} {

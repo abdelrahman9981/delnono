@@ -1,0 +1,17 @@
+# Native (static) splash, regenerate with: dart run flutter_native_splash:create
+# docs/design/README.md "Splash and brand". The animated intro follows in the app (lib/app/splash_intro.dart).
+flutter_native_splash:
+  color: "#F7F4EE"
+  color_dark: "#0F1E2B"
+  image: assets/icon/app_icon_foreground.png
+  image_dark: assets/icon/app_icon_foreground.png
+  android_12:
+    color: "#F7F4EE"
+    color_dark: "#0F1E2B"
+    image: assets/icon/app_icon_foreground.png
+    image_dark: assets/icon/app_icon_foreground.png
+    icon_background_color: "#CBE7EE"
+    icon_background_color_dark: "#CBE7EE"
+  android: true
+  ios: true
+  web: false

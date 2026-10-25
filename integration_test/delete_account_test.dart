@@ -38,8 +38,9 @@ void main() {
     final oldUid = FirebaseAuth.instance.currentUser!.uid;
 
     await tester.tap(find.text('الرئيسية').last);
-    await settle(tester, () => shows(find.byKey(const Key('account-button'))));
-    await tester.tap(find.byKey(const Key('account-button')));
+    await tester.tap(find.text('حسابي').last);
+    await settle(tester, () => shows(find.byKey(const Key('me-guardian'))));
+    await tester.tap(find.byKey(const Key('me-guardian')));
     await settle(tester, () => shows(find.byKey(const Key('account-delete'))));
     await tapInList(tester, find.byKey(const Key('account-delete')));
     await settle(tester, () => shows(find.byKey(const Key('delete-confirm'))));

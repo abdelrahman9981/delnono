@@ -20,8 +20,9 @@ final pickerOverride =
 
 Future<void> openAccount(WidgetTester tester) async {
   await tester.tap(find.text('الرئيسية').last);
-  await settle(tester, () => shows(find.byKey(const Key('account-button'))));
-  await tester.tap(find.byKey(const Key('account-button')));
+  await tester.tap(find.text('حسابي').last);
+  await settle(tester, () => shows(find.byKey(const Key('me-guardian'))));
+  await tester.tap(find.byKey(const Key('me-guardian')));
   await settle(tester, () => shows(find.byKey(const Key('account-change-phone'))));
 }
 

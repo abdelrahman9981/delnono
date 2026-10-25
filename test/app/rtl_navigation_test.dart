@@ -13,6 +13,7 @@ import 'package:delnono/features/auth/data/session_api.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:delnono/app/splash_intro.dart';
 import 'package:delnono/features/notifications/data/local_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,6 +81,7 @@ void main() {
         externalLinksProvider.overrideWithValue(_Links()),
         ...profileDataOverrides(anyChild: true),
         localNotifierProvider.overrideWithValue(const NoopNotifier()),
+        splashEnabledProvider.overrideWithValue(false),
       ],
       child: const App(),
     ));
@@ -109,10 +111,17 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('Account opens from Home with a back button, and its rows point forward (‹)', (tester) async {
-    await pumpApp(tester);
-    await tester.tap(find.byKey(const Key('account-button')));
+  /// «حسابي» tab → the guardian card opens Account.
+  Future<void> openAccount(WidgetTester tester) async {
+    await tester.tap(find.text('حسابي').last);
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('me-guardian')));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('Account opens from «حسابي» with a back button, and its rows point forward (‹)', (tester) async {
+    await pumpApp(tester);
+    await openAccount(tester);
     expect(location(), Routes.account);
 
     final chevrons = find.descendant(of: find.byType(ListTile), matching: find.byType(Icon)).evaluate()
@@ -122,18 +131,17 @@ void main() {
     for (final e in chevrons) {
       expect(pointing(e), Pointing.left, reason: 'forward chevron must point left in RTL');
     }
-    await expectBackTo(tester, Routes.home);
+    await expectBackTo(tester, Routes.me);
   });
 
   testWidgets('screens opened from Account each have a back button to Account', (tester) async {
     await pumpApp(tester);
     for (final key in ['account-change-phone', 'account-notifications', 'account-delete']) {
-      await tester.tap(find.byKey(const Key('account-button')));
-      await tester.pumpAndSettle();
+      await openAccount(tester);
       await tapKey(tester, key);
       expect(location(), isNot(Routes.account), reason: key);
       await expectBackTo(tester, Routes.account);
-      await expectBackTo(tester, Routes.home);
+      await expectBackTo(tester, Routes.me);
     }
   });
 

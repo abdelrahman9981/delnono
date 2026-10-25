@@ -7,6 +7,7 @@ import 'package:delnono/features/booking/data/vaccines_repository.dart';
 import 'package:delnono/features/booking/domain/price_preview.dart';
 import 'package:delnono/features/booking/presentation/booking_screen.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
+import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:delnono/features/clinics/data/clinics_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,6 +39,7 @@ void main() {
     String? packageId,
     List<Clinic> clinics = const [clinic1],
     String initial = '/booking',
+    String? preferredClinicId,
   }) async {
     api = FakeBookingApi();
     final h = ScreenHarness(
@@ -59,6 +61,14 @@ void main() {
         slotsTakenProvider.overrideWith((ref, key) => Stream.value(key.clinicId == 'clinic-1' ? taken : const {})),
         bookingApiProvider.overrideWithValue(api),
         activePackageProvider.overrideWith((ref, date) => Stream.value(packageId)),
+        guardianProvider.overrideWith((ref) => Stream.value(Guardian(
+              uid: 'u1',
+              phone: '+201000000001',
+              fullName: 'سارة',
+              relation: Relation.mother,
+              consentVersion: 1,
+              preferredClinicId: preferredClinicId,
+            ))),
       ],
     );
     await h.pump(tester);
@@ -219,6 +229,15 @@ void main() {
       expect(find.byKey(const Key('clinic-clinic-1')), findsOneWidget);
       expect(find.byKey(const Key('clinic-clinic-2')), findsOneWidget);
       expect(find.byKey(const Key('day-2026-11-16')), findsNothing, reason: 'no days before a clinic');
+    });
+
+    testWidgets('the preferred clinic from «حسابي» is chosen first; change clinic still lists both', (tester) async {
+      await open(tester, clinics: const [clinic1, clinic2], preferredClinicId: 'clinic-2');
+      expect(find.byKey(const Key('clinic-clinic-1')), findsNothing);
+      expect(find.byKey(const Key('chosen-clinic')), findsOneWidget);
+      expect(find.textContaining('مدينة نصر'), findsWidgets);
+      await pick(tester, const Key('change-clinic'));
+      expect(find.byKey(const Key('clinic-clinic-1')), findsOneWidget);
     });
 
     testWidgets('one active clinic is chosen for the guardian', (tester) async {

@@ -1,5 +1,10 @@
 <!--
 Sync Impact Report
+- Version change: 1.3.1 → 1.3.2 (PATCH: bottom navigation note), requested by the owner
+- Modified principles:
+  - V. Phase Discipline: the bottom navigation has five tabs (الرئيسية، حجز، طفلي، محتوى، حسابي);
+    Phase 2 "Ask the doctor" will be a button on Home, not a tab. No space is reserved in the nav.
+
 - Version change: 1.3.0 → 1.3.1 (PATCH: feature order only), requested by the owner
 - Modified sections:
   - Development Workflow: after 005 the order is 009 dashboard completion (BRD FR-64 desk
@@ -81,7 +86,7 @@ Anything that can change MUST be a setting editable from the dashboard, not a co
 All user-facing text is Arabic with full RTL layout, Arabic error messages, the Readex Pro or Cairo font, and light and dark mode. Code, specs and commit messages are in English.
 
 ### V. Phase Discipline
-Phase 1 covers clinic visits, cash payment, registration, booking, child profile and vaccines, content library, packages and pricing, notifications, and the web dashboard. Online consultation ("Ask the Doctor"), video visits and electronic payment are Phase 2 and MUST NOT be built or designed in Phase 1. The one exception: Phase 1 layout reserves space for the Phase 2 "Ask" tab in the bottom navigation, with no screens or logic behind it.
+Phase 1 covers clinic visits, cash payment, registration, booking, child profile and vaccines, content library, packages and pricing, notifications, and the web dashboard. Online consultation ("Ask the Doctor"), video visits and electronic payment are Phase 2 and MUST NOT be built or designed in Phase 1. The bottom navigation has five tabs (الرئيسية، حجز، طفلي، محتوى، حسابي); Phase 2 "Ask the Doctor" will be a button on Home, not a sixth tab, and nothing of it is built in Phase 1.
 
 ### VI. Simple and Testable
 Every feature has written acceptance criteria and automated tests. Prefer the platform and Firebase features over extra libraries. A new dependency requires a stated reason in the plan.
@@ -110,4 +115,4 @@ The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Functions, Host
 
 This constitution overrides other practices for this project. Amendments are agreed by the clinic owner (the doctor) and the lead developer, documented with a version bump (semantic versioning), and any dependent specs and plans are updated.
 
-**Version**: 1.3.1 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-25
+**Version**: 1.3.2 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-26

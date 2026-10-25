@@ -28,6 +28,7 @@ import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
 import '../features/home/home_screen.dart';
 import '../features/notifications/presentation/notifications_screen.dart';
+import '../features/settings/presentation/me_screen.dart';
 import '../features/welcome/welcome_screen.dart';
 import 'route_guard.dart';
 import 'session_flags.dart';
@@ -104,6 +105,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             ],
           ),
           GoRoute(path: Routes.content, builder: (_, _) => const ContentPlaceholder()),
+          GoRoute(path: Routes.me, builder: (_, _) => const MeScreen()),
         ],
       ),
       GoRoute(path: Routes.welcome, builder: (_, _) => const WelcomeScreen()),

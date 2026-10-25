@@ -2237,4 +2237,114 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notifUnread => 'غير مقروء';
+
+  @override
+  String get splashDoctorLine => 'د. أحمد العبد · طب الأطفال وحديثي الولادة';
+
+  @override
+  String get navMe => 'حسابي';
+
+  @override
+  String get meTitle => 'حسابي';
+
+  @override
+  String get meEdit => 'تعديل';
+
+  @override
+  String get meChildren => 'أطفالي';
+
+  @override
+  String get meAddChild => 'إضافة طفل';
+
+  @override
+  String get mePackage => 'الباقة';
+
+  @override
+  String get meAppearance => 'المظهر';
+
+  @override
+  String get meTheme => 'الوضع';
+
+  @override
+  String get themeLight => 'فاتح';
+
+  @override
+  String get themeDark => 'داكن';
+
+  @override
+  String get themeSystem => 'زي الموبايل';
+
+  @override
+  String get meTextSize => 'حجم الخط';
+
+  @override
+  String get textSmall => 'صغير';
+
+  @override
+  String get textNormal => 'عادي';
+
+  @override
+  String get textLarge => 'كبير';
+
+  @override
+  String get meSettings => 'الإعدادات';
+
+  @override
+  String get meLanguage => 'اللغة';
+
+  @override
+  String get meLanguageArabic => 'العربية';
+
+  @override
+  String get meEnglishSoon => 'English قريبًا';
+
+  @override
+  String get meNotifications => 'الإشعارات والتذكيرات';
+
+  @override
+  String get meNotificationsBoth => 'الحجز والتطعيمات شغالين';
+
+  @override
+  String get meNotificationsBooking => 'الحجز بس شغال';
+
+  @override
+  String get meNotificationsVaccine => 'التطعيمات بس شغالة';
+
+  @override
+  String get meNotificationsOff => 'مقفولين';
+
+  @override
+  String get mePreferredClinic => 'العيادة المفضلة';
+
+  @override
+  String get mePreferredClinicSub => 'بتظهر أول ما تحجزي';
+
+  @override
+  String get mePreferredNone => 'مش محددة';
+
+  @override
+  String get meAbout => 'عن التطبيق';
+
+  @override
+  String get meWhatsApp => 'كلمي العيادة على واتساب';
+
+  @override
+  String get mePrivacy => 'الخصوصية والشروط';
+
+  @override
+  String get meRate => 'قيّمي التطبيق';
+
+  @override
+  String get meRateSoon => 'التقييم هيتفعّل لما التطبيق ينزل على المتجر.';
+
+  @override
+  String meVersion(String version) {
+    return 'دكتور النونو · الإصدار $version';
+  }
+
+  @override
+  String get meSignInPrompt => 'سجّلي دخول عشان تشوفي أطفالك وتعدّلي بياناتك.';
+
+  @override
+  String get meSignIn => 'سجّلي برقم موبايلك';
 }

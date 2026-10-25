@@ -44,6 +44,7 @@ import 'package:delnono/features/registration/data/registration_api.dart';
 import 'package:delnono/features/registration/presentation/consent_screen.dart';
 import 'package:delnono/features/registration/presentation/guardian_details_screen.dart';
 import 'package:delnono/features/registration/presentation/link_children_screen.dart';
+import 'package:delnono/features/settings/presentation/me_screen.dart';
 import 'package:delnono/features/shell/shell_scaffold.dart';
 import 'package:delnono/features/welcome/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -53,6 +54,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
@@ -132,10 +134,14 @@ final screens = <String, Widget Function()>{
   'change phone': () => const ChangePhoneScreen(),
   'delete account': () => const DeleteAccountScreen(),
   'notifications': () => const NotificationsScreen(),
+  'me': () => const ShellScaffold(location: '/me', child: MeScreen()),
 };
 
 void main() {
-  setUp(() => SharedPreferencesAsyncPlatform.instance = InMemorySharedPreferencesAsync.empty());
+  setUp(() {
+    SharedPreferencesAsyncPlatform.instance = InMemorySharedPreferencesAsync.empty();
+    PackageInfo.setMockInitialValues(appName: 'delnono', packageName: 'eg.drelnono.app', version: '1.0.0', buildNumber: '1', buildSignature: '');
+  });
 
   for (final brightness in Brightness.values) {
     for (final scale in [1.0, 2.0]) {
