@@ -67,7 +67,7 @@ When two files exist for one child anyway (for example, different spellings of t
 
 1. **Given** the doctor in a child file, **When** they choose "merge with another file", **Then** they can pick only other open files on the same number, and see both files' basic data and record counts before confirming.
 2. **Given** a confirmed merge, **Then** every measurement, dose and visit of the closed file is in the kept file, unchanged, and the closed file records which file it was merged into.
-3. **Given** the closed file had an upcoming booking, **Then** the booking lists the kept child instead; if that booking already listed the kept child, the closed child is removed from it.
+3. **Given** the closed file had an upcoming booking, **Then** the booking lists the kept child instead; if an upcoming booking lists both children, the merge is refused until that booking is changed or cancelled (its prices were fixed for two children).
 4. **Given** a secretary, **Then** no merge action is offered, and a merge request is refused.
 5. **Given** a closed file, **Then** it does not appear in staff search or the guardian's app, and opening it shows which file it was merged into.
 
@@ -105,7 +105,7 @@ A guardian who entered three wrong birth dates is told to contact the clinic (00
 - **FR-003**: Registration MUST be offered from the Children screen and from a walk-in in Today, prefilled with the walk-in's number and children's names.
 - **FR-004**: Before creating anything, the server MUST check each child against existing open files on the same number by normalised name and birth date; on any match it MUST create nothing and return the matching child(ren), which the dashboard shows with a link to the file.
 - **FR-005**: Only the doctor MUST be able to merge two open files on the same number, choosing the kept file; the server MUST refuse merges by anyone else, of a file with itself, or across numbers.
-- **FR-006**: A merge MUST move every measurement, dose and visit (with their change logs and staff notes) to the kept file unchanged, repoint the closed child in upcoming confirmed bookings to the kept child (dropping it when the booking already has the kept child; past, cancelled and done bookings are not changed), keep the kept file's basic data unchanged, and mark the closed file as merged into the kept one, all at once or not at all.
+- **FR-006**: A merge MUST move every measurement, dose and visit (with their change logs and staff notes) to the kept file unchanged, repoint the closed child in upcoming confirmed bookings to the kept child (refusing the merge while an upcoming booking lists both children; past, cancelled and done bookings are not changed), keep the kept file's basic data unchanged, and mark the closed file as merged into the kept one, all at once or not at all.
 - **FR-007**: Closed (merged) files MUST NOT appear in staff search, the guardian's app, or the duplicate check, and opening one MUST say which file it was merged into.
 - **FR-008**: Any active staff member, after confirming, MUST be able to link a number's unlinked children to the guardian account on that number, which clears a linking lock (001 FR-021a).
 - **FR-009**: Every registration, merge and staff link MUST be written to the audit log with the staff member, the number and the children (D-13).
