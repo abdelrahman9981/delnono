@@ -32,3 +32,7 @@
 
 - [ ] T014 Integration test integration_test/notifications_test.dart (book → bell shows the confirmation → page → mark read; switch off/on) on the simulator
 - [ ] T015 Mark tasks done; analyze, flutter test, functions and rules tests (unchanged), simulator run at the end
+
+## Analyze (2026-10-25)
+
+Coverage: FR-001/002/004 → T003, T004, T007, T008; FR-003 → T007; FR-005 → T005, T010; FR-006 → T012; FR-007/008 → T010, T011; FR-009 → T009, T010; FR-010 → T007; FR-011 → T002, T003; FR-012 → T013. No CRITICAL or HIGH findings. LOW: the page hides items older than 60 days (research R4) — implementation detail, kept out of the spec.
