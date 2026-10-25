@@ -694,18 +694,6 @@ abstract class AppLocalizations {
   /// **'استشاري طب الأطفال وحديثي الولادة · المقطم'**
   String get welcomeDoctorTitle;
 
-  /// No description provided for @welcomePhotoPlaceholder.
-  ///
-  /// In ar, this message translates to:
-  /// **'صورة د. أحمد'**
-  String get welcomePhotoPlaceholder;
-
-  /// No description provided for @welcomePhotoSoon.
-  ///
-  /// In ar, this message translates to:
-  /// **'هنضيف الصورة الحقيقية قريب'**
-  String get welcomePhotoSoon;
-
   /// No description provided for @welcomeHeading.
   ///
   /// In ar, this message translates to:
@@ -2133,12 +2121,6 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'موجودين عشان نطمنك'**
   String get doctorTagline;
-
-  /// No description provided for @doctorPhotoPlaceholder.
-  ///
-  /// In ar, this message translates to:
-  /// **'[صورة د. أحمد · هنضيف الصورة الحقيقية قريب]'**
-  String get doctorPhotoPlaceholder;
 
   /// No description provided for @bookHere.
   ///
@@ -3903,6 +3885,24 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'الحساب مش مقفول.'**
   String get dashErrNotLocked;
+
+  /// No description provided for @clinicWaitingRoom.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكان الانتظار في العيادة'**
+  String get clinicWaitingRoom;
+
+  /// No description provided for @welcomeWaitingRoom.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكان الانتظار في العيادة'**
+  String get welcomeWaitingRoom;
+
+  /// No description provided for @welcomeWaitingRoomCaption.
+  ///
+  /// In ar, this message translates to:
+  /// **'مكان مريح للأطفال وأهاليهم'**
+  String get welcomeWaitingRoomCaption;
 }
 
 class _AppLocalizationsDelegate

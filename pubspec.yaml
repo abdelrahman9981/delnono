@@ -60,6 +60,7 @@ dev_dependencies:
   mocktail: ^1.0.5
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -68,6 +69,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+  # The doctor's and clinic's photos (docs/design/README.md) and the app icon source.
+  assets:
+    - assets/images/doctor_hero.jpg
+    - assets/images/doctor_avatar.jpg
+    - assets/images/clinic_waiting_room.jpg
 
   # Readex Pro static weights, from github.com/ThomasJockin/readexpro
   # (commit 563dfbb, the source Google Fonts pins). Licence: assets/fonts/OFL.txt.

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/brand_images.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../app/theme.dart';
 import '../../core/widgets/notice.dart';
@@ -79,6 +80,15 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: CircleAvatar(
+                        key: Key('dash-sign-in-avatar'),
+                        radius: 30,
+                        backgroundImage: AssetImage(BrandImages.doctorAvatar),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     Text(l10n.appTitle, style: text.labelLarge?.copyWith(color: c.blue)),
                     Text(l10n.dashSignInTitle, style: text.headlineSmall),
                     const SizedBox(height: 20),

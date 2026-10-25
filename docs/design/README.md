@@ -40,13 +40,22 @@ Match colors, radii, spacing and component shapes; build the layout in Flutter (
 - No automatic medical judgments ("normal", "on track"). Show values and charts only.
 - Any medical text (danger signs, follow-up items, video titles) is placeholder in brackets until the doctor approves it from the dashboard.
 - Bottom nav: Home, Booking, My child, Content; leave room for the Phase 2 "Ask" tab, but build nothing behind it.
-- Doctor photo is a placeholder until the real photo arrives.
+- The doctor's photo is real (no longer a placeholder); see Photos and icon below.
 
 ## Known issues in Figma
 
 - List chevrons point right (›) in the Figma screens. In RTL they must point left (‹), as fixed in the app.
 
-On the home hero card, the photo placeholder's caption overlaps the "موجودين عشان نطمنك" pill. Fix in Flutter: place the caption above the pill or drop it once the real photo is in.
+- Fixed: on the home hero card the photo placeholder's caption overlapped the "موجودين عشان نطمنك" pill. The real photo has no caption; the pill sits alone in the top corner over the wall, the name and title at the bottom.
+
+## Photos and icon
+
+| Asset | Where |
+|---|---|
+| `assets/images/doctor_hero.jpg` | Home hero card and Welcome hero, cropped to keep the face in frame, under a dark bottom gradient so the white text stays readable |
+| `assets/images/doctor_avatar.jpg` | Round, on each clinic card on Home and on the dashboard sign-in |
+| `assets/images/clinic_waiting_room.jpg` | Top of the main clinic's card on Home (it is that clinic's room) and a card on Welcome |
+| `assets/icon/app_icon_1024.png`, `app_icon_foreground.png` | App icon: Android adaptive (background `#CBE7EE`), iOS and web; the web favicon is also the dashboard's. Regenerate with `dart run flutter_launcher_icons` (`flutter_launcher_icons.yaml`) |
 
 ## Clinic dashboard (web, desktop first)
 

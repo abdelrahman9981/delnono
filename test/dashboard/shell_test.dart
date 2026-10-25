@@ -1,4 +1,6 @@
+import 'package:delnono/dashboard/screens/sign_in_screen.dart';
 import 'package:delnono/dashboard/screens/today_screen.dart';
+import 'package:delnono/features/auth/data/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -38,5 +40,13 @@ void main() {
     await pumpDashboard(tester, const TodayScreen(), overrides: dashboardOverrides(api: FakeDashboardApi()), size: const Size(820, 1180));
     expect(find.byKey(const Key('dash-nav')), findsNothing);
     expect(find.byType(DrawerButton), findsOneWidget);
+  });
+
+  testWidgets("the sign-in screen shows the doctor's photo", (tester) async {
+    await pumpDashboard(tester, const SignInScreen(), path: '/sign-in', overrides: [
+      ...dashboardOverrides(api: FakeDashboardApi()),
+      authStateProvider.overrideWith((ref) => Stream.value(null)),
+    ]);
+    expect(find.byKey(const Key('dash-sign-in-avatar')), findsOneWidget);
   });
 }

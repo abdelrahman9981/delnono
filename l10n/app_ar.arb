@@ -122,8 +122,6 @@
   "welcomeClinic": "دكتور النونو",
   "welcomeDoctorName": "د. أحمد العبد",
   "welcomeDoctorTitle": "استشاري طب الأطفال وحديثي الولادة · المقطم",
-  "welcomePhotoPlaceholder": "صورة د. أحمد",
-  "welcomePhotoSoon": "هنضيف الصورة الحقيقية قريب",
   "welcomeHeading": "أهلًا بيكي",
   "welcomeIntro": "احجزي ميعادك وتابعي نمو وتطعيمات طفلك من مكان واحد.",
   "welcomeBookTitle": "احجزي من التطبيق",
@@ -416,7 +414,6 @@
   "doctorName": "د. أحمد العبد",
   "doctorTitle": "استشاري طب الأطفال وحديثي الولادة",
   "doctorTagline": "موجودين عشان نطمنك",
-  "doctorPhotoPlaceholder": "[صورة د. أحمد · هنضيف الصورة الحقيقية قريب]",
   "bookHere": "احجزي هنا",
   "callClinicShort": "اتصلي",
   "whatsapp": "واتساب",
@@ -726,5 +723,8 @@
   "dashUnlockReverify": "فك قفل التحقق",
   "dashUnlockConfirm": "اتأكدي من شخصية ولي الأمر الأول. بعد كده يقدر يتحقق من تاني في التطبيق.",
   "dashUnlocked": "اتفك القفل.",
-  "dashErrNotLocked": "الحساب مش مقفول."
+  "dashErrNotLocked": "الحساب مش مقفول.",
+  "clinicWaitingRoom": "مكان الانتظار في العيادة",
+  "welcomeWaitingRoom": "مكان الانتظار في العيادة",
+  "welcomeWaitingRoomCaption": "مكان مريح للأطفال وأهاليهم"
 }
