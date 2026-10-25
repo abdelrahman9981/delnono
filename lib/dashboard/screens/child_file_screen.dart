@@ -18,6 +18,7 @@ import '../data/staff_session.dart';
 import '../router.dart';
 import '../widgets/dash_page.dart';
 import '../widgets/dash_ui.dart';
+import 'merge_dialog.dart';
 
 /// The child file, opened through `openChildFile` so the opening is logged (D-13, FR-028).
 final childFileProvider = FutureProvider.autoDispose.family<Map<String, dynamic>, String>(
@@ -58,7 +59,9 @@ class _ChildFileScreenState extends ConsumerState<ChildFileScreen> {
         file.when(
           loading: () => const Padding(padding: EdgeInsets.all(40), child: Center(child: CircularProgressIndicator())),
           error: (e, _) => Center(child: Text(dashErrorText(l10n, e))),
-          data: (f) => _File(childId: widget.childId, file: f, tab: _tab, onTab: (i) => setState(() => _tab = i)),
+          data: (f) => f['merged'] is Map
+              ? _ClosedFile(merged: Map<String, dynamic>.from(f['merged'] as Map))
+              : _File(childId: widget.childId, file: f, tab: _tab, onTab: (i) => setState(() => _tab = i)),
         ),
       ],
     );
@@ -163,6 +166,27 @@ class _File extends ConsumerWidget {
                 ),
             ],
             if (visited.isNotEmpty) StatusPill(l10n.dashClinicsVisited(visited.join(l10n.listSeparator)), PillKind.info, dot: false),
+            if (isDoctor)
+              OutlinedButton.icon(
+                key: const Key('merge-file'),
+                onPressed: () async {
+                  final keepId = await showDialog<String>(
+                    context: context,
+                    builder: (_) => MergeDialog(
+                      child: {...child, 'id': childId},
+                      counts: (measurements.length, doses.length, visits.length),
+                    ),
+                  );
+                  if (keepId == null || !context.mounted) return;
+                  if (keepId == childId) {
+                    reload();
+                  } else {
+                    context.go('${DashRoutes.children}/$keepId');
+                  }
+                },
+                icon: const Icon(Icons.merge_type, size: 18),
+                label: Text(l10n.dashMergeFile),
+              ),
             OutlinedButton.icon(
               key: const Key('edit-basics'),
               onPressed: () => dialog(_BasicsDialog(childId: childId, child: child)),
@@ -316,6 +340,32 @@ class _File extends ConsumerWidget {
       const SizedBox(height: 16),
       tabs[index],
     ]);
+  }
+}
+
+/// A closed file (009 FR-007): only where it was merged into.
+class _ClosedFile extends StatelessWidget {
+  const _ClosedFile({required this.merged});
+
+  final Map<String, dynamic> merged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return DashCard(
+      key: const Key('child-closed'),
+      title: l10n.dashFileClosed,
+      icon: Icons.merge_type,
+      tone: Tone.yellow,
+      child: Wrap(spacing: 12, runSpacing: 8, crossAxisAlignment: WrapCrossAlignment.center, children: [
+        Text('${merged['name'] ?? ''}', style: const TextStyle(fontWeight: FontWeight.w700)),
+        FilledButton(
+          key: const Key('open-kept'),
+          onPressed: () => context.go('${DashRoutes.children}/${merged['into']}'),
+          child: Text(l10n.dashOpenKept),
+        ),
+      ]),
+    );
   }
 }
 

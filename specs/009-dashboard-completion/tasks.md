@@ -28,10 +28,10 @@
 **Goal**: FR-005–FR-007, FR-009.
 **Independent test**: "mergeChildren" block in family.test.ts; merge widget tests.
 
-- [ ] T009 [US3] Tests first in functions/test/functions/staff/family.test.ts: doctor merges, records (with `changes` and `staff/notes`) move unchanged, closed file has `merged` and no number, link or name key; search and the guardian's query no longer return it; upcoming confirmed booking repointed, past one untouched; `booked_together`, `same_file`, `other_number`, `closed`, `doctor_only` refusals; audit `children.merged`; `openChildFile` on a closed file returns `merged`
-- [ ] T010 [US3] Implement `mergeChildren` in functions/src/callables/staff/family.ts and the closed-file response in `openChildFile` (functions/src/callables/staff/childFile.ts)
-- [ ] T011 [US3] Add `MergeDialog` in lib/dashboard/screens/merge_dialog.dart (other open files on the same number via `searchChildren`, side-by-side basic data and record counts, confirm) and the doctor-only "دمج ملف مكرر" action plus the merged-file notice in lib/dashboard/screens/child_file_screen.dart
-- [ ] T012 [US3] Widget tests in test/dashboard/family_test.dart: no merge action for a secretary; the doctor's merge sends `{keepId, closeId}`; a closed file shows the notice with a link to the kept file
+- [X] T009 [US3] Tests first in functions/test/functions/staff/family.test.ts: doctor merges, records (with `changes` and `staff/notes`) move unchanged, closed file has `merged` and no number, link or name key; search and the guardian's query no longer return it; upcoming confirmed booking repointed, past one untouched; `booked_together`, `same_file`, `other_number`, `closed`, `doctor_only` refusals; audit `children.merged`; `openChildFile` on a closed file returns `merged`
+- [X] T010 [US3] Implement `mergeChildren` in functions/src/callables/staff/family.ts and the closed-file response in `openChildFile` (functions/src/callables/staff/childFile.ts)
+- [X] T011 [US3] Add `MergeDialog` in lib/dashboard/screens/merge_dialog.dart (other open files on the same number via `searchChildren`, side-by-side basic data and record counts, confirm) and the doctor-only "دمج ملف مكرر" action plus the merged-file notice in lib/dashboard/screens/child_file_screen.dart
+- [X] T012 [US3] Widget tests in test/dashboard/family_test.dart: no merge action for a secretary; the doctor's merge sends `{keepId, closeId}`; a closed file shows the notice with a link to the kept file
 
 ## Phase 5: User Story 4 — Staff link after a locked link (P3)
 

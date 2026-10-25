@@ -45,6 +45,12 @@ export const openChildFile = onCall({ region: REGION }, async (request) => {
   const childId = str((request.data ?? {}) as Record<string, unknown>, "childId");
   const child = await db.doc(`children/${childId}`).get();
   if (!child.exists) throw new HttpsError("not-found", "Child not found.");
+  // A closed (merged) file shows nothing but where it went (009 FR-007).
+  const merged = child.get("merged") as { into: string } | undefined;
+  if (merged) {
+    const kept = await db.doc(`children/${merged.into}`).get();
+    return { merged: { into: merged.into, name: kept.get("name") ?? null } };
+  }
   const [measurements, doses, visits, packages] = await Promise.all([
     child.ref.collection("measurements").get(),
     child.ref.collection("doses").get(),

@@ -88,3 +88,117 @@ export const registerFamily = onCall({ region: REGION }, async (request) => {
 
   return { childIds };
 });
+
+const RECORD_KINDS = ["measurements", "doses", "visits"] as const;
+/** Staff-only documents under a record that move with it (005: change logs, the doctor's notes). */
+const RECORD_SUBCOLLECTIONS: Record<(typeof RECORD_KINDS)[number], string[]> = {
+  measurements: ["changes"],
+  doses: ["changes"],
+  visits: ["staff"],
+};
+/** A transaction holds at most 500 writes; a merge needing more is refused rather than split. */
+const MAX_MERGE_WRITES = 400;
+
+function refuse(reason: string, message: string): never {
+  throw new HttpsError("failed-precondition", message, { reason });
+}
+
+/**
+ * Merges two files of one child (009 FR-005–FR-007, BRD FR-65), doctor only. In one transaction:
+ * every measurement, dose and visit of the closed file (with change logs and staff notes) moves to
+ * the kept file unchanged; upcoming confirmed bookings name the kept child; the closed file keeps
+ * its data under `merged` and loses its number, link and name key, so search, the guardian's app,
+ * linking and duplicate checks no longer see it (research R1). contracts/callables.md#mergechildren
+ */
+export const mergeChildren = onCall({ region: REGION }, async (request) => {
+  const staff = await requireStaff(request);
+  if (staff.role !== "doctor") {
+    throw new HttpsError("permission-denied", "Only the doctor merges files.", { reason: "doctor_only" });
+  }
+  const data = (request.data ?? {}) as Record<string, unknown>;
+  const keepId = typeof data.keepId === "string" ? data.keepId : "";
+  const closeId = typeof data.closeId === "string" ? data.closeId : "";
+  if (!keepId || !closeId) throw new HttpsError("invalid-argument", "keepId and closeId are required", { field: "keepId" });
+  if (keepId === closeId) refuse("same_file", "A file cannot be merged with itself.");
+
+  const moved = await db.runTransaction(async (tx) => {
+    const keepRef = db.doc(`children/${keepId}`);
+    const closeRef = db.doc(`children/${closeId}`);
+    const [keep, close] = await Promise.all([tx.get(keepRef), tx.get(closeRef)]);
+    if (!keep.exists || !close.exists) throw new HttpsError("not-found", "Child not found.");
+    if (keep.get("merged") != null || close.get("merged") != null) refuse("closed", "A closed file cannot be merged.");
+    const phone = close.get("guardianPhone") as string | null;
+    if (!phone || phone !== keep.get("guardianPhone")) refuse("other_number", "The files are on different numbers.");
+
+    // Reads first (transactions read before they write).
+    const records = [];
+    for (const kind of RECORD_KINDS) {
+      for (const doc of (await tx.get(closeRef.collection(kind))).docs) {
+        const subs = [];
+        for (const sub of RECORD_SUBCOLLECTIONS[kind]) subs.push(...(await tx.get(doc.ref.collection(sub))).docs);
+        const clash = (await tx.get(keepRef.collection(kind).doc(doc.id))).exists;
+        records.push({ kind, doc, subs, target: clash ? keepRef.collection(kind).doc() : keepRef.collection(kind).doc(doc.id) });
+      }
+    }
+    const guardianUid = close.get("guardianUid") as string | null;
+    const now = Date.now();
+    const bookings = guardianUid
+      ? (await tx.get(db.collection("bookings").where("guardianUid", "==", guardianUid).where("status", "==", "confirmed"))).docs
+          .filter((b) => (b.get("startsAt")?.toMillis?.() ?? 0) > now)
+          .filter((b) => (b.get("children") as { childId: string }[]).some((c) => c.childId === closeId))
+      : [];
+    if (bookings.some((b) => (b.get("children") as { childId: string }[]).some((c) => c.childId === keepId))) {
+      refuse("booked_together", "An upcoming booking lists both children.");
+    }
+    const writes = records.reduce((n, r) => n + 2 + 2 * r.subs.length, 0) + bookings.length + 2;
+    if (writes > MAX_MERGE_WRITES) refuse("too_large", "Too many records to merge at once.");
+
+    for (const r of records) {
+      tx.set(r.target, r.doc.data()!);
+      for (const sub of r.subs) {
+        tx.set(r.target.collection(sub.ref.parent.id).doc(sub.id), sub.data());
+        tx.delete(sub.ref);
+      }
+      tx.delete(r.doc.ref);
+    }
+    const repoint = <T extends { childId: string }>(list: T[] | undefined) =>
+      (list ?? []).map((x) => (x.childId === closeId ? { ...x, childId: keepId } : x));
+    for (const b of bookings) {
+      const price = b.get("price") as { vaccines?: { childId: string }[] } | undefined;
+      tx.update(b.ref, {
+        children: repoint(b.get("children") as { childId: string }[]),
+        ...(price ? { "price.vaccines": repoint(price.vaccines) } : {}),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+    }
+    tx.update(closeRef, {
+      merged: {
+        into: keepId,
+        at: FieldValue.serverTimestamp(),
+        by: staff.uid,
+        guardianPhone: phone,
+        guardianUid,
+        name: close.get("name"),
+        birthDate: close.get("birthDate"),
+      },
+      guardianPhone: null,
+      guardianUid: null,
+      nameKey: null,
+      updatedAt: FieldValue.serverTimestamp(),
+      updatedBy: staff.uid,
+    });
+    const counts = {
+      measurements: records.filter((r) => r.kind === "measurements").length,
+      doses: records.filter((r) => r.kind === "doses").length,
+      visits: records.filter((r) => r.kind === "visits").length,
+      bookings: bookings.length,
+    };
+    await writeAudit({
+      action: "children.merged", actorUid: staff.uid, subjectPhone: phone, childIds: [keepId, closeId],
+      details: { kept: keepId, closed: closeId, closedName: close.get("name"), closedBirthDate: close.get("birthDate"), ...counts },
+    }, tx);
+    return counts;
+  });
+
+  return { moved };
+});

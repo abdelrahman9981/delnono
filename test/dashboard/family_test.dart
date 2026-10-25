@@ -1,5 +1,6 @@
 import 'package:delnono/dashboard/data/dashboard_api.dart';
 import 'package:delnono/dashboard/data/today_repository.dart';
+import 'package:delnono/dashboard/screens/child_file_screen.dart';
 import 'package:delnono/dashboard/screens/children_search_screen.dart';
 import 'package:delnono/dashboard/screens/today_screen.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'fakes.dart';
 import 'harness.dart';
+import 'screens_test.dart' show file;
 
 Future<void> pickDate(WidgetTester tester, Key key) async {
   await tester.tap(find.byKey(key));
@@ -86,6 +88,67 @@ void main() {
       await tester.tap(find.byKey(const Key('open-duplicate-kid')));
       await tester.pumpAndSettle();
       expect(router.state.uri.path, '/children/kid');
+    });
+  });
+
+  group('merging files (009 US3)', () {
+    FakeDashboardApi api0() => FakeDashboardApi()
+      ..responses['openChildFile'] = file
+      ..responses['searchChildren'] = {
+        'children': [
+          {'id': 'kid', 'name': 'يوسف', 'birthDate': '2024-03-15', 'sex': 'male', 'guardianPhone': '+201000000001'},
+          {'id': 'dup', 'name': 'يوسف ا', 'birthDate': '2024-03-15', 'sex': 'male', 'guardianPhone': '+201000000001'},
+        ],
+      };
+
+    testWidgets('a secretary has no merge action', (tester) async {
+      await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid', overrides: dashboardOverrides(api: api0()));
+      expect(find.byKey(const Key('merge-file')), findsNothing);
+    });
+
+    testWidgets('the doctor picks the other file on the number and merges it into this one', (tester) async {
+      final api = api0();
+      await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid',
+          overrides: dashboardOverrides(api: api, session: doctorSession));
+      await tester.tap(find.byKey(const Key('merge-file')));
+      await tester.pumpAndSettle();
+      expect(api.calls.last.$1, 'searchChildren');
+      expect(api.calls.last.$2, {'query': '+201000000001'});
+      expect(find.byKey(const Key('merge-pick-kid')), findsNothing, reason: 'not itself');
+      expect(tester.widget<FilledButton>(find.byKey(const Key('merge-confirm'))).onPressed, isNull);
+      await tester.tap(find.byKey(const Key('merge-pick-dup')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('merge-side-kid')), findsOneWidget);
+      expect(find.byKey(const Key('merge-side-dup')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('merge-confirm')));
+      await tester.pumpAndSettle();
+      expect(api.calls.where((c) => c.$1 == 'mergeChildren').single.$2, {'keepId': 'kid', 'closeId': 'dup'});
+    });
+
+    testWidgets('keeping the other file closes this one and opens the kept file', (tester) async {
+      final api = api0();
+      final router = await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid',
+          overrides: dashboardOverrides(api: api, session: doctorSession));
+      await tester.tap(find.byKey(const Key('merge-file')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('merge-pick-dup')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.descendant(of: find.byKey(const Key('merge-keep')), matching: find.text('يوسف ا')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('merge-confirm')));
+      await tester.pumpAndSettle();
+      expect(api.calls.where((c) => c.$1 == 'mergeChildren').single.$2, {'keepId': 'dup', 'closeId': 'kid'});
+      expect(router.state.uri.path, '/children/dup');
+    });
+
+    testWidgets('a closed file says where it went', (tester) async {
+      final api = FakeDashboardApi()..responses['openChildFile'] = {'merged': {'into': 'kept', 'name': 'يوسف أحمد'}};
+      final router = await pumpDashboard(tester, const ChildFileScreen(childId: 'old'), path: '/children/old', overrides: dashboardOverrides(api: api));
+      expect(find.byKey(const Key('child-closed')), findsOneWidget);
+      expect(find.text('يوسف أحمد'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('open-kept')));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/children/kept');
     });
   });
 }
