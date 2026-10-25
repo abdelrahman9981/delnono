@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>لوحة العيادة · اليوم</title>
+<link rel="stylesheet" href="dash.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&amp;display=swap">
+<style>body{margin:0}a{color:#237db8}a:hover{color:#16324b}</style>
+</helmet>
+<div class="app">
+  <aside class="side" aria-label="القائمة">
+    <div class="brand">
+      <span class="brand-mark"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"></path></svg></span>
+      <span><b>دكتور النونو</b><small>لوحة العيادة</small></span>
+    </div>
+    <a class="nav active" href="Today.dc.html"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>اليوم<span class="count">٣</span></a>
+    <a class="nav" href="ChildFile.dc.html"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"></circle><circle cx="17" cy="9" r="2"></circle><path d="M3 20c0-3 3-5 6-5s6 2 6 5M15 15c3 0 6 1.5 6 4"></path></svg>ملفات الأطفال</a>
+    <a class="nav" href="#"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"></path></svg>التقارير</a>
+    <div class="side-sep"></div>
+    <span class="side-label">إدارة</span>
+    <a class="nav" href="Clinic.dc.html"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V9l8-6 8 6v12M9 21v-6h6v6"></path></svg>إعدادات العيادة</a>
+    <a class="nav" href="#"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m18 2 4 4M17 7l3-3M19 9 9 19l-4 1 1-4L16 6l3 3Z"></path></svg>التطعيمات</a>
+    <a class="nav" href="#"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2ZM13 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5Z"></path></svg>المحتوى والقوائم</a>
+    <a class="nav" href="#"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"></circle><path d="M2 21c0-3.5 3-6 7-6M16 11l2 2 4-4"></path></svg>الموظفين</a>
+    <a class="nav" href="#"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>سجل التدقيق</a>
+    <div class="side-foot">
+      <span class="avatar" style="background: #e9f5fc; color: #237db8">أ</span>
+      <span style="flex: 1"><b style="font-size: 13px; color: #fff; display: block">د. أحمد العبد</b><small style="font-size: 11px; color: #9fb6c9">الدكتور · العيادتين</small></span>
+      <button class="btn btn-sm" type="button" aria-label="تسجيل الخروج" style="background: transparent; color: #c9d8e4; padding: 0 6px"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"></path></svg></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><h1>اليوم</h1><p class="sub">الأحد ١٥ نوفمبر ٢٠٢٦ · من ٥ لـ ٩ م</p></div>
+      <span class="spacer"></span>
+      <div class="clinic-switch" role="group" aria-label="العيادة">
+        <button type="button" class="active">عيادة المقطم</button>
+        <button type="button">العيادة التانية</button>
+      </div>
+      <button class="btn btn-ghost" type="button">إيقاف الحالات بدون حجز</button>
+      <button class="btn btn-primary" type="button"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>حالة بدون حجز</button>
+    </header>
+
+    <div class="content">
+      <div class="kpis">
+        <div class="card kpi"><small>الحجوزات</small><b>١٨ <span>/ ٢٤ مكان</span></b><span>٦ أماكن فاضية</span></div>
+        <div class="card kpi"><small>وصلوا</small><b style="color: #7d5800">٥</b><span>مستنيين دلوقتي ٣</span></div>
+        <div class="card kpi"><small>تم الكشف</small><b style="color: #1f7a61">٧</b><span>آخر كشف ٦:٢٠ م</span></div>
+        <div class="card kpi"><small>لم يحضر</small><b style="color: #8a2f20">١</b><span>الساعة ٥ م</span></div>
+        <div class="card kpi"><small>كاش النهارده</small><b>٢٬١٠٠ <span>جنيه</span></b><span>+ باقة واحدة ١٬٥٠٠</span></div>
+      </div>
+
+      <div class="hours">
+        <div class="hour"><div class="hour-top"><b>٥ لـ ٦ م</b><span class="pill p-done">خلصت</span></div><div class="bar"><i style="width: 83%; background: #4fbf9f"></i><i style="width: 17%; background: #e2a99f"></i></div><small>٥ تم · ١ لم يحضر</small></div>
+        <div class="hour now"><div class="hour-top"><b>٦ لـ ٧ م</b><span class="pill p-confirmed">دلوقتي</span></div><div class="bar"><i style="width: 33%; background: #4fbf9f"></i><i style="width: 50%; background: #f5c04a"></i></div><small>٢ تم · ٣ وصلوا · مكان فاضي</small></div>
+        <div class="hour"><div class="hour-top"><b>٧ لـ ٨ م</b><span class="muted" style="font-size: 12px">٤ من ٦</span></div><div class="bar"><i style="width: 67%; background: #3a9ad9"></i></div><small>٤ حجوزات مؤكدة</small></div>
+        <div class="hour"><div class="hour-top"><b>٨ لـ ٩ م</b><span class="muted" style="font-size: 12px">٣ من ٦</span></div><div class="bar"><i style="width: 50%; background: #3a9ad9"></i></div><small>٣ حجوزات · ١ بدون حجز</small></div>
+      </div>
+
+      <section class="card">
+        <div class="card-head">
+          <span class="icon-chip yellow"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+          <div><h2>طابور الساعة ٦ لـ ٧ م</h2><p class="hint">الدخول بأسبقية الوصول</p></div>
+          <span style="flex: 1"></span>
+          <div class="clinic-switch" role="group" aria-label="الساعة"><button type="button">٥ م</button><button type="button" class="active">٦ م</button><button type="button">٧ م</button><button type="button">٨ م</button></div>
+        </div>
+        <div style="overflow-x: auto">
+        <table class="table">
+          <thead><tr><th>#</th><th>الطفل</th><th>الزيارة</th><th>الحالة</th><th>الدفع</th><th style="text-align: left">إجراء</th></tr></thead>
+          <tbody>
+            <tr><td class="num">١</td><td><div class="who"><span class="avatar blue">ي</span><span><b>يوسف محمود</b><small>٩ شهور · ولي الأمر ٠١٠٠٠٠٠٠٠٠١</small></span></div></td><td>كشف + تطعيم ٩ شهور</td><td><span class="pill p-arrived"><i></i>وصل ٦:٠٥</span></td><td><span class="pill green">مغطى بالباقة</span></td><td><div class="row-actions"><button class="btn btn-sm btn-green" type="button">تم الكشف</button><button class="btn btn-sm btn-ghost" type="button" aria-label="المزيد">⋯</button></div></td></tr>
+            <tr><td class="num">٢</td><td><div class="who"><span class="avatar pink">ل</span><span><b>ليلى ومراد خالد</b><small>إخوات · ٢ سنة و٥ سنين</small></span></div></td><td>كشف واحد للإخوات</td><td><span class="pill p-arrived"><i></i>وصل ٦:١٢</span></td><td><b>٣٠٠ جنيه</b></td><td><div class="row-actions"><button class="btn btn-sm btn-green" type="button">تم الكشف</button><button class="btn btn-sm btn-ghost" type="button" aria-label="المزيد">⋯</button></div></td></tr>
+            <tr><td class="num">٣</td><td><div class="who"><span class="avatar" style="background: #ede9fb; color: #5b46a8">ع</span><span><b>عمر حسن</b><small>بدون حجز · ٣ سنين</small></span></div></td><td>كشف</td><td><span class="pill p-walkin"><i></i>بدون حجز ٦:١٨</span></td><td><b>٣٠٠ جنيه</b></td><td><div class="row-actions"><button class="btn btn-sm btn-green" type="button">تم الكشف</button><button class="btn btn-sm btn-ghost" type="button" aria-label="المزيد">⋯</button></div></td></tr>
+            <tr><td class="num">٤</td><td><div class="who"><span class="avatar blue">ن</span><span><b>نور أحمد</b><small>٤ شهور</small></span></div></td><td>تطعيم فقط</td><td><span class="pill p-confirmed"><i></i>مؤكد</span></td><td><span class="muted">٤٥٠ جنيه عند الوصول</span></td><td><div class="row-actions"><button class="btn btn-sm btn-soft" type="button">وصل</button><button class="btn btn-sm btn-ghost" type="button" aria-label="المزيد">⋯</button></div></td></tr>
+            <tr><td class="num">✓</td><td><div class="who"><span class="avatar green">س</span><span><b>سلمى ياسر</b><small>٩ شهور</small></span></div></td><td>كشف</td><td><span class="pill p-done"><i></i>تم ٦:٠٠</span></td><td><span class="pill green">اتدفع ٣٠٠</span></td><td><div class="row-actions"><button class="btn btn-sm btn-ghost" type="button">الملف</button></div></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
