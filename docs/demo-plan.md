@@ -6,6 +6,24 @@ D-43. Until step 1, everything runs on the Firebase emulators (`demo-delnono`).
 Firebase project: `dr-elnono-clinic` (Android and iOS apps registered as `eg.drelnono.app`; the app
 uses it only when built with `--dart-define=FIREBASE_ENV=prod`).
 
+## Status (27 Oct 2026, D-53)
+
+Done by the owner in the Firebase console:
+
+- [x] Firestore created on `dr-elnono-clinic`: Standard edition, `(default)` database, location
+      **me-central1 (Doha)**, production-mode rules for now. The location is permanent.
+- [x] Phone sign-in enabled (Spark plan; real SMS limited to 10 a day).
+- [x] Test numbers +201000000001, +201000000003, +201000000099 with code 123456.
+
+Remaining (deploys only with the owner's approval):
+
+- [ ] Blaze + 1 USD budget alert (step 1).
+- [ ] Switch the Functions region to `me-central1` in `functions/src/lib/region.ts` and
+      `lib/core/firebase/functions_region.dart` (both still `us-central1` for the emulators), then
+      deploy rules, indexes, functions and hosting (steps 4 and 8).
+- [ ] Apple: APNs key and TestFlight, later (steps 3 and 6).
+- [ ] Launch checklist: no proposed medical content in production (docs/launch-checklist.md).
+
 ## 1. Blaze and budget alert (2–3 days before the demo, D-40)
 
 - [ ] Upgrade `dr-elnono-clinic` to the Blaze plan (billing account owned by the clinic).
@@ -14,15 +32,15 @@ uses it only when built with `--dart-define=FIREBASE_ENV=prod`).
 
 ## 2. Firestore region
 
-- [ ] Create the Firestore database in the region chosen after the legal review (Law 151/2020). The
-      region cannot be changed later.
-- [ ] Set the Functions region in `functions/src/lib/region.ts` and `lib/core/firebase/functions_region.dart`
+- [x] Create the Firestore database: me-central1 (Doha), done by the owner (D-53). The region
+      cannot be changed later.
+- [ ] Set the Functions region (me-central1) in `functions/src/lib/region.ts` and `lib/core/firebase/functions_region.dart`
       to match (research R8 of 001).
 
 ## 3. Test phone numbers (D-41)
 
-- [ ] In Authentication → Sign-in method → Phone, enable phone sign-in and add the test numbers with
-      fixed codes, for example:
+- [x] In Authentication → Sign-in method → Phone, enable phone sign-in and add the test numbers with
+      fixed codes (done by the owner, D-53):
 
   | Number | Code | Use |
   |--------|------|-----|
