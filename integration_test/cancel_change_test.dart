@@ -55,6 +55,9 @@ void main() {
     final before = await mine();
     final date = before.get('date') as String;
     final hour = before.get('hour') as int;
+    // Counts relative to the seeded demo bookings that may share these hours.
+    final takenHere = await taken(date, hour);
+    final takenNext = await taken(date, hour + 1);
 
     // Change to the next hour.
     await tapInList(tester, find.byKey(const Key('view-my-bookings')));
@@ -68,8 +71,8 @@ void main() {
     final after = await mine();
     expect(after.get('number'), before.get('number'), reason: 'same booking number');
     expect(after.get('hour'), hour + 1);
-    expect(await taken(date, hour), 0);
-    expect(await taken(date, hour + 1), 1);
+    expect(await taken(date, hour), takenHere - 1);
+    expect(await taken(date, hour + 1), takenNext + 1);
 
     // Cancel.
     await settle(tester, () => shows(find.byKey(Key('cancel-${after.id}'))));
@@ -78,6 +81,6 @@ void main() {
     await tester.tap(find.byKey(const Key('confirm-cancel')));
     await settle(tester, () => shows(find.text('اتلغى الحجز.')));
     expect((await mine()).get('status'), 'cancelled');
-    expect(await taken(date, hour + 1), 0, reason: 'place freed at once');
+    expect(await taken(date, hour + 1), takenNext, reason: 'place freed at once');
   });
 }

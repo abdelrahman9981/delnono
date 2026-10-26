@@ -15,6 +15,7 @@ class ContentItem {
     this.ageToMonths,
     this.order = 100,
     this.publishedAt,
+    this.proposed = false,
   });
 
   /// 005 items have no type or order: a link means a video.
@@ -36,8 +37,12 @@ class ContentItem {
       ageToMonths: (d['ageToMonths'] as num?)?.toInt(),
       order: (d['order'] as num?)?.toInt() ?? 100,
       publishedAt: (d['publishedAt'] as Timestamp?)?.toDate(),
+      proposed: d['reviewStatus'] == 'proposed',
     );
   }
+
+  /// A researched tip not yet approved by the doctor (`reviewStatus: proposed`); dashboard badge only.
+  final bool proposed;
 
   final String id;
   final ContentType type;

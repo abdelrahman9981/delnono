@@ -30,7 +30,7 @@ void main() {
     await tester.tap(find.text('محتوى').last);
     await settle(tester, () => location(tester) == '/content');
 
-    // Seed: 3 published Shorts and 3 placeholder tips; the 5 drafts never show (SC-003).
+    // Seed: 3 published Shorts and the proposed tips; the 5 drafts never show (SC-003).
     Finder item(String id) => find.byKey(Key('content-item-$id'));
     await settle(tester, () => shows(item('yt-WjbDIjEH38U')));
     expect(item('yt-WjbDIjEH38U'), findsOneWidget);
@@ -47,15 +47,15 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(item('yt-WjbDIjEH38U'), findsOneWidget);
     expect(item('yt-TGzE9d9m44A'), findsNothing);
-    await tester.enterText(find.byKey(const Key('content-search')), 'الحراره');
+    await tester.enterText(find.byKey(const Key('content-search')), 'حراره');
     await tester.pump(const Duration(milliseconds: 300));
     expect(item('yt-dHP05TFideE'), findsNothing, reason: 'a draft');
     expect(item('tip-fever'), findsOneWidget);
 
-    // A tip opens its (bracketed) text.
+    // A tip opens its text.
     await tester.tap(item('tip-fever'));
     await settle(tester, () => shows(find.byKey(const Key('tip-body'))));
-    expect(find.text('[نص النصيحة · يكتبه الدكتور قبل النشر]'), findsOneWidget);
+    expect(find.textContaining('ترمومتر ديجيتال'), findsOneWidget);
     await tester.tap(find.byType(BackButton));
     // The location changes before the tip's page has left; wait for the library itself.
     await settle(tester, () => location(tester) == '/content' && shows(find.byKey(const Key('content-search'))));

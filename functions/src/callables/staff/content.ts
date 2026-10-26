@@ -92,7 +92,8 @@ export const setContentStatus = onCall({ region: REGION }, async (request) => {
   if (!action) throw new HttpsError("failed-precondition", `${from} → ${status}`, { reason: "invalid_transition" });
   await ref.update({
     status, updatedBy: staff.uid, updatedAt: FieldValue.serverTimestamp(),
-    ...(status === "published" ? { publishedBy: staff.uid, publishedAt: FieldValue.serverTimestamp() } : {}),
+    // The doctor publishing a researched (proposed) tip approves it.
+    ...(status === "published" ? { publishedBy: staff.uid, publishedAt: FieldValue.serverTimestamp(), reviewStatus: "approved" } : {}),
   });
   await writeAudit({ action, actorUid: staff.uid, details: { id: ref.id, title: snap.get("title"), from, to: status } });
   return {};

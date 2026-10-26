@@ -4749,6 +4749,24 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'العيادة مسجلة أطفال على رقمك'**
   String get meLinkClinicSub;
+
+  /// No description provided for @dashProposed.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقترح · يراجعه الدكتور'**
+  String get dashProposed;
+
+  /// No description provided for @dashBandDangerSigns.
+  ///
+  /// In ar, this message translates to:
+  /// **'علامات خطر للسن ده (سطر لكل علامة)'**
+  String get dashBandDangerSigns;
+
+  /// No description provided for @followUpBandSigns.
+  ///
+  /// In ar, this message translates to:
+  /// **'خاصة بالسن ده'**
+  String get followUpBandSigns;
 }
 
 class _AppLocalizationsDelegate

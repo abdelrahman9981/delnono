@@ -70,6 +70,29 @@ describe("clinic, catalogue, content, follow-up, settings, reports (005 US5–US
     assert.deepEqual((await adminDb().doc("settings/followUp").get()).get("dangerSigns"), ["خطر"]);
   });
 
+  it("approving clears proposed (researched demo) content: schedule, follow-up with its band signs, tips", async () => {
+    const s = await secretary1();
+    const d = await doctor();
+    await adminDb().doc("vaccines/v1").set({ name: "شلل الأطفال بالفم", kind: "basic", active: true, reviewStatus: "proposed" });
+    await adminDb().doc("vaccineSchedule/s04").set({ vaccineId: "v1", dose: 2, dueAge: { months: 2, days: 0 }, reviewStatus: "proposed" });
+    assert.ok((await callFunction("updateCatalogue", { vaccines: [{ id: "v1", name: "شلل الأطفال بالفم" }], approve: true }, d)).result);
+    assert.equal((await adminDb().doc("vaccines/v1").get()).get("reviewStatus"), "approved");
+    assert.equal((await adminDb().doc("vaccineSchedule/s04").get()).get("reviewStatus"), "approved", "the whole schedule");
+
+    await callFunction("saveFollowUpDraft", {
+      bands: [{ fromMonths: 0, toMonths: 2, title: "أول شهرين", items: ["أ"], dangerSigns: ["مش بيرضع كويس"] }], dangerSigns: ["خطر"],
+    }, s);
+    assert.ok((await callFunction("publishFollowUp", {}, d)).result);
+    const band = (await adminDb().doc("followUp/b0").get()).data()!;
+    assert.deepEqual(band.dangerSigns, ["مش بيرضع كويس"]);
+    assert.equal(band.reviewStatus, "approved");
+    assert.equal((await adminDb().doc("settings/followUp").get()).get("reviewStatus"), "approved");
+
+    await adminDb().doc("content/tip-sleep").set({ type: "tip", title: "نوم", category: "sleep", body: "نص", status: "draft", reviewStatus: "proposed" });
+    assert.ok((await callFunction("setContentStatus", { id: "tip-sleep", status: "published" }, d)).result);
+    assert.equal((await adminDb().doc("content/tip-sleep").get()).get("reviewStatus"), "approved");
+  });
+
   it("settings: doctor only, whitelisted, policy version only goes up (FR-024)", async () => {
     const s = await secretary1();
     const d = await doctor();

@@ -113,7 +113,8 @@ class FollowUpScreen extends ConsumerWidget {
                   const SizedBox(height: 6),
                   Text(l10n.whenToCallIntro, style: text.bodyMedium?.copyWith(color: c.dangerText)),
                   const SizedBox(height: 8),
-                  for (final sign in settings.dangerSigns)
+                  // This age's own signs first (e.g. a young infant), then the ones for every age.
+                  for (final sign in [if (!overAge) ...?band?.dangerSigns, ...settings.dangerSigns])
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 3),
                       child: Text('• $sign', style: text.bodyMedium?.copyWith(color: c.dangerText)),

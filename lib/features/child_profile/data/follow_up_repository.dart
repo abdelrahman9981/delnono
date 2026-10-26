@@ -11,6 +11,8 @@ class FollowUpBand {
     required this.title,
     required this.items,
     this.order = 0,
+    this.dangerSigns = const [],
+    this.proposed = false,
   });
 
   factory FollowUpBand.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> s) {
@@ -21,8 +23,16 @@ class FollowUpBand {
       title: d['title'] as String? ?? '',
       items: [for (final i in (d['items'] as List? ?? const [])) '$i'],
       order: (d['order'] as num?)?.toInt() ?? 0,
+      dangerSigns: [for (final i in (d['dangerSigns'] as List? ?? const [])) '$i'],
+      proposed: d['reviewStatus'] == 'proposed',
     );
   }
+
+  /// «إمتى تتصلي بالدكتور» items for this age only, shown before the general ones.
+  final List<String> dangerSigns;
+
+  /// Researched for the demo and not yet approved by the doctor (`reviewStatus: proposed`).
+  final bool proposed;
 
   /// The band covers fromMonths ≤ age < toMonths.
   final int fromMonths;
@@ -34,15 +44,17 @@ class FollowUpBand {
 
 /// `settings/followUp`. Defaults apply when missing.
 class FollowUpSettings {
-  const FollowUpSettings({this.maxAgeMonths = 48, this.dangerSigns = const []});
+  const FollowUpSettings({this.maxAgeMonths = 48, this.dangerSigns = const [], this.proposed = false});
 
   factory FollowUpSettings.fromMap(Map<String, dynamic>? d) => FollowUpSettings(
     maxAgeMonths: (d?['maxAgeMonths'] as num?)?.toInt() ?? 48,
     dangerSigns: [for (final i in (d?['dangerSigns'] as List? ?? const [])) '$i'],
+    proposed: d?['reviewStatus'] == 'proposed',
   );
 
   final int maxAgeMonths;
   final List<String> dangerSigns;
+  final bool proposed;
 }
 
 final followUpBandsProvider = StreamProvider<List<FollowUpBand>>(

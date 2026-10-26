@@ -5,16 +5,18 @@
  *   functions/node_modules/.bin/firebase emulators:exec --only auth,firestore \
  *     --export-on-exit emulator-seed "cd functions && npm run seed"
  */
-import { initializeApp } from "firebase-admin/app";
+import { getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { nameKey } from "../src/lib/nameKey";
+import { BANDS, DANGER_SIGNS, DANGER_SIGNS_SOURCES, HOLIDAYS, PROPOSED, SCHEDULE, SRC, TIPS, VACCINES } from "./demo_data";
+import { seedDemoFamilies } from "./seed_demo";
+import { assertEmulatorOnly } from "./seed_guard";
 
-if (!process.env.FIRESTORE_EMULATOR_HOST) {
-  throw new Error("FIRESTORE_EMULATOR_HOST is not set; refusing to seed anything but the emulator.");
-}
+// Emulators of a demo-* project only: the seed holds proposed (unapproved) medical content.
+assertEmulatorOnly("demo-delnono", process.env);
 
-const app = initializeApp({ projectId: "demo-delnono" });
+const app = getApps()[0] ?? initializeApp({ projectId: "demo-delnono" });
 const db = getFirestore(app);
 
 const PLACEHOLDER = "[نص مؤقت · يراجعه المحامي قبل الإطلاق]";
@@ -49,73 +51,61 @@ async function main() {
   // Family-wide booking limits (002, D-49). Clinic schedules and prices are on each clinic (004).
   batch.set(db.doc("settings/booking"), { bookingHorizonDays: 14, maxUpcomingPerFamily: 2, placeholder: true });
 
-  // Two clinics (004, D-44, D-45). Placeholder details until the doctor sets them in the dashboard (005,
-  // D-36). Weekdays are ISO numbers: 1 = Monday … 7 = Sunday. Clinic 1 is the main clinic (order 0).
-  const evening = [{ from: 17, to: 21 }];
-  const morning = [{ from: 10, to: 14 }];
+  // Two clinics (004, D-44, D-45) with realistic hours (several ranges), capacity, Egyptian public
+  // holidays (Nov 2026 – Dec 2027) and Cairo prices (docs/demo-data-sources.md). Weekdays are ISO
+  // numbers: 1 = Monday … 7 = Sunday. Clinic 1 is the main clinic (order 0). Names, addresses and
+  // phone numbers are for the demo; the doctor confirms them.
+  const c1Hours = [{ from: 13, to: 15 }, { from: 18, to: 22 }];
+  const c2Long = [{ from: 11, to: 14 }, { from: 17, to: 20 }];
+  const c2Evening = [{ from: 17, to: 21 }];
+  const priceAt = (clinic: 1 | 2, price: number) => (clinic === 1 ? price : Math.round((price * 1.1) / 5) * 5);
+  const offers = (clinic: 1 | 2) => Object.fromEntries(VACCINES.map((v) => [v.id, {
+    // Clinic 2 does not stock the meningococcal vaccine (shows a clinic that offers fewer).
+    offered: !(clinic === 2 && v.id === "v12"), price: priceAt(clinic, v.price), shown: true,
+  }]));
   const clinics = [
     {
       id: CLINIC_1,
-      name: "[عيادة المقطم · بيانات مؤقتة]",
+      name: "عيادة المقطم",
       area: "المقطم",
-      address: "[عنوان مؤقت · شارع ٩، المقطم، القاهرة]",
+      address: "شارع ٩، المقطم، القاهرة",
       phone: "+201000000000",
       whatsapp: "+201000000000",
       order: 0,
       capacityPerHour: 6,
-      workingHours: { "1": evening, "2": evening, "3": evening, "4": evening, "5": [], "6": evening, "7": evening },
-      vaccineWeekdays: [1, 3],
+      workingHours: { "1": c1Hours, "2": c1Hours, "3": c1Hours, "4": c1Hours, "5": [], "6": c1Hours, "7": c1Hours },
+      vaccineWeekdays: [7, 3],
       cancelWindowHours: 3,
-      visitPrice: 300,
-      packagePrice: 1500,
-      vaccinePrices: {
-        v1: { offered: true, price: 150, shown: true },
-        v2: { offered: true, price: 200, shown: true },
-        v3: { offered: true, price: 450, shown: false },
-        v4: { offered: true, price: 300, shown: true },
-      },
+      visitPrice: 400,
+      packagePrice: 4000,
+      vaccinePrices: offers(1),
     },
     {
       id: CLINIC_2,
-      name: "[عيادة مدينة نصر · بيانات مؤقتة]",
+      name: "عيادة مدينة نصر",
       area: "مدينة نصر",
-      address: "[عنوان مؤقت · شارع عباس العقاد، مدينة نصر، القاهرة]",
+      address: "شارع عباس العقاد، مدينة نصر، القاهرة",
       phone: "+201000000002",
       whatsapp: "+201000000002",
       order: 1,
       capacityPerHour: 5,
-      workingHours: { "1": morning, "2": morning, "3": morning, "4": morning, "5": [], "6": [], "7": morning },
-      vaccineWeekdays: [7, 2],
+      workingHours: { "1": c2Evening, "2": c2Long, "3": c2Long, "4": c2Evening, "5": [], "6": [], "7": c2Long },
+      vaccineWeekdays: [1, 4],
       cancelWindowHours: 6,
-      visitPrice: 350,
-      packagePrice: 1700,
-      vaccinePrices: {
-        v1: { offered: true, price: 170, shown: true },
-        v2: { offered: false, price: 0, shown: true },
-        v3: { offered: true, price: 500, shown: true },
-        v4: { offered: true, price: 320, shown: true },
-      },
+      visitPrice: 450,
+      packagePrice: 4500,
+      vaccinePrices: offers(2),
     },
   ];
   for (const { id, ...c } of clinics) {
-    batch.set(db.doc(`clinics/${id}`), { ...c, holidays: [], packageMonths: 12, active: true, placeholder: true });
+    batch.set(db.doc(`clinics/${id}`), { ...c, holidays: HOLIDAYS, packageMonths: 12, active: true, placeholder: false });
   }
 
-  // Vaccine list (002). Names are placeholders in brackets until the doctor's list arrives
-  // (constitution Principle II); the schedule comes in 003; prices are per clinic (004).
-  const vaccines = [
-    { id: "v1", name: "[تطعيم مؤقت ١]", kind: "basic", active: true },
-    { id: "v2", name: "[تطعيم مؤقت ٢]", kind: "basic", active: true },
-    {
-      id: "v3", name: "[تطعيم مؤقت ٣]", kind: "additional", active: true,
-      suggestedAge: { months: 12, days: 0 }, doses: 2, intervalWeeks: 4, note: "[ملاحظة الدكتور · مؤقتة]",
-    },
-    {
-      id: "v4", name: "[تطعيم مؤقت ٤]", kind: "additional", active: false,
-      suggestedAge: { months: 24, days: 0 }, doses: 1, intervalWeeks: 0, note: "[ملاحظة الدكتور · مؤقتة]",
-    },
-  ];
-  for (const { id, ...v } of vaccines) batch.set(db.doc(`vaccines/${id}`), { ...v, placeholder: true });
+  // Vaccine list: the MOHP basic schedule (free) and common optional vaccines with approximate prices
+  // (demo_data.ts). Proposed until the doctor approves the list in the dashboard.
+  for (const { id, price: _, ...v } of VACCINES) {
+    batch.set(db.doc(`vaccines/${id}`), { ...v, active: true, placeholder: false, reviewStatus: PROPOSED });
+  }
 
   // The seeded family: a registered guardian (Auth user FAMILY_UID, created in seedFamily) with
   // current consent and three linked children with sample records.
@@ -178,9 +168,12 @@ async function main() {
   await seedStaff();
   // The seeded family's Auth user, with the uid its guardian doc and children use.
   await getAuth(app).createUser({ uid: FAMILY_UID, phoneNumber: FAMILY_PHONE });
+  // Ten fictional families with bookings, visits, doses, packages and audit entries (seed_demo.ts).
+  await seedDemoFamilies(db, getAuth(app));
   console.log(
-    "Seeded settings (auth, policy, booking, vaccines, followUp, content), 8 channel videos (3 published) and 3 placeholder tips, 2 placeholder clinics, 4 placeholder vaccines, the placeholder",
-    "schedule and follow-up lists, the registered family on", FAMILY_PHONE, `(uid ${FAMILY_UID}, 3 children with sample records)`,
+    "Seeded settings (auth, policy, booking, vaccines, followUp, content), 8 channel videos (3 published),",
+    `${TIPS.length} proposed tips, 2 clinics, ${VACCINES.length} proposed vaccines, the proposed MOHP schedule and follow-up lists,`,
+    "10 demo families with activity, the registered family on", FAMILY_PHONE, `(uid ${FAMILY_UID}, 3 children with sample records)`,
     "and an unlinked clinic family on", CLINIC_PHONE,
   );
 }
@@ -193,22 +186,13 @@ const SEED_STAFF = "seed-staff";
 
 function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
   batch.set(db.doc("settings/vaccines"), {
-    source: "[جدول التطعيمات الإجبارية · وزارة الصحة المصرية · يراجعه الدكتور]",
-    reviewedOn: "2026-10-01",
+    source: "جدول التطعيمات الإجبارية · وزارة الصحة والسكان (مقترح · يراجعه الدكتور)",
     lateAfterDays: 7,
-    placeholder: true,
+    placeholder: false,
+    reviewStatus: PROPOSED,
+    sourceUrl: SRC.mohp2025,
   });
-  const schedule: [string, string, number, number, string, number?][] = [
-    ["s01", "v1", 1, 0, "عند الولادة"],
-    ["s02", "v2", 1, 2, "الشهر الثاني"],
-    ["s03", "v1", 2, 2, "الشهر الثاني"],
-    ["s04", "v2", 2, 4, "الشهر الرابع"],
-    ["s05", "v2", 3, 6, "الشهر السادس"],
-    ["s06", "v1", 3, 9, "الشهر التاسع"],
-    ["s07", "v2", 4, 12, "السنة الأولى"],
-    ["s08", "v1", 4, 18, "سنة ونص", 24],
-  ];
-  schedule.forEach(([id, vaccineId, dose, months, ageLabel, lastMonths], order) => {
+  SCHEDULE.forEach(({ id, vaccineId, dose, months, ageLabel, lastMonths, sourceUrl }, order) => {
     batch.set(db.doc(`vaccineSchedule/${id}`), {
       vaccineId,
       dose,
@@ -216,34 +200,23 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
       ...(lastMonths ? { lastAge: { months: lastMonths, days: 0 } } : {}),
       ageLabel,
       order,
-      placeholder: true,
+      placeholder: false,
+      reviewStatus: PROPOSED,
+      sourceUrl,
     });
   });
 
+  // Follow-up by age (CDC milestones) and «إمتى تتصلي بالدكتور» (WHO IMCI, AAP): proposed.
   batch.set(db.doc("settings/followUp"), {
     maxAgeMonths: 48,
-    dangerSigns: [1, 2, 3, 4].map((n) => `[علامة خطر ${ar(n)} · من قائمة الدكتور]`),
-    placeholder: true,
+    dangerSigns: DANGER_SIGNS,
+    placeholder: false,
+    reviewStatus: PROPOSED,
+    sourceUrls: DANGER_SIGNS_SOURCES,
   });
-  const bands: [number, number, string][] = [
-    [0, 2, "متابعة أول شهرين"],
-    [2, 4, "متابعة الشهر التاني والتالت"],
-    [4, 6, "متابعة الشهر الرابع والخامس"],
-    [6, 9, "متابعة الشهر السادس"],
-    [9, 12, "متابعة الشهر التاسع"],
-    [12, 18, "متابعة السنة الأولى"],
-    [18, 24, "متابعة سنة ونص"],
-    [24, 36, "متابعة السنة التانية"],
-    [36, 48, "متابعة السنة التالتة"],
-  ];
-  bands.forEach(([fromMonths, toMonths, title], order) => {
+  BANDS.forEach(({ fromMonths, toMonths, title, items, dangerSigns, sourceUrl }, order) => {
     batch.set(db.doc(`followUp/b${fromMonths}`), {
-      fromMonths,
-      toMonths,
-      title,
-      items: [1, 2, 3, 4].map((n) => `[بند متابعة ${ar(n)} من قائمة الدكتور]`),
-      order,
-      placeholder: true,
+      fromMonths, toMonths, title, items, dangerSigns, order, placeholder: false, reviewStatus: PROPOSED, sourceUrl,
     });
   });
 
@@ -291,24 +264,19 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
     });
   }
 
-  // [childId, scheduleId | null, vaccineId, dose, givenOn, lot?]
-  const doses: [string, string | null, string, number, string, string?][] = [
-    ["seed-youssef", "s01", "v1", 1, "2024-03-16", "LOT-1001"],
-    ["seed-youssef", "s02", "v2", 1, "2024-05-15", "LOT-2001"],
-    ["seed-youssef", "s03", "v1", 2, "2024-05-15"],
-    ["seed-youssef", "s04", "v2", 2, "2024-07-15", "LOT-2002"],
-    ["seed-youssef", "s05", "v2", 3, "2024-09-15", "LOT-2003"],
-    ["seed-youssef", "s07", "v2", 4, "2025-03-15", "LOT-2004"],
-    ["seed-youssef", null, "v3", 1, "2025-03-15", "LOT-3001"],
-    ...(["s01", "s02", "s03", "s04", "s05", "s06", "s07", "s08"].map(
-      (id, i) => ["seed-mariam", id, i % 2 ? "v2" : "v1", 1, "2024-01-01"] as [string, string, string, number, string],
-    )),
-    ["seed-salma", "s01", "v1", 1, "2026-01-21", "LOT-1101"],
-    ["seed-salma", "s02", "v2", 1, "2026-03-20", "LOT-2101"],
-    ["seed-salma", "s03", "v1", 2, "2026-03-20"],
-    ["seed-salma", "s04", "v2", 2, "2026-05-20", "LOT-2102"],
-    ["seed-salma", "s05", "v2", 3, "2026-07-20", "LOT-2103"],
-  ];
+  // [childId, scheduleId | null, vaccineId, dose, givenOn, lot?]: the seeded children's doses on the
+  // MOHP schedule, given on time (Salma's 9-month dose is still due). Youssef also had the rota vaccine.
+  const family: [string, string][] = [["seed-youssef", "2024-03-15"], ["seed-mariam", "2022-07-02"], ["seed-salma", "2026-01-20"]];
+  const doses: [string, string | null, string, number, string, string?][] = [];
+  for (const [childId, birthDate] of family) {
+    for (const e of SCHEDULE) {
+      const due = addMonths(birthDate, e.months);
+      if (due > "2026-10-01") continue;
+      const lot = childId === "seed-youssef" && e.id === "s01" ? "LOT-1001" : `LOT-${e.id.slice(1)}${doses.length + 100}`;
+      doses.push([childId, e.id, e.vaccineId, e.dose, e.months === 0 ? addDays(birthDate, 1) : due, lot]);
+    }
+  }
+  doses.push(["seed-youssef", null, "v3", 1, "2024-05-15", "LOT-3001"], ["seed-youssef", null, "v3", 2, "2024-07-15", "LOT-3002"]);
   doses.forEach(([childId, scheduleId, vaccineId, dose, givenOn, lot], i) => {
     batch.set(db.doc(`children/${childId}/doses/d${i + 1}`), {
       scheduleId,
@@ -359,18 +327,14 @@ function seedContent(batch: FirebaseFirestore.WriteBatch) {
       ...(published ? { publishedBy: "staff-doctor", publishedAt: at } : {}),
     });
   }
-  const tips: [string, string, string, number?, number?][] = [
-    ["tip-fever", "[نصيحة عن الحرارة · يكتبها الدكتور]", "fever"],
-    ["tip-sleep", "[نصيحة عن نوم الرضيع · يكتبها الدكتور]", "sleep", 0, 12],
-    ["tip-allergy", "[نصيحة عن الحساسية · يكتبها الدكتور]", "allergy"],
-  ];
-  tips.forEach(([id, title, category, from, to], i) => {
-    const at = new Date(`2026-10-0${i + 1}T12:00:00+02:00`);
+  // Short researched tips, 2–3 per category, published for the demo but proposed (dashboard badge).
+  TIPS.forEach(({ id, category, title, body, ageFromMonths, ageToMonths, sourceUrl }, i) => {
+    const at = new Date(Date.UTC(2026, 9, 1 + (i % 20), 10));
     batch.set(db.doc(`content/${id}`), {
-      type: "tip", title, category, body: "[نص النصيحة · يكتبه الدكتور قبل النشر]", youtubeId: null, url: null,
-      ageFromMonths: from ?? null, ageToMonths: to ?? null, order: 100, status: "published",
-      createdBy: "staff-doctor", createdAt: at, updatedBy: "staff-doctor", updatedAt: at,
-      publishedBy: "staff-doctor", publishedAt: at,
+      type: "tip", title, category, body, youtubeId: null, url: null,
+      ageFromMonths: ageFromMonths ?? null, ageToMonths: ageToMonths ?? null, order: 100, status: "published",
+      createdBy: "staff-sec1", createdAt: at, updatedBy: "staff-doctor", updatedAt: at,
+      publishedBy: "staff-doctor", publishedAt: at, reviewStatus: PROPOSED, sourceUrl,
     });
   });
 }
@@ -396,11 +360,19 @@ async function seedStaff() {
   }
 }
 
-function ar(n: number) {
-  return String(n).replace(/[0-9]/g, (d) => "٠١٢٣٤٥٦٧٨٩"[Number(d)]);
-}
-
 main().catch((e) => {
   console.error(e);
   process.exit(1);
 });
+
+function addDays(date: string, days: number): string {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+function addMonths(date: string, months: number): string {
+  const [y, m, d] = date.split("-").map(Number);
+  const last = new Date(Date.UTC(y, m - 1 + months + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(y, m - 1 + months, Math.min(d, last))).toISOString().slice(0, 10);
+}

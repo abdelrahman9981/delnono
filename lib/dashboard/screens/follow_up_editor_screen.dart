@@ -40,9 +40,12 @@ class _BandEdit {
     : title = TextEditingController(text: b.title),
       from = TextEditingController(text: '${b.fromMonths}'),
       to = TextEditingController(text: '${b.toMonths}'),
-      items = TextEditingController(text: b.items.join('\n'));
+      items = TextEditingController(text: b.items.join('\n')),
+      danger = TextEditingController(text: b.dangerSigns.join('\n')),
+      proposed = b.proposed;
 
-  final TextEditingController title, from, to, items;
+  final TextEditingController title, from, to, items, danger;
+  final bool proposed;
 }
 
 class _FollowUpEditorScreenState extends ConsumerState<FollowUpEditorScreen> {
@@ -68,6 +71,7 @@ class _FollowUpEditorScreenState extends ConsumerState<FollowUpEditorScreen> {
           'fromMonths': int.tryParse(b.from.text) ?? 0,
           'toMonths': int.tryParse(b.to.text) ?? 0,
           'items': b.items.text.split('\n').map((s) => s.trim()).where((s) => s.isNotEmpty).toList(),
+          'dangerSigns': b.danger.text.split('\n').map((s) => s.trim()).where((s) => s.isNotEmpty).toList(),
         },
     ],
     'dangerSigns': _danger.text.split('\n').map((s) => s.trim()).where((s) => s.isNotEmpty).toList(),
@@ -111,6 +115,9 @@ class _FollowUpEditorScreenState extends ConsumerState<FollowUpEditorScreen> {
           hint: l10n.dashOnePerLine,
           icon: Icons.warning_amber_rounded,
           tone: Tone.pink,
+          action: (ref.watch(followUpSettingsProvider).value?.proposed ?? false)
+              ? const ProposedBadge(key: Key('proposed-danger-signs'))
+              : null,
           child: TextField(
             key: const Key('danger-signs'),
             controller: _danger,
@@ -125,6 +132,7 @@ class _FollowUpEditorScreenState extends ConsumerState<FollowUpEditorScreen> {
             title: b.title.text.isEmpty ? l10n.dashFollowUpBands : b.title.text,
             icon: Icons.checklist_rtl,
             tone: Tone.green,
+            action: b.proposed ? ProposedBadge(key: Key('proposed-band-$i')) : null,
             child: Column(
               children: [
                 Row(
@@ -163,6 +171,12 @@ class _FollowUpEditorScreenState extends ConsumerState<FollowUpEditorScreen> {
                   controller: b.items,
                   maxLines: 4,
                   decoration: InputDecoration(helperText: l10n.dashOnePerLine),
+                ),
+                TextField(
+                  key: Key('band-danger-$i'),
+                  controller: b.danger,
+                  maxLines: 3,
+                  decoration: InputDecoration(labelText: l10n.dashBandDangerSigns),
                 ),
               ],
             ),

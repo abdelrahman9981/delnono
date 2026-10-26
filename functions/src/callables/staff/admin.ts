@@ -75,12 +75,12 @@ export const updateCatalogue = onCall({ region: REGION }, async (request) => {
   for (const v of (data.vaccines as Record<string, unknown>[] | undefined) ?? []) {
     const id = str(v, "id");
     const { id: _, ...rest } = v;
-    batch.set(db.doc(`vaccines/${id}`), { ...rest, ...(approve ? { placeholder: false } : {}), updatedAt: FieldValue.serverTimestamp() }, { merge: true });
+    batch.set(db.doc(`vaccines/${id}`), { ...rest, ...(approve ? { placeholder: false, reviewStatus: "approved" } : {}), updatedAt: FieldValue.serverTimestamp() }, { merge: true });
   }
   for (const e of (data.schedule as Record<string, unknown>[] | undefined) ?? []) {
     const id = str(e, "id");
     const { id: _, ...rest } = e;
-    batch.set(db.doc(`vaccineSchedule/${id}`), { ...rest, ...(approve ? { placeholder: false } : {}) }, { merge: true });
+    batch.set(db.doc(`vaccineSchedule/${id}`), { ...rest, ...(approve ? { placeholder: false, reviewStatus: "approved" } : {}) }, { merge: true });
   }
   for (const id of (data.deleteSchedule as string[] | undefined) ?? []) batch.delete(db.doc(`vaccineSchedule/${id}`));
   const info: Record<string, unknown> = {};
@@ -88,6 +88,13 @@ export const updateCatalogue = onCall({ region: REGION }, async (request) => {
   if (approve) {
     info.reviewedOn = cairoDate();
     info.placeholder = false;
+    info.reviewStatus = "approved";
+    // Approving covers the whole list the doctor reviewed, including entries not edited this time.
+    const sent = new Set(((data.schedule as Record<string, unknown>[] | undefined) ?? []).map((e) => String(e.id)));
+    const deleted = new Set((data.deleteSchedule as string[] | undefined) ?? []);
+    for (const d of (await db.collection("vaccineSchedule").get()).docs) {
+      if (!sent.has(d.id) && !deleted.has(d.id)) batch.set(d.ref, { placeholder: false, reviewStatus: "approved" }, { merge: true });
+    }
   }
   if (Object.keys(info).length) batch.set(db.doc("settings/vaccines"), info, { merge: true });
   await batch.commit();
@@ -108,6 +115,7 @@ export const saveFollowUpDraft = onCall({ region: REGION }, async (request) => {
     if (!(from >= 0 && to > from)) throw new HttpsError("invalid-argument", "band ages", { field: "bands" });
     batch.set(db.doc(`followUpDrafts/b${from}`), {
       fromMonths: from, toMonths: to, title: String(b.title ?? ""), items: ((b.items as unknown[]) ?? []).map(String), order,
+      dangerSigns: ((b.dangerSigns as unknown[]) ?? []).map(String),
     });
   });
   batch.set(db.doc("followUpDrafts/_settings"), {
@@ -126,8 +134,11 @@ export const publishFollowUp = onCall({ region: REGION }, async (request) => {
   if (!settings && bands.length === 0) throw new HttpsError("failed-precondition", "Nothing to publish.", { reason: "no_draft" });
   const batch = db.batch();
   for (const d of live.docs) if (!bands.some((b) => b.id === d.id)) batch.delete(d.ref);
-  for (const b of bands) batch.set(db.doc(`followUp/${b.id}`), { ...b.data(), placeholder: false });
-  if (settings) batch.set(db.doc("settings/followUp"), { dangerSigns: settings.get("dangerSigns"), placeholder: false }, { merge: true });
+  // Publishing is the doctor's approval: proposed (researched) items become approved.
+  for (const b of bands) batch.set(db.doc(`followUp/${b.id}`), { ...b.data(), placeholder: false, reviewStatus: "approved" });
+  if (settings) {
+    batch.set(db.doc("settings/followUp"), { dangerSigns: settings.get("dangerSigns"), placeholder: false, reviewStatus: "approved" }, { merge: true });
+  }
   await batch.commit();
   await writeAudit({ action: "followup.published", actorUid: staff.uid, details: { bands: bands.length } });
   return {};

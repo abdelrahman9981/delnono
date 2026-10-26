@@ -120,6 +120,7 @@ List<Override> profileDataOverrides({
   bool anyChild = false,
   bool offline = false,
   List<({bool active, String startsOn, String endsOn})> packages = const [],
+  List<FollowUpBand> followUpBands = bands,
   List<Vaccine> bookingVaccines = const [],
   List<Clinic> clinics = const [clinic1],
 }) =>
@@ -146,7 +147,7 @@ List<Override> profileDataOverrides({
       vaccineScheduleProvider.overrideWith((ref) => Stream.value(schedule)),
       vaccineCatalogueProvider.overrideWith((ref) => Stream.value(catalogue)),
       vaccineSettingsProvider.overrideWith((ref) => Stream.value(vaccineSettings)),
-      followUpBandsProvider.overrideWith((ref) => Stream.value(bands)),
+      followUpBandsProvider.overrideWith((ref) => Stream.value(followUpBands)),
       followUpSettingsProvider.overrideWith((ref) => Stream.value(followUpSettings)),
     ];
 
@@ -160,10 +161,18 @@ List<Override> profileOverrides({
   List<Clinic> clinics = const [clinic1],
   Guardian? guardian,
   bool includeChildren = true,
+  List<FollowUpBand> followUpBands = bands,
 }) =>
     [
       clockProvider.overrideWithValue(() => today),
       if (includeChildren) childrenProvider.overrideWith((ref) => Stream.value(children)),
       guardianProvider.overrideWith((ref) => Stream.value(guardian)),
-      ...profileDataOverrides(measurements: measurements, store: store, offline: offline, packages: packages, clinics: clinics),
+      ...profileDataOverrides(
+        measurements: measurements,
+        store: store,
+        offline: offline,
+        packages: packages,
+        clinics: clinics,
+        followUpBands: followUpBands,
+      ),
     ];
