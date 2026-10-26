@@ -32,7 +32,7 @@ describe("linkClinicChildren", () => {
   const guardian = async () => (await adminDb().doc(`guardians/${user.uid}`).get()).data()!;
   const actions = async () =>
     (await adminDb().collection("auditLog").get()).docs.map((d) => d.get("action") as string).sort();
-  const link = (birthDate: string) => callFunction<{ linked: { childId: string; name: string }[] }>(
+  const link = (birthDate: string) => callFunction<{ linked: { childId: string; name: string; duplicate: boolean }[] }>(
     "linkClinicChildren",
     { birthDate },
     user,
@@ -51,6 +51,13 @@ describe("linkClinicChildren", () => {
     assert.equal((await guardian()).clinicChildrenPending, false);
     assert.equal((await adminDb().doc(`linkAttempts/${user.phone}`).get()).exists, false);
     assert.deepEqual(await actions(), ["children.linked"]);
+  });
+
+  it("flags a clinic child the guardian already added (same name and birth date) as a duplicate (FR-022)", async () => {
+    await seedChild("added-first", { name: "يُوسف", birthDate: "2024-03-15", guardianPhone: user.phone, guardianUid: user.uid, registeredBy: "guardian" });
+    const res = await link("2024-03-15");
+    const dup = Object.fromEntries(res.result!.linked.map((c) => [c.childId, c.duplicate]));
+    assert.deepEqual(dup, { youssef: true, mariam: false, "left-by-deleted": false });
   });
 
   it("a wrong date counts down, then locks at maxLinkAttempts (FR-021a)", async () => {

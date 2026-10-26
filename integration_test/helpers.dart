@@ -187,3 +187,16 @@ Future<void> addChild(WidgetTester tester, String name) async {
   await tapInList(tester, find.text('حفظ'));
   await settle(tester, () => shows(find.text(name)));
 }
+
+/// A child the clinic registered on [phone] with no app account yet (like the seed's عمر and نور),
+/// written through the emulator's admin access.
+Future<void> seedClinicChild(String phone, String id, String name, String birthDate, {String sex = 'male'}) =>
+    adminSetFields('children/$id', {
+      'name': {'stringValue': name},
+      'nameKey': {'stringValue': name},
+      'birthDate': {'stringValue': birthDate},
+      'sex': {'stringValue': sex},
+      'guardianPhone': {'stringValue': phone},
+      'guardianUid': {'nullValue': null},
+      'registeredBy': {'stringValue': 'clinic'},
+    });

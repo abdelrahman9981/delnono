@@ -3,13 +3,14 @@ import { HttpsError, onCall } from "firebase-functions/https";
 import { db } from "../lib/admin";
 import { writeAudit } from "../lib/audit";
 import { requireGuardianWithCurrentConsent, requirePhoneUser } from "../lib/guards";
+import { nameKey } from "../lib/nameKey";
 import { REGION } from "../lib/region";
 import { getAuthSettings } from "../lib/settings";
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 type Outcome =
-  | { kind: "linked"; linked: { childId: string; name: string }[] }
+  | { kind: "linked"; linked: { childId: string; name: string; duplicate: boolean }[] }
   | { kind: "wrong"; remaining: number }
   | { kind: "locked" }
   | { kind: "none" };
@@ -37,6 +38,11 @@ export const linkClinicChildren = onCall({ region: REGION }, async (request) => 
     const children = await tx.get(
       db.collection("children").where("guardianPhone", "==", phone).where("guardianUid", "==", null),
     );
+    // Children the guardian already added in the app: one with the same name and birth date as a
+    // clinic child is probably the same child (FR-022), so the app warns and staff merge (FR-065).
+    const own = await tx.get(db.collection("children").where("guardianUid", "==", uid));
+    const key = (c: FirebaseFirestore.DocumentSnapshot) => `${nameKey(String(c.get("name") ?? ""))}|${c.get("birthDate")}`;
+    const ownKeys = new Set(own.docs.map(key));
     const now = FieldValue.serverTimestamp();
 
     if (attempts.get("lockedAt") != null) {
@@ -58,7 +64,14 @@ export const linkClinicChildren = onCall({ region: REGION }, async (request) => 
         { action: "children.linked", actorUid: uid, subjectPhone: phone, childIds: children.docs.map((c) => c.id) },
         tx,
       );
-      return { kind: "linked", linked: children.docs.map((c) => ({ childId: c.id, name: c.get("name") as string })) };
+      return {
+        kind: "linked",
+        linked: children.docs.map((c) => ({
+          childId: c.id,
+          name: c.get("name") as string,
+          duplicate: ownKeys.has(key(c)),
+        })),
+      };
     }
 
     const failed = ((attempts.get("failedCount") as number | undefined) ?? 0) + 1;
