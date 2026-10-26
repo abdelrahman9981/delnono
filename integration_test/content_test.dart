@@ -57,7 +57,9 @@ void main() {
     await settle(tester, () => shows(find.byKey(const Key('tip-body'))));
     expect(find.text('[نص النصيحة · يكتبه الدكتور قبل النشر]'), findsOneWidget);
     await tester.tap(find.byType(BackButton));
-    await settle(tester, () => location(tester) == '/content');
+    // The location changes before the tip's page has left; wait for the library itself.
+    await settle(tester, () => location(tester) == '/content' && shows(find.byKey(const Key('content-search'))));
+    await tester.pump(const Duration(milliseconds: 500));
 
     // A Short plays in the app in a vertical 9:16 player, with the YouTube fallback offered.
     await tester.enterText(find.byKey(const Key('content-search')), '');
