@@ -5,8 +5,8 @@
 
 ## Phase 1: Setup
 
-- [ ] T001 Add `youtube_player_iframe: ^6.0.2` and `connectivity_plus: ^7.0.0` to pubspec.yaml; `flutter pub get`; `cd ios && pod install` builds
-- [ ] T002 [P] Audit actions `content.unpublished`, `content.archived`, `content.restored`, `content.categories_updated` in functions/src/lib/audit.ts
+- [X] T001 Add `youtube_player_iframe: ^6.0.2` and `connectivity_plus: ^7.0.0` to pubspec.yaml; `flutter pub get`; `cd ios && pod install` builds
+- [X] T002 [P] Audit actions `content.unpublished`, `content.archived`, `content.restored`, `content.categories_updated` in functions/src/lib/audit.ts
 
 ## Phase 2: Foundational
 
