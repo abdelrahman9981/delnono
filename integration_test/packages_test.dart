@@ -25,12 +25,15 @@ void main() {
 
   testWidgets('package page from Home; «الباقة» per child with its end date', (tester) async {
     await startApp(tester, overrides: [pickerOverride]);
+    // "Browse first" lands on Content; the package card is on Home.
     await leaveWelcome(tester);
+    await tester.tap(find.text('الرئيسية').last);
     await settle(tester, () => shows(find.byKey(const Key('home-package'))));
     await tapInList(tester, find.byKey(const Key('home-package')));
     await settle(tester, () => shows(find.text('سارية في العيادتين.')));
     expect(find.textContaining('جنيه ·'), findsWidgets, reason: "the clinics' package prices from the seed");
-    await tester.pageBack();
+    // pageBack() looks for the English "Back" tooltip; this app is Arabic.
+    await tester.tap(find.byType(BackButton));
     await settle(tester, () => shows(find.byKey(const Key('home-package'))));
 
     await registerWithChild(tester, '+201000000089', 'منى حسن', 'آدم');

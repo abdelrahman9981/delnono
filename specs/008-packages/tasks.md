@@ -22,7 +22,7 @@
 - [X] T011 [US3] Reminder `package:{id}:14d` in lib/features/notifications/domain/reminders.dart and reminder_sync.dart (packages input, booking switch, route /package), tests
 
 ## Phase 5: Polish
-- [ ] T012 Simulator integration test for «الباقة» and the page (integration_test/packages_test.dart); mark tasks; all checks
+- [X] T012 Simulator integration test for «الباقة» and the page (integration_test/packages_test.dart); mark tasks; all checks
 
 ## Analyze (2026-10-26)
 
