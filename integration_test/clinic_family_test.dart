@@ -67,7 +67,8 @@ void main() {
     await settle(tester, () => !location(tester).startsWith('/register'));
 
     await tester.tap(find.text('طفلي'));
-    await settle(tester, () => shows(find.textContaining('نور')));
+    // Wait for all three: the link message also names نور, so one name alone can come too early.
+    await settle(tester, () => ['سليم', 'عمر', 'نور'].every((n) => shows(find.textContaining(n))));
     for (final name in ['سليم', 'عمر', 'نور']) {
       expect(find.textContaining(name), findsWidgets, reason: name);
     }
