@@ -11,6 +11,7 @@ import 'package:delnono/features/child_profile/data/vaccine_schedule_repository.
 import 'package:delnono/features/child_profile/data/visits_repository.dart';
 import 'package:delnono/features/child_profile/domain/child_age.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
+import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:delnono/features/clinics/data/clinics_repository.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 
@@ -157,9 +158,12 @@ List<Override> profileOverrides({
   bool offline = false,
   List<({bool active, String startsOn, String endsOn})> packages = const [],
   List<Clinic> clinics = const [clinic1],
+  Guardian? guardian,
+  bool includeChildren = true,
 }) =>
     [
       clockProvider.overrideWithValue(() => today),
-      childrenProvider.overrideWith((ref) => Stream.value(children)),
+      if (includeChildren) childrenProvider.overrideWith((ref) => Stream.value(children)),
+      guardianProvider.overrideWith((ref) => Stream.value(guardian)),
       ...profileDataOverrides(measurements: measurements, store: store, offline: offline, packages: packages, clinics: clinics),
     ];

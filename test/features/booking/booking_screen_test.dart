@@ -9,6 +9,7 @@ import 'package:delnono/features/booking/presentation/booking_screen.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:delnono/features/clinics/data/clinics_repository.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -40,6 +41,7 @@ void main() {
     List<Clinic> clinics = const [clinic1],
     String initial = '/booking',
     String? preferredClinicId,
+    bool childrenFail = false,
   }) async {
     api = FakeBookingApi();
     final h = ScreenHarness(
@@ -57,7 +59,9 @@ void main() {
           settings: {'clinic-1': settings, 'clinic-2': clinic2Settings},
           vaccines: {'clinic-1': vaccines, 'clinic-2': const [Vaccine(id: 'v1', name: '[تطعيم ١]', price: 170, showPrice: true)]},
         ),
-        childrenProvider.overrideWith((ref) => Stream.value(children)),
+        childrenProvider.overrideWith((ref) => childrenFail
+            ? Stream.error(FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied'))
+            : Stream.value(children)),
         slotsTakenProvider.overrideWith((ref, key) => Stream.value(key.clinicId == 'clinic-1' ? taken : const {})),
         bookingApiProvider.overrideWithValue(api),
         activePackageProvider.overrideWith((ref, date) => Stream.value(packageId)),
@@ -226,6 +230,15 @@ void main() {
       await scrollTo(tester, find.byKey(const Key('package-hint')));
       expect(find.text('عندك إخوة بيكشفوا كتير؟ شوفي الباقة السنوية'), findsOneWidget);
     });
+  });
+
+  testWidgets('a failed children read shows the error with a retry, never "add a child first" (bug 0003)', (tester) async {
+    final h = await open(tester, childrenFail: true);
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byKey(const Key('load-error')), findsOneWidget);
+    expect(find.text('ضيفي طفل الأول عشان تحجزي.'), findsNothing);
+    // Stops Riverpod's retry timer for the failing read.
+    h.container.dispose();
   });
 
   group('004 clinic step', () {

@@ -27,6 +27,7 @@ import '../data/vaccines_repository.dart';
 import '../domain/price_preview.dart';
 import '../domain/schedule.dart';
 import 'booking_format.dart';
+import '../../../core/widgets/load_error.dart';
 
 /// Booking (`/booking`, docs/design/figma/booking.jpg; FR-001 to FR-017). The guardian picks the
 /// clinic first (004 FR-006); [initialClinicId] comes from a Home clinic card (`/booking?clinic=`).
@@ -83,6 +84,16 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     }
     // The guardian's profile too, so the preferred clinic is known before the first choice.
     final guardian = ref.watch(guardianProvider);
+    // A failed read is not "no children": say so with a retry, never the add-child gate (bug 0003).
+    if (children.hasError || clinics.hasError) {
+      return Scaffold(
+        appBar: _appBar(l10n),
+        body: LoadErrorView(onRetry: () {
+          ref.invalidate(childrenProvider);
+          ref.invalidate(clinicsProvider);
+        }),
+      );
+    }
     if (!clinics.hasValue || !children.hasValue || !guardian.hasValue) {
       return Scaffold(appBar: _appBar(l10n), body: const Center(child: CircularProgressIndicator()));
     }

@@ -2449,4 +2449,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get signInRetry => 'حاولي تاني';
+
+  @override
+  String get loadError => 'مقدرناش نحمّل البيانات. اتأكدي من النت وجربي تاني.';
+
+  @override
+  String get linkClinicChildren => 'ربط أطفال العيادة';
 }

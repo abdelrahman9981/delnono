@@ -12,6 +12,7 @@ import '../../../core/format/arabic_digits.dart';
 import '../../../core/launch/external_links.dart';
 import '../../../core/phone/egypt_phone.dart';
 import '../../../core/settings/settings_repository.dart';
+import '../../../core/widgets/load_error.dart';
 import '../../../core/widgets/segmented.dart';
 import '../../auth/data/auth_repository.dart';
 import '../../booking/presentation/booking_format.dart';
@@ -134,7 +135,10 @@ class MeScreen extends ConsumerWidget {
                   ]),
                 ),
               ),
-            if (signedIn) ...[
+            if (signedIn && ref.watch(childrenProvider).hasError) ...[
+              section(l10n.meChildren),
+              Card(margin: EdgeInsets.zero, child: LoadErrorView(onRetry: () => ref.invalidate(childrenProvider))),
+            ] else if (signedIn) ...[
               section(l10n.meChildren),
               card([
                 for (final (i, child) in children.indexed) ...[

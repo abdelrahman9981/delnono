@@ -1,7 +1,10 @@
 import 'package:delnono/features/child_profile/data/measurements_repository.dart';
 import 'package:delnono/features/child_profile/presentation/my_child_screen.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
+import 'package:delnono/features/registration/data/guardian_repository.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -147,6 +150,50 @@ void main() {
     testWidgets('nothing loaded yet and offline: a connection is needed the first time', (tester) async {
       await open(tester, children: const [], offline: true);
       expect(find.text('محتاجين إنترنت أول مرة عشان نحمّل البيانات.'), findsOneWidget);
+    });
+  });
+
+  group('never blank (bug 0003)', () {
+    Future<ScreenHarness> openWith(WidgetTester tester, List<Override> extra, {Guardian? guardian, bool children = true}) async {
+      final h = ScreenHarness(
+        initial: '/children',
+        routes: [GoRoute(path: '/children', builder: (_, _) => const MyChildScreen())],
+        overrides: [...profileOverrides(children: const [], guardian: guardian, includeChildren: children), ...extra],
+      );
+      await h.pump(tester);
+      return h;
+    }
+
+    testWidgets('a failed read shows the error with «حاولي تاني», which reads again', (tester) async {
+      var reads = 0;
+      final h = await openWith(tester, children: false, [
+        childrenProvider.overrideWith((ref) {
+          reads++;
+          return Stream.error(FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied'));
+        }),
+      ]);
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.byKey(const Key('load-error')), findsOneWidget);
+      expect(find.text('حاولي تاني'), findsOneWidget);
+      final before = reads;
+      await tester.tap(find.byKey(const Key('load-retry')));
+      await tester.pump();
+      expect(reads, greaterThan(before));
+      h.container.dispose();
+    });
+
+    testWidgets('no children: the empty state with «إضافة طفل», and «ربط أطفال العيادة» when the clinic has some', (tester) async {
+      await openWith(tester, const [], guardian: const Guardian(
+        uid: 'g3',
+        phone: '+201000000003',
+        fullName: 'محمد',
+        relation: Relation.mother,
+        consentVersion: 1,
+        clinicChildrenPending: true,
+      ));
+      expect(find.byKey(const Key('add-child')), findsOneWidget);
+      expect(find.byKey(const Key('link-clinic-children')), findsOneWidget);
+      expect(find.text('ربط أطفال العيادة'), findsOneWidget);
     });
   });
 }

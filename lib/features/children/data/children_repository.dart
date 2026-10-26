@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/firebase/callable.dart';
 import '../../../core/firebase/functions_region.dart';
 import '../../../core/settings/settings_repository.dart';
-import '../../auth/data/auth_repository.dart';
+import '../../registration/data/family_access.dart';
 
 enum Sex { male, female }
 
@@ -122,7 +122,8 @@ final childrenRepositoryProvider = Provider<ChildrenRepository>(
 
 /// Children linked to the signed-in guardian; empty when signed out.
 final childrenProvider = StreamProvider<List<Child>>((ref) {
-  final uid = ref.watch(authStateProvider).value?.uid;
+  // Only once the rules allow it, and again whenever that changes (bug 0003).
+  final uid = ref.watch(familyAccessProvider);
   if (uid == null) return Stream.value(const []);
   return ref.watch(childrenRepositoryProvider).watchLinked(uid);
 });

@@ -4443,6 +4443,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'حاولي تاني'**
   String get signInRetry;
+
+  /// No description provided for @loadError.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقدرناش نحمّل البيانات. اتأكدي من النت وجربي تاني.'**
+  String get loadError;
+
+  /// No description provided for @linkClinicChildren.
+  ///
+  /// In ar, this message translates to:
+  /// **'ربط أطفال العيادة'**
+  String get linkClinicChildren;
 }
 
 class _AppLocalizationsDelegate
