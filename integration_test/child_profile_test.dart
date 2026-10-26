@@ -44,14 +44,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('a linked clinic child\'s record, online and offline', (tester) async {
+  testWidgets('the seeded family\'s child record, online and offline', (tester) async {
     await startApp(tester, overrides: [pickerOverride]);
-    await signInFromBooking(tester, '+201000000001');
-    await registerGuardian(tester, 'سارة محمود');
-    await settle(tester, () => shows(find.byKey(const Key('link-birth-date'))));
-    await tapInList(tester, find.byKey(const Key('link-birth-date')));
-    await tapInList(tester, find.text('تأكيد'));
-    await settle(tester, () => location(tester) == '/booking');
+    // +201000000001 is the registered seeded family: no registration, straight in.
+    await signInFromBooking(tester, seededFamilyPhone, registered: true);
+    expect(location(tester), '/booking');
 
     // Measurements and chart (FR-003, FR-004).
     await openMyChild(tester, 'seed-youssef');

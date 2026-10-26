@@ -2440,4 +2440,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashErrTooEarly => 'التجديد بيبقى في آخر ١٤ يوم من الباقة.';
+
+  @override
+  String get errTimeout => 'الرد اتأخر. اتأكدي من النت وجربي تاني.';
+
+  @override
+  String get signInLoadError => 'اتسجل دخولك، بس مقدرناش نحمّل بياناتك.';
+
+  @override
+  String get signInRetry => 'حاولي تاني';
 }

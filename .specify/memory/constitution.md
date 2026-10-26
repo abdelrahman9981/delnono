@@ -1,5 +1,13 @@
 <!--
 Sync Impact Report
+- Version change: 1.3.2 → 1.3.3 (PATCH: clarifications from BRD D-50 to D-52), requested by the owner
+- Modified sections:
+  - Development and cost (backend paragraph): fixed code 123456 until the demo; emulator-only
+    helper, never in production builds; test numbers on the real project; SMS via Firebase Phone
+    Auth after the demo, no WhatsApp OTP (D-51, D-52).
+  - Additional Constraints > Stack: content videos on YouTube (Unlisted), links only, played in the
+    app; no Cloud Storage for videos (D-50).
+
 - Version change: 1.3.1 → 1.3.2 (PATCH: bottom navigation note), requested by the owner
 - Modified principles:
   - V. Phase Discipline: the bottom navigation has five tabs (الرئيسية، حجز، طفلي، محتوى، حسابي);
@@ -92,11 +100,11 @@ Phase 1 covers clinic visits, cash payment, registration, booking, child profile
 Every feature has written acceptance criteria and automated tests. Prefer the platform and Firebase features over extra libraries. A new dependency requires a stated reason in the plan.
 
 ### VII. Cost and Reliability
-The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Functions, Hosting; Cloud Storage in Phase 2). Development runs on the Firebase emulators and the Spark plan using Firebase test phone numbers. The project MUST upgrade to Blaze 2–3 days before the client demo (D-40), because SMS OTP and deployed Cloud Functions require it (Cloud Storage for prescription photos follows in Phase 2, D-39), with a 1 USD budget alert from the day it is enabled. The client demo signs in with Firebase test phone numbers and fixed codes (D-41). Phase 1 reminders are local notifications scheduled on the device; server push waits for Blaze (D-42). SMS OTP sends MUST be minimized (persistent sessions). Booking requires connectivity; child profile and loaded content are readable offline.
+The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Functions, Hosting; Cloud Storage in Phase 2). Development runs on the Firebase emulators and the Spark plan using Firebase test phone numbers. The project MUST upgrade to Blaze 2–3 days before the client demo (D-40), because SMS OTP and deployed Cloud Functions require it (Cloud Storage for prescription photos follows in Phase 2, D-39), with a 1 USD budget alert from the day it is enabled. The client demo signs in with Firebase test phone numbers and fixed codes (D-41). Until the demo the code is 123456: in emulator builds a development helper turns 123456 into the code the Auth emulator issued, for any number; that helper MUST NOT exist in production builds, and on the real project only the console's test numbers use 123456 (D-51). After the demo, codes are sent by SMS through Firebase Phone Auth on Blaze; no WhatsApp OTP (D-52). Phase 1 reminders are local notifications scheduled on the device; server push waits for Blaze (D-42). SMS OTP sends MUST be minimized (persistent sessions). Booking requires connectivity; child profile and loaded content are readable offline.
 
 ## Additional Constraints
 
-- **Stack:** Flutter for Android and iOS; Firebase Authentication (phone OTP); Cloud Firestore; Cloud Functions; local notifications for Phase 1 reminders and Firebase Cloud Messaging once on Blaze (D-42); web dashboard (Flutter Web) on Firebase Hosting; a demo web build with sample data and no backend (D-43); Cloud Storage for prescription photos in Phase 2 (D-39).
+- **Stack:** Flutter for Android and iOS; Firebase Authentication (phone OTP); Cloud Firestore; Cloud Functions; local notifications for Phase 1 reminders and Firebase Cloud Messaging once on Blaze (D-42); web dashboard (Flutter Web) on Firebase Hosting; a demo web build with sample data and no backend (D-43); content videos hosted on YouTube as Unlisted, stored as a link or id with a title and played inside the app, never in Cloud Storage (D-50); Cloud Storage for prescription photos in Phase 2 (D-39).
 - **Roles:** Doctor: everything, in every clinic; the only role that corrects measurements and vaccine doses after they are saved (every correction recorded in a change log), uploads prescriptions (a photo of the paper prescription, from the dashboard; Phase 2, D-39) and writes medical notes. Secretary: works for one clinic and sees only that clinic's bookings, queue, payments, prices and settings (D-47): appointments, queue, payments, prices, packages, vaccine days, basic child data (name, age, guardian phone), and recording measurements (weight, length, head circumference) and vaccine doses (date, lot number); no edits after saving, no medical notes or prescriptions. Guardian: own children only, read-only medical record.
 - **Booking:** app-only; phone and WhatsApp are for contact and support, not booking. Guardians pick the clinic, then book an hour slot with that clinic's capacity; entry within the hour is by arrival order. Walk-ins added by the secretary continue. A family has at most one active booking per day and two upcoming bookings across all clinics (D-49).
 - **Clinics:** the doctor runs two clinics, more possible later (D-44). Each has its own details, hours, capacity, vaccine days, holidays and prices (D-45). The annual package is valid in every clinic; its revenue counts for the clinic that sold it, and each covered visit is recorded where it happened (D-46). One child record is shared across clinics; every visit, measurement and dose records its clinic (D-48).
@@ -115,4 +123,4 @@ The backend is Firebase (Auth, Firestore, Cloud Messaging, Cloud Functions, Host
 
 This constitution overrides other practices for this project. Amendments are agreed by the clinic owner (the doctor) and the lead developer, documented with a version bump (semantic versioning), and any dependent specs and plans are updated.
 
-**Version**: 1.3.2 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-26
+**Version**: 1.3.3 | **Ratified**: 2026-10-19 | **Last Amended**: 2026-10-26

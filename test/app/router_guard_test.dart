@@ -333,13 +333,20 @@ void main() {
       return c.read(guardStateProvider);
     }
 
-    test('a guardian read that fails (e.g. permission denied) is not treated as loading', () async {
-      final c = containerWith(Stream.error(FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied')));
+    test('a guardian read that fails is a load error, not loading and not "no guardian"', () async {
+      final c = containerWith(Stream.error(FirebaseException(plugin: 'cloud_firestore', code: 'unavailable')));
       final s = await settled(c);
       expect(s.loading, isFalse, reason: 'Riverpod retries keep isLoading true; the guard must still decide');
-      expect(s.signedIn, isTrue);
-      expect(s.hasGuardian, isFalse);
-      expect(go('/booking', s), '/register/guardian?from=%2Fbooking');
+      expect(s, GuardState.loadErrorState);
+      // The guard keeps the guardian where they are: the code screen shows the error with a retry.
+      expect(go('/sign-in/code', s), isNull);
+      expect(go('/booking', s), isNull, reason: 'never sent to registration because a read failed');
+    });
+
+    test('a new account (no guardian doc) goes from the code screen to guardian details', () async {
+      final s = await settled(containerWith(Stream.value(null)));
+      expect(go('/sign-in/code', s), '/register/guardian');
+      expect(go('/sign-in/code?from=%2Fbooking', s), '/register/guardian?from=%2Fbooking');
     });
 
     test('a signed-in user without a guardian doc goes to registration', () async {

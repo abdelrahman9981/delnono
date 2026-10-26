@@ -1,6 +1,6 @@
 // Linking clinic-registered children end to end (quickstart.md scenarios 8 and 18; FR-021).
-// Uses the seeded clinic number +201000000001 with Youssef (2024-03-15), Mariam (2022-07-02) and
-// Salma (2026-01-20).
+// Uses the seeded clinic number +201000000003 (no app account yet) with Omar (2023-05-10) and
+// Nour (2021-08-08).
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:delnono/core/firebase/firebase_init.dart';
@@ -12,7 +12,7 @@ import 'package:integration_test/integration_test.dart';
 
 import 'helpers.dart';
 
-DateTime picked = DateTime(2024, 3, 15);
+DateTime picked = DateTime(2023, 5, 10);
 final pickerOverride = birthDatePickerProvider.overrideWithValue((context, {initial}) async => picked);
 
 void main() {
@@ -28,11 +28,11 @@ void main() {
 
   testWidgets('a wrong date counts down; the right date links both clinic children', (tester) async {
     await startApp(tester, overrides: [pickerOverride]);
-    await signInFromBooking(tester, '+201000000001');
-    await registerGuardian(tester, 'سارة محمود');
+    await signInFromBooking(tester, '+201000000003');
+    await registerGuardian(tester, 'منى إبراهيم');
     await settle(tester, () => shows(find.byKey(const Key('link-birth-date'))));
     expect(location(tester), '/register/link?from=%2Fbooking');
-    expect(find.textContaining('يوسف'), findsNothing, reason: 'no child data before the check');
+    expect(find.textContaining('عمر'), findsNothing, reason: 'no child data before the check');
 
     picked = DateTime(2019, 5, 5);
     await tapInList(tester, find.byKey(const Key('link-birth-date')));
@@ -40,7 +40,7 @@ void main() {
     await settle(tester, () => shows(find.textContaining('فاضلك محاولتين')));
     expect(find.textContaining('فاضلك محاولتين'), findsOneWidget);
 
-    picked = DateTime(2024, 3, 15);
+    picked = DateTime(2023, 5, 10);
     await tapInList(tester, find.byKey(const Key('link-birth-date')));
     await tapInList(tester, find.text('تأكيد'));
     await settle(tester, () => location(tester) == '/booking');
@@ -49,6 +49,6 @@ void main() {
     final uid = FirebaseAuth.instance.currentUser!.uid;
     final children =
         await FirebaseFirestore.instance.collection('children').where('guardianUid', isEqualTo: uid).get();
-    expect(children.docs.map((d) => d.get('name')).toSet(), {'يوسف', 'مريم', 'سلمى'});
+    expect(children.docs.map((d) => d.get('name')).toSet(), {'عمر', 'نور'});
   });
 }

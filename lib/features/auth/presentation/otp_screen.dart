@@ -7,13 +7,16 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../app/route_guard.dart';
+import '../../../app/router.dart';
 import '../../../app/theme.dart';
 import '../../../core/errors/arabic_errors.dart';
 import '../../../core/format/arabic_digits.dart';
 import '../../../core/phone/egypt_phone.dart';
+import '../../../core/settings/settings_repository.dart';
 import '../../../core/widgets/code_boxes.dart';
 import '../../../core/widgets/notice.dart';
 import '../../../core/widgets/step_indicator.dart';
+import '../../registration/data/guardian_repository.dart';
 import '../application/otp_controller.dart';
 
 
@@ -29,10 +32,16 @@ class OtpScreen extends ConsumerStatefulWidget {
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
+/// After a correct code, the most the app waits for the guardian's data before offering a retry.
+const postSignInTimeout = Duration(seconds: 10);
+
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _code = TextEditingController();
   final _focus = FocusNode();
   Timer? _ticker;
+
+  /// When the current wait for the guardian's data after sign-in began.
+  DateTime? _waitingSince;
 
   String get _signInLocation =>
       Uri(path: Routes.signIn, queryParameters: widget.from == null ? null : {'from': widget.from}).toString();
@@ -72,6 +81,13 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   void _changeNumber() => context.go(_signInLocation);
 
+  /// Reloads the guardian and policy after a failed or slow load (never leave the guardian stuck).
+  void _retryLoad() {
+    ref.invalidate(guardianProvider);
+    ref.invalidate(policySettingsProvider);
+    setState(() => _waitingSince = ref.read(clockProvider)());
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -86,6 +102,19 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final busy = state.phase == OtpPhase.verifying || state.phase == OtpPhase.sending;
     final canType = state.hasCode && !expired && !busy;
     final resendWait = otp.resendWait();
+
+    // Signed in: the guard moves on as soon as the guardian's data arrives (details screen when there
+    // is no guardian yet). A load error, or a wait longer than [postSignInTimeout], shows a retry.
+    final signedIn = state.phase == OtpPhase.signedIn;
+    final guard = ref.watch(guardStateProvider);
+    final now = ref.read(clockProvider)();
+    if (!signedIn || !guard.loading) {
+      _waitingSince = null;
+    } else {
+      _waitingSince ??= now;
+    }
+    final stuck = signedIn &&
+        (guard.loadError || (_waitingSince != null && now.difference(_waitingSince!) >= postSignInTimeout));
 
     String? problem;
     if (expired) {
@@ -127,6 +156,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             const SizedBox(height: 18),
             CodeBoxes(controller: _code, focusNode: _focus, enabled: canType, onCompleted: _verify),
             const SizedBox(height: 14),
+            if (stuck) ...[
+              Notice(l10n.signInLoadError, key: const Key('sign-in-load-error'), kind: NoticeKind.danger),
+              const SizedBox(height: 8),
+              FilledButton(key: const Key('sign-in-retry'), onPressed: _retryLoad, child: Text(l10n.signInRetry)),
+              const SizedBox(height: 12),
+            ] else if (signedIn && guard.loading)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: Center(child: CircularProgressIndicator(key: Key('sign-in-loading'))),
+              ),
             if (problem != null) ...[
               Notice(problem, kind: NoticeKind.danger),
               const SizedBox(height: 12),

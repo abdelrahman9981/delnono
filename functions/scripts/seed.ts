@@ -18,7 +18,11 @@ const app = initializeApp({ projectId: "demo-delnono" });
 const db = getFirestore(app);
 
 const PLACEHOLDER = "[نص مؤقت · يراجعه المحامي قبل الإطلاق]";
-const CLINIC_PHONE = "+201000000001";
+/** The seeded family: already registered, children linked; signs in straight to Home (D-51: 123456). */
+const FAMILY_PHONE = "+201000000001";
+export const FAMILY_UID = "seed-guardian-1";
+/** A family the clinic registered that has no app account yet: links its children at first sign-in (001 FR-021). */
+const CLINIC_PHONE = "+201000000003";
 const CLINIC_1 = "clinic-1";
 const CLINIC_2 = "clinic-2";
 
@@ -113,11 +117,24 @@ async function main() {
   ];
   for (const { id, ...v } of vaccines) batch.set(db.doc(`vaccines/${id}`), { ...v, placeholder: true });
 
-  batch.set(db.doc(`clinicGuardians/${CLINIC_PHONE}`), {
+  // The seeded family: a registered guardian (Auth user FAMILY_UID, created in seedFamily) with
+  // current consent and three linked children with sample records.
+  batch.set(db.doc(`guardians/${FAMILY_UID}`), {
+    phone: FAMILY_PHONE,
     fullName: "سارة محمود",
     relation: "mother",
+    consentVersion: 1,
+    clinicChildrenPending: false,
+    lastActiveAt: new Date(),
     createdAt: new Date(),
+    updatedAt: new Date(),
   });
+  batch.set(db.doc(`guardians/${FAMILY_UID}/consents/seed`), {
+    policyVersion: 1,
+    scopes: ["privacy_policy", "terms", "child_data"],
+    acceptedAt: new Date(),
+  });
+  batch.set(db.doc(`clinicGuardians/${FAMILY_PHONE}`), { fullName: "سارة محمود", relation: "mother", createdAt: new Date() });
 
   const children = [
     { id: "seed-youssef", name: "يوسف", birthDate: "2024-03-15", sex: "male" },
@@ -125,6 +142,24 @@ async function main() {
     { id: "seed-salma", name: "سلمى", birthDate: "2026-01-20", sex: "female" },
   ];
   for (const c of children) {
+    batch.set(db.doc(`children/${c.id}`), {
+      name: c.name,
+      nameKey: nameKey(c.name),
+      birthDate: c.birthDate,
+      sex: c.sex,
+      guardianPhone: FAMILY_PHONE,
+      guardianUid: FAMILY_UID,
+      registeredBy: "clinic",
+      createdAt: new Date(),
+    });
+  }
+
+  // The clinic-registered family without an account (001 FR-021): birth date of one child links both.
+  batch.set(db.doc(`clinicGuardians/${CLINIC_PHONE}`), { fullName: "منى إبراهيم", relation: "mother", createdAt: new Date() });
+  for (const c of [
+    { id: "seed-omar", name: "عمر", birthDate: "2023-05-10", sex: "male" },
+    { id: "seed-nour", name: "نور", birthDate: "2021-08-08", sex: "female" },
+  ]) {
     batch.set(db.doc(`children/${c.id}`), {
       name: c.name,
       nameKey: nameKey(c.name),
@@ -140,10 +175,12 @@ async function main() {
   seedChildProfile(batch);
   await batch.commit();
   await seedStaff();
+  // The seeded family's Auth user, with the uid its guardian doc and children use.
+  await getAuth(app).createUser({ uid: FAMILY_UID, phoneNumber: FAMILY_PHONE });
   console.log(
     "Seeded settings (auth, policy, booking, vaccines, followUp), 2 placeholder clinics, 4 placeholder vaccines, the placeholder",
-    "schedule and follow-up lists, 1 clinic guardian and 3 unlinked clinic children with sample records on",
-    CLINIC_PHONE,
+    "schedule and follow-up lists, the registered family on", FAMILY_PHONE, `(uid ${FAMILY_UID}, 3 children with sample records)`,
+    "and an unlinked clinic family on", CLINIC_PHONE,
   );
 }
 

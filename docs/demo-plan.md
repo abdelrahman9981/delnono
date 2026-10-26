@@ -26,8 +26,13 @@ uses it only when built with `--dart-define=FIREBASE_ENV=prod`).
 
   | Number | Code | Use |
   |--------|------|-----|
-  | +20 100 000 0001 | 123456 | the seeded clinic family (linked children) |
+  | +20 100 000 0001 | 123456 | the registered family (signs in to Home, children linked) |
+  | +20 100 000 0003 | 123456 | a clinic family to link (birth date 2023-05-10) |
   | +20 100 000 0099 | 123456 | a new guardian |
+
+  Only these console test numbers use 123456 on the real project; there is no bypass for real
+  numbers (D-51). On the emulators, 123456 works for any number through a development helper that
+  production builds do not contain.
 
 - [ ] Do not send real SMS for the demo.
 - [ ] Add the Android SHA-1 and SHA-256 fingerprints and the Apple push key (APNs) so phone sign-in
@@ -53,7 +58,12 @@ uses it only when built with `--dart-define=FIREBASE_ENV=prod`).
 - [ ] `flutter build ipa --dart-define=FIREBASE_ENV=prod`, upload with Transporter or Xcode.
 - [ ] Add the owner and staff as TestFlight testers.
 
-## 7. Web demo link (D-43)
+## 7. After the demo: real SMS codes (D-52)
+
+- [ ] Codes are sent by SMS through Firebase Phone Auth on `dr-elnono-clinic` (needs Blaze). No
+      WhatsApp OTP. The test numbers above stay for store review and demos.
+
+## 8. Web demo link (D-43)
 
 - [ ] After the app is complete, build the demo version with sample data and no backend.
 - [ ] Deploy it to Firebase Hosting and share the link.

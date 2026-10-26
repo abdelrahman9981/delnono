@@ -34,8 +34,27 @@ Future<String> latestCodeFor(String phone) async {
   return codes.lastWhere((c) => c['phoneNumber'] == phone)['code'] as String;
 }
 
-Future<void> deleteAllEmulatorUsers() =>
-    _request('DELETE', 'http://$emulatorHost:9099/emulator/v1/projects/demo-delnono/accounts');
+/// Deletes every Auth user, then restores the seeded family's account (emulator-seed: uid
+/// `seed-guardian-1` on +201000000001), whose guardian doc and children stay in Firestore.
+Future<void> deleteAllEmulatorUsers() async {
+  await _request('DELETE', 'http://$emulatorHost:9099/emulator/v1/projects/demo-delnono/accounts');
+  final client = HttpClient();
+  try {
+    final req = await client.postUrl(
+      Uri.parse('http://$emulatorHost:9099/identitytoolkit.googleapis.com/v1/projects/demo-delnono/accounts'),
+    );
+    req.headers.set('Authorization', 'Bearer owner');
+    req.headers.contentType = ContentType.json;
+    req.write(jsonEncode({'localId': seededFamilyUid, 'phoneNumber': seededFamilyPhone}));
+    await (await req.close()).drain<void>();
+  } finally {
+    client.close();
+  }
+}
+
+/// The seeded, registered family (functions/scripts/seed.ts).
+const seededFamilyPhone = '+201000000001';
+const seededFamilyUid = 'seed-guardian-1';
 
 /// The current location. A pushed screen (e.g. Account) keeps the base URI, so report its own
 /// location instead.
@@ -87,8 +106,9 @@ Future<void> leaveWelcome(WidgetTester tester) async {
   await settle(tester, () => shows(find.text('حجز')));
 }
 
-/// From Welcome or any shell screen: Booking → sign in with [phone] and the emulator's code.
-Future<void> signInFromBooking(WidgetTester tester, String phone) async {
+/// From Welcome or any shell screen: Booking → sign in with [phone] and the emulator's code. A
+/// [registered] guardian lands on Booking; a new one on registration.
+Future<void> signInFromBooking(WidgetTester tester, String phone, {bool registered = false}) async {
   await leaveWelcome(tester);
   await tester.tap(find.text('حجز'));
   await settle(tester, () => shows(find.byKey(const Key('phone-field'))));
@@ -96,7 +116,7 @@ Future<void> signInFromBooking(WidgetTester tester, String phone) async {
   await tester.tap(find.text('ابعتيلي الكود'));
   await settle(tester, () => shows(find.byKey(const Key('otp-field'))));
   await tester.enterText(find.byKey(const Key('otp-field')), await latestCodeFor(phone));
-  await settle(tester, () => location(tester).startsWith('/register'));
+  await settle(tester, () => registered ? location(tester) == '/booking' : location(tester).startsWith('/register'));
 }
 
 /// Guardian details and both consents, ending wherever the guard sends a new guardian next.

@@ -826,5 +826,8 @@
   "@pkgRenewed": {"placeholders": {"date": {"type": "String"}}},
   "@pkgChildLine": {"placeholders": {"name": {"type": "String"}}},
   "@remindPackageBody": {"placeholders": {"date": {"type": "String"}}},
-  "@dashPackageNext": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}}
+  "@dashPackageNext": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
+  "errTimeout": "الرد اتأخر. اتأكدي من النت وجربي تاني.",
+  "signInLoadError": "اتسجل دخولك، بس مقدرناش نحمّل بياناتك.",
+  "signInRetry": "حاولي تاني"
 }
