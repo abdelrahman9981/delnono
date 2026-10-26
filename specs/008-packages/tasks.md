@@ -23,3 +23,7 @@
 
 ## Phase 5: Polish
 - [ ] T012 Simulator integration test for «الباقة» and the page (integration_test/packages_test.dart); mark tasks; all checks
+
+## Analyze (2026-10-26)
+
+Coverage: FR-001 → T005; FR-002, FR-003 → T004; FR-004 → T006; FR-005 → T011; FR-006 → T009, T010; FR-007 → T008, T009; FR-008 → T007 (app layout) and the dashboard layout sweep. No CRITICAL or HIGH findings. Note: the clarifications are night-run assumptions; if the owner changes the renewal start date (R1), only T008–T009 change.
