@@ -100,11 +100,13 @@ void main() {
     expect(tagline.bottom, lessThan(name.top));
   });
 
-  testWidgets("the waiting room shows on the main clinic's card only; each card has the doctor's avatar", (tester) async {
+  testWidgets('each clinic card shows its picture and the doctor\'s avatar (Moqattam: waiting room; second: illustration)', (tester) async {
     await open(tester);
-    expect(find.byKey(const Key('clinic-photo-clinic-1')), findsOneWidget);
-    expect(find.byKey(const Key('clinic-photo-clinic-2')), findsNothing);
+    final first = tester.widget<Image>(find.byKey(const Key('clinic-photo-clinic-1')));
+    expect((first.image as AssetImage).assetName, 'assets/images/clinic_waiting_room.jpg');
     await scrollTo(tester, find.byKey(const Key('clinic-card-clinic-2')));
+    final second = tester.widget<Image>(find.byKey(const Key('clinic-photo-clinic-2')));
+    expect((second.image as AssetImage).assetName, 'assets/images/clinic2_illustration.jpg');
     expect(
       find.descendant(of: find.byKey(const Key('clinic-card-clinic-2')), matching: find.byType(CircleAvatar)),
       findsOneWidget,

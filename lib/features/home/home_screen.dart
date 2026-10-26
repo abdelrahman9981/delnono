@@ -7,10 +7,10 @@ import '../../app/l10n/app_localizations.dart';
 import '../../app/route_guard.dart';
 import '../../app/theme.dart';
 import '../../core/launch/external_links.dart';
-import '../account/presentation/account_button.dart';
 import '../clinics/data/clinics_repository.dart';
 import '../notifications/presentation/notifications_bell.dart';
 import '../clinics/domain/hours_summary.dart';
+import '../clinics/presentation/clinic_photo.dart';
 import '../registration/data/guardian_repository.dart';
 
 /// Home (`/`, design `figma/home.jpg`; 004 FR-013): the doctor's card and one card per active clinic
@@ -27,7 +27,7 @@ class HomeScreen extends ConsumerWidget {
     final clinics = ref.watch(clinicsProvider);
 
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false, actions: const [NotificationsBell(), AccountButton()]),
+      appBar: AppBar(automaticallyImplyLeading: false, actions: const [NotificationsBell()]),
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(18, 0, 18, 28),
@@ -146,9 +146,6 @@ class _ClinicCard extends ConsumerWidget {
     final links = ref.read(externalLinksProvider);
     final hours = hoursSummary(l10n, clinic.workingHours);
 
-    // The waiting-room photo is of the main clinic, so only its card shows it.
-    final isMain = ref.watch(mainClinicProvider)?.id == clinic.id;
-
     return Card(
       key: Key('clinic-card-${clinic.id}'),
       margin: EdgeInsets.zero,
@@ -156,14 +153,7 @@ class _ClinicCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (isMain)
-            Image.asset(
-              BrandImages.waitingRoom,
-              key: Key('clinic-photo-${clinic.id}'),
-              height: 150,
-              fit: BoxFit.cover,
-              semanticLabel: l10n.clinicWaitingRoom,
-            ),
+          ClinicPhoto(clinic: clinic),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

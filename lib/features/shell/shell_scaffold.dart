@@ -4,16 +4,14 @@ import 'package:go_router/go_router.dart';
 import '../../app/l10n/app_localizations.dart';
 import '../../app/theme.dart';
 
-/// Bottom navigation for the four Phase 1 tabs. In right-to-left layout the row runs from the
-/// right: Home, Booking, My Child, Content, then an empty slot of the same width reserved for the
-/// Phase 2 "Ask" tab, with no route and no tap target (constitution Principle V).
+/// Bottom navigation, five tabs. In right-to-left layout the row runs from the right: Home,
+/// Booking, My Child, Content, «حسابي». Phase 2 "Ask the doctor" will be a Home button, not a tab
+/// (constitution 1.3.2).
 class ShellScaffold extends StatelessWidget {
   const ShellScaffold({super.key, required this.location, required this.child});
 
   final String location;
   final Widget child;
-
-  static const reservedSlotKey = Key('nav-reserved-ask');
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +23,7 @@ class ShellScaffold extends StatelessWidget {
       (path: '/booking', icon: Icons.calendar_month_outlined, label: l10n.navBooking),
       (path: '/children', icon: Icons.child_care_outlined, label: l10n.navMyChild),
       (path: '/content', icon: Icons.play_circle_outline, label: l10n.navContent),
+      (path: '/me', icon: Icons.account_circle_outlined, label: l10n.navMe),
     ];
 
     return Scaffold(
@@ -51,7 +50,6 @@ class ShellScaffold extends StatelessWidget {
                         onTap: () => context.go(tab.path),
                       ),
                     ),
-                  const Expanded(child: SizedBox(key: reservedSlotKey)),
                 ],
               ),
             ),

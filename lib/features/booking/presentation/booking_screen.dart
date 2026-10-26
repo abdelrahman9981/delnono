@@ -14,6 +14,8 @@ import '../../../core/widgets/notice.dart';
 import '../../../core/widgets/step_indicator.dart';
 import '../../children/data/children_repository.dart';
 import '../../clinics/data/clinics_repository.dart';
+import '../../clinics/presentation/clinic_photo.dart';
+import '../../registration/data/guardian_repository.dart';
 import '../application/booking_form_controller.dart';
 import '../data/booking_api.dart';
 import '../data/booking_settings.dart';
@@ -52,11 +54,14 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
     });
   }
 
-  /// A new booking starts at the clinic from Home, or the only active clinic (004 FR-006).
+  /// A new booking starts at the clinic from Home, the guardian's preferred clinic («حسابي»), or
+  /// the only active clinic (004 FR-006). "Change clinic" still shows them all.
   void _preselect(List<Clinic> clinics) {
     if (_preselected || widget.changeBookingId != null) return;
     _preselected = true;
-    final wanted = clinics.where((c) => c.id == widget.initialClinicId).firstOrNull ?? (clinics.length == 1 ? clinics.first : null);
+    final preferred = ref.read(guardianProvider).value?.preferredClinicId;
+    Clinic? byId(String? id) => clinics.where((c) => c.id == id).firstOrNull;
+    final wanted = byId(widget.initialClinicId) ?? byId(preferred) ?? (clinics.length == 1 ? clinics.first : null);
     if (wanted == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) ref.read(bookingFormProvider.notifier).setClinic(wanted.id);
@@ -76,7 +81,9 @@ class _BookingScreenState extends ConsumerState<BookingScreen> {
         return Scaffold(appBar: _appBar(l10n), body: const Center(child: CircularProgressIndicator()));
       }
     }
-    if (!clinics.hasValue || !children.hasValue) {
+    // The guardian's profile too, so the preferred clinic is known before the first choice.
+    final guardian = ref.watch(guardianProvider);
+    if (!clinics.hasValue || !children.hasValue || !guardian.hasValue) {
       return Scaffold(appBar: _appBar(l10n), body: const Center(child: CircularProgressIndicator()));
     }
     _preselect(clinics.value!);
@@ -151,19 +158,26 @@ class _ClinicStep extends ConsumerWidget {
         if (clinics.isEmpty) Text(l10n.noClinics, style: text.bodyMedium?.copyWith(color: c.muted)),
         for (final clinic in clinics) ...[
           Card(
-            child: ListTile(
-              key: Key('clinic-${clinic.id}'),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              leading: CircleAvatar(
-                backgroundColor: c.blueSoft,
-                foregroundColor: c.blue,
-                child: const Icon(Icons.location_on_outlined),
-              ),
-              title: Text(clinic.name, style: text.titleSmall),
-              subtitle: Text(clinic.address, style: text.bodySmall),
-              // chevron_right mirrors with the text direction: it points left (‹, forward) in RTL.
-              trailing: Icon(Icons.chevron_right, color: c.muted),
-              onTap: () => ref.read(bookingFormProvider.notifier).setClinic(clinic.id),
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ClinicPhoto(clinic: clinic, height: 120),
+                ListTile(
+                  key: Key('clinic-${clinic.id}'),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  leading: CircleAvatar(
+                    backgroundColor: c.blueSoft,
+                    foregroundColor: c.blue,
+                    child: const Icon(Icons.location_on_outlined),
+                  ),
+                  title: Text(clinic.name, style: text.titleSmall),
+                  subtitle: Text(clinic.address, style: text.bodySmall),
+                  // chevron_right mirrors with the text direction: it points left (‹, forward) in RTL.
+                  trailing: Icon(Icons.chevron_right, color: c.muted),
+                  onTap: () => ref.read(bookingFormProvider.notifier).setClinic(clinic.id),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),

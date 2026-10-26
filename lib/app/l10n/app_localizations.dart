@@ -4053,6 +4053,222 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'غير مقروء'**
   String get notifUnread;
+
+  /// No description provided for @splashDoctorLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'د. أحمد العبد · طب الأطفال وحديثي الولادة'**
+  String get splashDoctorLine;
+
+  /// No description provided for @navMe.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابي'**
+  String get navMe;
+
+  /// No description provided for @meTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'حسابي'**
+  String get meTitle;
+
+  /// No description provided for @meEdit.
+  ///
+  /// In ar, this message translates to:
+  /// **'تعديل'**
+  String get meEdit;
+
+  /// No description provided for @meChildren.
+  ///
+  /// In ar, this message translates to:
+  /// **'أطفالي'**
+  String get meChildren;
+
+  /// No description provided for @meAddChild.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة طفل'**
+  String get meAddChild;
+
+  /// No description provided for @mePackage.
+  ///
+  /// In ar, this message translates to:
+  /// **'الباقة'**
+  String get mePackage;
+
+  /// No description provided for @meAppearance.
+  ///
+  /// In ar, this message translates to:
+  /// **'المظهر'**
+  String get meAppearance;
+
+  /// No description provided for @meTheme.
+  ///
+  /// In ar, this message translates to:
+  /// **'الوضع'**
+  String get meTheme;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In ar, this message translates to:
+  /// **'فاتح'**
+  String get themeLight;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In ar, this message translates to:
+  /// **'داكن'**
+  String get themeDark;
+
+  /// No description provided for @themeSystem.
+  ///
+  /// In ar, this message translates to:
+  /// **'زي الموبايل'**
+  String get themeSystem;
+
+  /// No description provided for @meTextSize.
+  ///
+  /// In ar, this message translates to:
+  /// **'حجم الخط'**
+  String get meTextSize;
+
+  /// No description provided for @textSmall.
+  ///
+  /// In ar, this message translates to:
+  /// **'صغير'**
+  String get textSmall;
+
+  /// No description provided for @textNormal.
+  ///
+  /// In ar, this message translates to:
+  /// **'عادي'**
+  String get textNormal;
+
+  /// No description provided for @textLarge.
+  ///
+  /// In ar, this message translates to:
+  /// **'كبير'**
+  String get textLarge;
+
+  /// No description provided for @meSettings.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإعدادات'**
+  String get meSettings;
+
+  /// No description provided for @meLanguage.
+  ///
+  /// In ar, this message translates to:
+  /// **'اللغة'**
+  String get meLanguage;
+
+  /// No description provided for @meLanguageArabic.
+  ///
+  /// In ar, this message translates to:
+  /// **'العربية'**
+  String get meLanguageArabic;
+
+  /// No description provided for @meEnglishSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'English قريبًا'**
+  String get meEnglishSoon;
+
+  /// No description provided for @meNotifications.
+  ///
+  /// In ar, this message translates to:
+  /// **'الإشعارات والتذكيرات'**
+  String get meNotifications;
+
+  /// No description provided for @meNotificationsBoth.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحجز والتطعيمات شغالين'**
+  String get meNotificationsBoth;
+
+  /// No description provided for @meNotificationsBooking.
+  ///
+  /// In ar, this message translates to:
+  /// **'الحجز بس شغال'**
+  String get meNotificationsBooking;
+
+  /// No description provided for @meNotificationsVaccine.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات بس شغالة'**
+  String get meNotificationsVaccine;
+
+  /// No description provided for @meNotificationsOff.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقفولين'**
+  String get meNotificationsOff;
+
+  /// No description provided for @mePreferredClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'العيادة المفضلة'**
+  String get mePreferredClinic;
+
+  /// No description provided for @mePreferredClinicSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'بتظهر أول ما تحجزي'**
+  String get mePreferredClinicSub;
+
+  /// No description provided for @mePreferredNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'مش محددة'**
+  String get mePreferredNone;
+
+  /// No description provided for @meAbout.
+  ///
+  /// In ar, this message translates to:
+  /// **'عن التطبيق'**
+  String get meAbout;
+
+  /// No description provided for @meWhatsApp.
+  ///
+  /// In ar, this message translates to:
+  /// **'كلمي العيادة على واتساب'**
+  String get meWhatsApp;
+
+  /// No description provided for @mePrivacy.
+  ///
+  /// In ar, this message translates to:
+  /// **'الخصوصية والشروط'**
+  String get mePrivacy;
+
+  /// No description provided for @meRate.
+  ///
+  /// In ar, this message translates to:
+  /// **'قيّمي التطبيق'**
+  String get meRate;
+
+  /// No description provided for @meRateSoon.
+  ///
+  /// In ar, this message translates to:
+  /// **'التقييم هيتفعّل لما التطبيق ينزل على المتجر.'**
+  String get meRateSoon;
+
+  /// No description provided for @meVersion.
+  ///
+  /// In ar, this message translates to:
+  /// **'دكتور النونو · الإصدار {version}'**
+  String meVersion(String version);
+
+  /// No description provided for @meSignInPrompt.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّلي دخول عشان تشوفي أطفالك وتعدّلي بياناتك.'**
+  String get meSignInPrompt;
+
+  /// No description provided for @meSignIn.
+  ///
+  /// In ar, this message translates to:
+  /// **'سجّلي برقم موبايلك'**
+  String get meSignIn;
 }
 
 class _AppLocalizationsDelegate

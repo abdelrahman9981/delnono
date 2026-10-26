@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:delnono/app/app.dart';
+import 'package:delnono/app/splash_intro.dart';
 import 'package:delnono/app/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,7 +68,12 @@ Future<void> tapInList(WidgetTester tester, Finder finder) async {
 /// Starts the app fresh (new provider container; Firebase keeps its session).
 Future<void> startApp(WidgetTester tester, {List<Override> overrides = const []}) async {
   await tester.pumpWidget(const SizedBox());
-  await tester.pumpWidget(ProviderScope(key: UniqueKey(), overrides: overrides, child: const App()));
+  // The animated intro would cover the app and swallow the first tap.
+  await tester.pumpWidget(ProviderScope(
+    key: UniqueKey(),
+    overrides: [splashEnabledProvider.overrideWithValue(false), ...overrides],
+    child: const App(),
+  ));
   await tester.pumpAndSettle();
 }
 

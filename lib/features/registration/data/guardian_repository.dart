@@ -16,6 +16,7 @@ class Guardian {
     this.email,
     required this.consentVersion,
     this.clinicChildrenPending = false,
+    this.preferredClinicId,
   });
 
   factory Guardian.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snap) {
@@ -28,6 +29,7 @@ class Guardian {
       email: d['email'] as String?,
       consentVersion: (d['consentVersion'] as num?)?.toInt() ?? 0,
       clinicChildrenPending: d['clinicChildrenPending'] as bool? ?? false,
+      preferredClinicId: d['preferredClinicId'] as String?,
     );
   }
 
@@ -38,6 +40,9 @@ class Guardian {
   final String? email;
   final int consentVersion;
   final bool clinicChildrenPending;
+
+  /// The clinic booking starts with («حسابي»); null = choose each time.
+  final String? preferredClinicId;
 }
 
 class GuardianRepository {
@@ -59,6 +64,9 @@ class GuardianRepository {
         'email': email,
         'updatedAt': FieldValue.serverTimestamp(),
       });
+
+  Future<void> setPreferredClinic(String uid, String? clinicId) =>
+      _doc(uid).update({'preferredClinicId': clinicId, 'updatedAt': FieldValue.serverTimestamp()});
 }
 
 final guardianRepositoryProvider =

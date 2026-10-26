@@ -48,6 +48,8 @@ dependencies:
   path_provider: ^2.1.6
   flutter_local_notifications: ^22.3.3
   shared_preferences: ^2.5.6
+  flutter_native_splash: ^2.4.8
+  package_info_plus: ^10.2.2
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +80,7 @@ flutter:
     - assets/images/doctor_hero.jpg
     - assets/images/doctor_avatar.jpg
     - assets/images/clinic_waiting_room.jpg
+    - assets/images/clinic2_illustration.jpg
 
   # Readex Pro static weights, from github.com/ThomasJockin/readexpro
   # (commit 563dfbb, the source Google Fonts pins). Licence: assets/fonts/OFL.txt.

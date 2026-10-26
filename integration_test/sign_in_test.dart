@@ -5,6 +5,7 @@
 //   flutter test integration_test/sign_in_test.dart --dart-define=USE_EMULATOR=true -d <simulator>
 
 import 'package:delnono/app/app.dart';
+import 'package:delnono/app/splash_intro.dart';
 import 'package:delnono/core/firebase/firebase_init.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ void main() {
 
   testWidgets('sign in with a code, then stay signed in after a restart (FR-003, FR-005, FR-010)',
       (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: App()));
+    await tester.pumpWidget(ProviderScope(overrides: [splashEnabledProvider.overrideWithValue(false)], child: const App()));
     await tester.pumpAndSettle();
     await leaveWelcome(tester);
 

@@ -9,7 +9,6 @@ import '../../../core/clock.dart';
 import '../../../core/format/age.dart';
 import '../../../core/format/arabic_digits.dart';
 import '../../booking/domain/clinic_time.dart';
-import '../../account/presentation/account_button.dart';
 import '../../children/data/children_repository.dart';
 import '../application/selected_child.dart';
 import '../data/family_packages_repository.dart';
@@ -39,7 +38,6 @@ class MyChildScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(l10n.childProfileTitle),
         automaticallyImplyLeading: false,
-        actions: const [AccountButton()],
       ),
       body: SafeArea(
         child: children.when(

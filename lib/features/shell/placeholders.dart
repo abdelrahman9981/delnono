@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../app/l10n/app_localizations.dart';
 import '../../app/theme.dart';
-import '../account/presentation/account_button.dart';
 
 /// A screen that a later task or feature replaces. Always shows the "placeholder" tag so it is
 /// never mistaken for finished content (constitution Principle II, D-36).
@@ -55,7 +54,6 @@ class HomePlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlaceholderScreen(
         title: AppLocalizations.of(context).placeholderHome,
-        actions: const [AccountButton()],
       );
 }
 
