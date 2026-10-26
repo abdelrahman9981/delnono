@@ -1,6 +1,7 @@
 import 'package:delnono/core/launch/external_links.dart';
 import 'package:delnono/features/auth/data/auth_repository.dart';
 import 'package:delnono/features/clinics/data/clinics_repository.dart';
+import 'package:delnono/features/content/domain/content_item.dart';
 import 'package:delnono/features/home/home_screen.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../helpers/clinic_fakes.dart';
 import '../../helpers/screen_harness.dart';
+import '../content/fakes.dart';
 
 class _Links implements ExternalLinks {
   final opened = <String>[];
@@ -30,13 +32,18 @@ class _Links implements ExternalLinks {
 void main() {
   late _Links links;
 
-  Future<ScreenHarness> open(WidgetTester tester, {List<Clinic> clinics = const [clinic1, clinic2], Guardian? guardian}) async {
+  Future<ScreenHarness> open(
+    WidgetTester tester, {
+    List<Clinic> clinics = const [clinic1, clinic2],
+    Guardian? guardian,
+    List<ContentItem> content = const [],
+  }) async {
     links = _Links();
     final h = ScreenHarness(
       initial: '/',
       routes: [GoRoute(path: '/', builder: (_, _) => const HomeScreen())],
       overrides: [
-        ...clinicOverrides(clinics: clinics),
+        ...clinicOverrides(clinics: clinics, content: content),
         guardianProvider.overrideWith((ref) => Stream.value(guardian)),
         externalLinksProvider.overrideWithValue(links),
         // Signed out unless a test says otherwise: no bell (007 FR-008).
@@ -117,5 +124,25 @@ void main() {
     final h = await open(tester);
     await tapVisible(tester, find.byKey(const Key('home-package')));
     expect(h.location, '/package');
+  });
+
+  testWidgets('the latest 3 published items, newest first, and «كل المحتوى» (006 FR-010)', (tester) async {
+    final h = await open(tester, content: sampleContent);
+    await scrollTo(tester, find.byKey(const Key('home-content')));
+    for (final id in ['salt', 'vitd', 'tip-fever']) {
+      await scrollTo(tester, find.byKey(Key('home-$id')));
+    }
+    expect(find.byKey(const Key('home-newborn')), findsNothing, reason: 'the oldest of four');
+    final salt = tester.getTopLeft(find.byKey(const Key('home-salt'))).dy;
+    final vitd = tester.getTopLeft(find.byKey(const Key('home-vitd'))).dy;
+    expect(salt, lessThan(vitd));
+    await tapVisible(tester, find.byKey(const Key('home-content-all')));
+    expect(h.location, '/content');
+  });
+
+  testWidgets('no published content: no content card', (tester) async {
+    await open(tester);
+    await scrollTo(tester, find.byKey(const Key('clinic-card-clinic-2')));
+    expect(find.byKey(const Key('home-content')), findsNothing);
   });
 }
