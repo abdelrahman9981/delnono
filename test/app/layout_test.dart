@@ -38,6 +38,9 @@ import 'package:delnono/features/notifications/data/local_notifier.dart';
 import 'package:delnono/features/notifications/data/reminder_sync.dart';
 import 'package:delnono/features/notifications/domain/reminders.dart';
 import 'package:delnono/features/notifications/presentation/notifications_screen.dart';
+import 'package:delnono/features/packages/data/packages_repository.dart';
+import 'package:delnono/features/packages/domain/family_package.dart';
+import 'package:delnono/features/packages/presentation/package_screen.dart';
 import 'package:delnono/features/registration/application/registration_controller.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:delnono/features/registration/data/registration_api.dart';
@@ -135,6 +138,7 @@ final screens = <String, Widget Function()>{
   'delete account': () => const DeleteAccountScreen(),
   'notifications': () => const NotificationsScreen(),
   'me': () => const ShellScaffold(location: '/me', child: MeScreen()),
+  'package': () => const PackageScreen(),
 };
 
 void main() {
@@ -169,6 +173,9 @@ void main() {
             activePackageProvider.overrideWith((ref, date) => Stream.value(null)),
             // Reminders the page lists, and a phone that has not allowed notifications (denied note).
             localNotifierProvider.overrideWithValue(const NoopNotifier()),
+            familyPackageListProvider.overrideWith((ref) => Stream.value(const [
+                  FamilyPackage(id: 'p', active: true, startsOn: '2026-01-13', endsOn: '2027-01-12', soldAtClinicId: 'clinic-1'),
+                ])),
             feedProvider.overrideWithValue([
               for (final (i, kind) in FeedKind.values.indexed)
                 FeedItem(

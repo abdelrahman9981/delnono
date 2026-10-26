@@ -169,6 +169,7 @@ void main() {
       await pick(tester, const Key('child-a'));
       await pick(tester, const Key('child-b'));
       expect(find.text('اختاري تطعيم واحد على الأقل.'), findsOneWidget);
+      expect(find.byKey(const Key('package-hint')), findsNothing, reason: 'covered: no package hint');
       await pick(tester, const Key('vaccine-a-v1'));
       expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, '١٥٠ جنيه');
       await pick(tester, const Key('confirm-booking'));
@@ -207,6 +208,7 @@ void main() {
       await scrollTo(tester, find.byKey(const Key('summary-total')));
       expect(find.text('باقة نشطة'), findsOneWidget);
       expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, 'مغطّى بالباقة');
+      expect(find.byKey(const Key('package-hint')), findsNothing, reason: 'covered: no package hint');
       await pick(tester, const Key('vaccine-a-v1'));
       expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, '١٥٠ جنيه');
       await pick(tester, const Key('confirm-booking'));
@@ -220,6 +222,9 @@ void main() {
       await pick(tester, const Key('child-a'));
       await scrollTo(tester, find.byKey(const Key('summary-total')));
       expect(find.text('باقة نشطة'), findsNothing);
+      // A hint to the annual package (008 FR-004).
+      await scrollTo(tester, find.byKey(const Key('package-hint')));
+      expect(find.text('عندك إخوة بيكشفوا كتير؟ شوفي الباقة السنوية'), findsOneWidget);
     });
   });
 

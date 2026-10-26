@@ -65,8 +65,9 @@ abstract final class Routes {
   static const accountDelete = '/account/delete';
   static const notifications = '/notifications';
   static const me = '/me';
+  static const package = '/package';
 
-  static const public = {welcome, home, content, me};
+  static const public = {welcome, home, content, me, package};
 
   /// Steps of sign-in, registration and re-check. Reaching one when it is no longer needed
   /// continues to `from`.

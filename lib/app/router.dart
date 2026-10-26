@@ -28,6 +28,7 @@ import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
 import '../features/home/home_screen.dart';
 import '../features/notifications/presentation/notifications_screen.dart';
+import '../features/packages/presentation/package_screen.dart';
 import '../features/settings/presentation/me_screen.dart';
 import '../features/welcome/welcome_screen.dart';
 import 'route_guard.dart';
@@ -140,6 +141,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.account, builder: (_, _) => const AccountScreen()),
       GoRoute(path: Routes.accountPhone, builder: (_, _) => const ChangePhoneScreen()),
       GoRoute(path: Routes.notifications, builder: (_, _) => const NotificationsScreen()),
+      GoRoute(path: Routes.package, builder: (_, _) => const PackageScreen()),
       GoRoute(path: Routes.accountDelete, builder: (_, _) => const DeleteAccountScreen()),
     ],
   );

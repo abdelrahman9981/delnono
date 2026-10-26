@@ -40,6 +40,26 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             const _DoctorCard(),
+            const SizedBox(height: 14),
+            // The annual package for all siblings (figma/home.jpg service card; 008 FR-002).
+            Card(
+              margin: EdgeInsets.zero,
+              child: ListTile(
+                key: const Key('home-package'),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                onTap: () => context.push(Routes.package),
+                leading: Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(color: c.yellowSoft, borderRadius: BorderRadius.circular(14)),
+                  child: Icon(Icons.verified_user_outlined, color: c.yellow),
+                ),
+                title: Text(l10n.pkgTitle, style: text.titleMedium),
+                subtitle: Text(l10n.pkgSubtitle, style: text.bodySmall),
+                // chevron_right mirrors with the text direction: it points left (‹, forward) in RTL.
+                trailing: Icon(Icons.chevron_right, color: c.muted),
+              ),
+            ),
             const SizedBox(height: 22),
             Text(l10n.homeClinics, style: text.titleLarge),
             const SizedBox(height: 10),
