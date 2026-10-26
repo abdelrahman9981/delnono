@@ -19,6 +19,7 @@
 - Q: Two seeded videos are about vaccines and newborns, outside the four BRD categories; where do they go? → A: **Assumption — needs owner review.** The category list is the doctor's to edit (owner's scope); the seed adds «التطعيمات» and «حديثي الولادة» after the four BRD categories.
 - Q: Which child does «مناسب لسن …» use when there are several? → A: **Assumption — needs owner review.** The child selected in «طفلي» (or the first), if under 4 years; children over 4 get no age-based section (requirement 3). Items with no age range never appear there, only in the library.
 - Q: Can the channel import run on the real project before Blaze? → A: **Assumption — needs owner review.** It runs in a Cloud Function that reads the channel's public feed; on the emulators it works now; on the real project it needs deployed Functions (Blaze, D-40) like every callable. Staff can always paste a link instead.
+- Q: How are items ordered, and what does "unpublish" do? → A: **Assumption — needs owner review.** Lower order number first, then newest published first; unpublish returns a published item to draft (hidden from the app, editable again by the secretary); archive hides it for good and only the doctor can bring it back to draft.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -32,7 +33,7 @@ Anyone, signed in or not, opens «محتوى» and sees published videos and tip
 
 **Acceptance Scenarios**:
 
-1. **Given** published and draft items, **Then** only published ones are listed; archived and draft never appear in the app.
+1. **Given** published and draft items, **Then** only published ones are listed, by order number then newest; archived and draft never appear in the app.
 2. **Given** a category chip, **Then** only that category's items show; «الكل» shows every category.
 3. **Given** a search word, **Then** items whose title contains it show (Arabic-normalised: hamza and taa marbuta forms match).
 4. **Given** a video, **When** tapped, **Then** it plays inside the app in a 9:16 player; **if** the video does not allow embedding or fails to load, **then** «شوفي الفيديو على يوتيوب» opens it in YouTube.
@@ -103,7 +104,7 @@ Home shows up to 3 latest published items with a link to the library.
 
 ### Functional Requirements
 
-- **FR-001**: The app MUST list published content (videos and tips) to everyone, signed in or not, with category chips (from the doctor's list) and title search.
+- **FR-001**: The app MUST list published content (videos and tips) to everyone, signed in or not, with category chips (from the doctor's list) and title search, sorted by order number then newest published.
 - **FR-002**: Videos MUST play inside the app in a vertical 9:16 player; when embedding fails or is not allowed, the app MUST offer «شوفي الفيديو على يوتيوب» to open YouTube.
 - **FR-003**: Content MUST store only the YouTube video id (and the original link) and the title for videos; no video or image files are stored (D-50).
 - **FR-004**: For a signed-in guardian whose selected child is under 48 months, the app MUST show «مناسب لسن <name>» with published items whose age range covers the child's age.
