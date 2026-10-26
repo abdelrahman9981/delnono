@@ -58,7 +58,8 @@ void main() {
   test('0003: no children query before registration and consent; the linked and added children after', () async {
     final allowed = ValueNotifier(false);
     final repo = _RulesChildren(allowed);
-    final guardianStream = StreamController<Guardian?>.broadcast();
+    // Single-subscription, so an event sent before the provider listens is kept, not dropped.
+    final guardianStream = StreamController<Guardian?>();
     Guardian? current;
     final c = ProviderContainer(overrides: [
       authStateProvider.overrideWith((ref) => Stream.value(_User())),
@@ -82,7 +83,10 @@ void main() {
     allowed.value = true;
     current = guardian();
     guardianStream.add(current);
-    await Future<void>.delayed(const Duration(milliseconds: 50));
+    // Wait for the streams rather than a fixed time: a loaded machine can take longer than 50 ms.
+    for (var i = 0; i < 100 && (c.read(childrenProvider).value?.length ?? 0) < 3; i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
     expect(c.read(familyAccessProvider), 'g3');
     expect(c.read(childrenProvider).value!.map((x) => x.name), ['عمر', 'نور', 'سليم']);
     expect(repo.subscribedBeforeAccess, 0);
