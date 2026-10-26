@@ -95,42 +95,6 @@ export const updateCatalogue = onCall({ region: REGION }, async (request) => {
   return {};
 });
 
-const CATEGORIES = ["fever", "feeding", "sleep", "allergy"];
-
-/**
- * Tips and videos (FR-039, D-19): staff save drafts; only the doctor publishes or archives.
- * Guardians read published items only (rules).
- */
-export const saveContent = onCall({ region: REGION }, async (request) => {
-  const staff = await requireStaff(request);
-  const data = (request.data ?? {}) as Record<string, unknown>;
-  const status = data.status ?? "draft";
-  if (!["draft", "published", "archived"].includes(String(status))) throw new HttpsError("invalid-argument", "status", { field: "status" });
-  if (status !== "draft" && staff.role !== "doctor") throw new HttpsError("permission-denied", "Only the doctor publishes.", { reason: "doctor_only" });
-  const id = str(data, "id", { optional: true });
-  const ref = id ? db.doc(`content/${id}`) : db.collection("content").doc();
-  const current = id ? await ref.get() : null;
-  if (id && !current?.exists) throw new HttpsError("not-found", "Content not found.");
-  if (current?.exists && current.get("status") !== "draft" && staff.role !== "doctor") {
-    throw new HttpsError("permission-denied", "Published items are changed by the doctor.", { reason: "doctor_only" });
-  }
-  const category = str(data, "category");
-  if (!CATEGORIES.includes(category)) throw new HttpsError("invalid-argument", "category", { field: "category" });
-  const url = str(data, "url", { optional: true, max: 500 });
-  if (url && !/^https:\/\//.test(url)) throw new HttpsError("invalid-argument", "url", { field: "url" });
-  await ref.set({
-    title: str(data, "title", { max: 120 }), category,
-    ageFromMonths: typeof data.ageFromMonths === "number" ? data.ageFromMonths : 0,
-    ageToMonths: typeof data.ageToMonths === "number" ? data.ageToMonths : 48,
-    url: url || null, body: str(data, "body", { optional: true, max: 4000 }) || null,
-    status, updatedBy: staff.uid, updatedAt: FieldValue.serverTimestamp(),
-    ...(current?.exists ? {} : { createdBy: staff.uid, createdAt: FieldValue.serverTimestamp() }),
-    ...(status === "published" ? { publishedBy: staff.uid, publishedAt: FieldValue.serverTimestamp() } : {}),
-  }, { merge: true });
-  if (status !== "draft") await writeAudit({ action: "content.published", actorUid: staff.uid, details: { id: ref.id, status } });
-  return { id: ref.id };
-});
-
 /** Follow-up lists and danger signs as drafts (D-19, 005 R7); the app keeps the published ones. */
 export const saveFollowUpDraft = onCall({ region: REGION }, async (request) => {
   const staff = await requireStaff(request);

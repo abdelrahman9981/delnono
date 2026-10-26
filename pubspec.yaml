@@ -50,6 +50,8 @@ dependencies:
   shared_preferences: ^2.5.6
   flutter_native_splash: ^2.4.8
   package_info_plus: ^10.2.2
+  youtube_player_iframe: ^6.0.2
+  connectivity_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:

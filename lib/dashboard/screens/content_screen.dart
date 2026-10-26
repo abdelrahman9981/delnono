@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/l10n/app_localizations.dart';
+import '../../app/theme.dart';
 import '../../core/settings/settings_repository.dart';
+import '../../features/content/data/content_repository.dart';
+import '../../features/content/domain/content_item.dart';
+import '../../features/content/presentation/item_card.dart';
 import '../data/dashboard_api.dart';
 import '../data/staff_session.dart';
 import '../widgets/dash_page.dart';
 import '../widgets/dash_ui.dart';
+import 'content_dialog.dart';
 
 /// Every content item with its status; staff read drafts (rules).
 final contentItemsProvider = StreamProvider<List<Map<String, dynamic>>>(
@@ -17,18 +22,12 @@ final contentItemsProvider = StreamProvider<List<Map<String, dynamic>>>(
       .map(
         (q) => [
           for (final d in q.docs) {'id': d.id, ...d.data()},
-        ]..sort((a, b) => '${a['title']}'.compareTo('${b['title']}')),
+        ]..sort((a, b) {
+          final byOrder = ((a['order'] as num?) ?? 100).compareTo((b['order'] as num?) ?? 100);
+          return byOrder != 0 ? byOrder : '${a['title']}'.compareTo('${b['title']}');
+        }),
       ),
 );
-
-const contentCategories = ['fever', 'feeding', 'sleep', 'allergy'];
-
-String categoryLabel(AppLocalizations l10n, String c) => switch (c) {
-  'fever' => l10n.dashCatFever,
-  'feeding' => l10n.dashCatFeeding,
-  'sleep' => l10n.dashCatSleep,
-  _ => l10n.dashCatAllergy,
-};
 
 String statusLabel(AppLocalizations l10n, String s) => switch (s) {
   'published' => l10n.dashPublished,
@@ -36,18 +35,54 @@ String statusLabel(AppLocalizations l10n, String s) => switch (s) {
   _ => l10n.dashDraft,
 };
 
-/// Tips and videos (005 US6, FR-039, D-19): staff draft; only the doctor publishes or archives.
-class ContentScreen extends ConsumerWidget {
+/// «المحتوى والقوائم» (006 US4, D-19): staff draft videos and tips; only the doctor publishes,
+/// unpublishes, archives and restores (each audited) and edits the categories.
+class ContentScreen extends ConsumerStatefulWidget {
   const ContentScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ContentScreen> createState() => _ContentScreenState();
+}
+
+class _ContentScreenState extends ConsumerState<ContentScreen> {
+  String _filter = 'all';
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final items = ref.watch(contentItemsProvider).value ?? const <Map<String, dynamic>>[];
+    final all = ref.watch(contentItemsProvider).value ?? const <Map<String, dynamic>>[];
+    final items = [for (final i in all) if (_filter == 'all' || (i['status'] ?? 'draft') == _filter) i];
+    final categories = ref.watch(contentCategoriesProvider).value ?? defaultContentCategories;
     final isDoctor = ref.watch(staffSessionProvider).value?.isDoctor ?? false;
+    String categoryName(String id) => categories.where((x) => x.id == id).firstOrNull?.name ?? id;
+
+    Widget statusAction(Map<String, dynamic> item, String status, String key, String label, String done, {bool filled = false}) {
+      void run() => runAction(
+        context,
+        () => ref.read(dashboardApiProvider).call('setContentStatus', {'id': item['id'], 'status': status}),
+        done: done,
+      );
+      return filled
+          ? FilledButton.tonal(key: Key('$key-${item['id']}'), onPressed: run, child: Text(label))
+          : OutlinedButton(key: Key('$key-${item['id']}'), onPressed: run, child: Text(label));
+    }
+
     return DashPage(
       title: l10n.dashNavContent,
       actions: [
+        OutlinedButton.icon(
+          key: const Key('content-import'),
+          onPressed: () => showDialog<void>(context: context, builder: (_) => const ChannelImportDialog()),
+          icon: const Icon(Icons.smart_display_outlined),
+          label: Text(l10n.dashContentImport),
+        ),
+        if (isDoctor)
+          OutlinedButton.icon(
+            key: const Key('content-categories'),
+            onPressed: () => showDialog<void>(context: context, builder: (_) => CategoriesDialog(initial: categories)),
+            icon: const Icon(Icons.label_outline),
+            label: Text(l10n.dashContentCategories),
+          ),
         FilledButton.icon(
           key: const Key('content-new'),
           onPressed: () => showDialog<void>(context: context, builder: (_) => const ContentDialog()),
@@ -57,6 +92,16 @@ class ContentScreen extends ConsumerWidget {
       ],
       showClinic: false,
       children: [
+        SegmentSwitch<String>(
+          options: [
+            ('all', l10n.dashContentAll),
+            ('draft', l10n.dashDraft),
+            ('published', l10n.dashPublished),
+            ('archived', l10n.dashArchived),
+          ],
+          value: _filter,
+          onChanged: (v) => setState(() => _filter = v),
+        ),
         DashCard(
           title: l10n.dashContentList,
           hint: l10n.dashDraftNote,
@@ -68,47 +113,48 @@ class ContentScreen extends ConsumerWidget {
               if (items.isEmpty) Text(l10n.dashNothingYet),
               for (final (i, item) in items.indexed) ...[
                 if (i > 0) const Divider(height: 1),
-                ActionRow(
-                  key: Key('content-${item['id']}'),
-                  title: '${item['title']}',
-                  subtitle: categoryLabel(l10n, '${item['category']}'),
-                  actions: [
-                    StatusPill(statusLabel(l10n, '${item['status']}'), switch (item['status']) {
-                      'published' => PillKind.ok,
-                      'archived' => PillKind.noShow,
-                      _ => PillKind.warn,
-                    }),
-                    if (item['status'] == 'draft' || isDoctor)
+                Builder(builder: (context) {
+                  final content = ContentItem.fromMap('${item['id']}', item);
+                  final status = '${item['status'] ?? 'draft'}';
+                  return ActionRow(
+                    key: Key('content-${item['id']}'),
+                    leading: ContentThumb(item: content, width: 40),
+                    title: content.title,
+                    subtitle: [
+                      categoryName(content.category),
+                      content.isVideo ? l10n.dashTypeVideo : l10n.dashTypeTip,
+                      '${l10n.dashOrder} ${content.order}',
+                    ].join(' · '),
+                    actions: [
+                      StatusPill(statusLabel(l10n, status), switch (status) {
+                        'published' => PillKind.ok,
+                        'archived' => PillKind.noShow,
+                        _ => PillKind.warn,
+                      }),
                       IconButton(
-                        tooltip: l10n.dashEdit,
-                        icon: const Icon(Icons.edit_outlined),
-                        onPressed: () => showDialog<void>(
-                          context: context,
-                          builder: (_) => ContentDialog(item: item),
-                        ),
+                        key: Key('preview-${item['id']}'),
+                        tooltip: l10n.dashPreview,
+                        icon: const Icon(Icons.visibility_outlined),
+                        onPressed: () => showContentPreview(context, content),
                       ),
-                    if (isDoctor && item['status'] != 'published')
-                      FilledButton.tonal(
-                        key: Key('publish-${item['id']}'),
-                        onPressed: () => runAction(
-                          context,
-                          () => ref.read(dashboardApiProvider).call('saveContent', {...item, 'status': 'published'}),
-                          done: l10n.dashPublished,
+                      if (status == 'draft' || isDoctor)
+                        IconButton(
+                          key: Key('edit-${item['id']}'),
+                          tooltip: l10n.dashEdit,
+                          icon: const Icon(Icons.edit_outlined),
+                          onPressed: () => showDialog<void>(context: context, builder: (_) => ContentDialog(item: item)),
                         ),
-                        child: Text(l10n.dashPublish),
-                      ),
-                    if (isDoctor && item['status'] == 'published')
-                      OutlinedButton(
-                        key: Key('archive-${item['id']}'),
-                        onPressed: () => runAction(
-                          context,
-                          () => ref.read(dashboardApiProvider).call('saveContent', {...item, 'status': 'archived'}),
-                          done: l10n.dashArchived,
-                        ),
-                        child: Text(l10n.dashArchive),
-                      ),
-                  ],
-                ),
+                      if (isDoctor && status == 'draft')
+                        statusAction(item, 'published', 'publish', l10n.dashPublish, l10n.dashPublished, filled: true),
+                      if (isDoctor && status == 'published')
+                        statusAction(item, 'draft', 'unpublish', l10n.dashUnpublish, l10n.dashUnpublished),
+                      if (isDoctor && status != 'archived')
+                        statusAction(item, 'archived', 'archive', l10n.dashArchive, l10n.dashArchived),
+                      if (isDoctor && status == 'archived')
+                        statusAction(item, 'draft', 'restore', l10n.dashRestore, l10n.dashRestored),
+                    ],
+                  );
+                }),
               ],
             ],
           ),
@@ -118,99 +164,156 @@ class ContentScreen extends ConsumerWidget {
   }
 }
 
-class ContentDialog extends ConsumerStatefulWidget {
-  const ContentDialog({super.key, this.item});
-
-  final Map<String, dynamic>? item;
+/// The channel's latest videos (`channelVideos`); picking one opens a new draft with its link.
+class ChannelImportDialog extends ConsumerStatefulWidget {
+  const ChannelImportDialog({super.key});
 
   @override
-  ConsumerState<ContentDialog> createState() => _ContentDialogState();
+  ConsumerState<ChannelImportDialog> createState() => _ChannelImportDialogState();
 }
 
-class _ContentDialogState extends ConsumerState<ContentDialog> {
-  late final _title = TextEditingController(text: '${widget.item?['title'] ?? ''}');
-  late final _url = TextEditingController(text: '${widget.item?['url'] ?? ''}');
-  late final _body = TextEditingController(text: '${widget.item?['body'] ?? ''}');
-  late final _from = TextEditingController(text: '${widget.item?['ageFromMonths'] ?? 0}');
-  late final _to = TextEditingController(text: '${widget.item?['ageToMonths'] ?? 48}');
-  late String _category = '${widget.item?['category'] ?? 'fever'}';
+class _ChannelImportDialogState extends ConsumerState<ChannelImportDialog> {
+  late final Future<List<Map<String, dynamic>>> _videos = ref
+      .read(dashboardApiProvider)
+      .call('channelVideos', {})
+      .then((r) => [for (final v in (r['videos'] as List? ?? const [])) Map<String, dynamic>.from(v as Map)]);
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final c = Theme.of(context).extension<AppColors>()!;
+    return AlertDialog(
+      title: Text(l10n.dashContentImport),
+      content: SizedBox(
+        width: 520,
+        child: FutureBuilder(
+          future: _videos,
+          builder: (context, snap) {
+            if (snap.hasError) return Text(l10n.dashImportError, key: const Key('import-error'));
+            if (!snap.hasData) return const SizedBox(height: 120, child: Center(child: CircularProgressIndicator()));
+            return SingleChildScrollView(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+                Text(l10n.dashImportNote, style: TextStyle(fontSize: 12, color: c.muted)),
+                const SizedBox(height: 8),
+                for (final v in snap.data!)
+                  ActionRow(
+                    key: Key('import-row-${v['id']}'),
+                    leading: ContentThumb(
+                      item: ContentItem(id: '${v['id']}', type: ContentType.video, title: '', category: '', youtubeId: '${v['id']}'),
+                      width: 40,
+                    ),
+                    title: '${v['title']}',
+                    subtitle: '${v['published']}'.split('T').first,
+                    actions: [
+                      if (v['alreadyAdded'] == true)
+                        StatusPill(l10n.dashImportAdded, PillKind.ok)
+                      else
+                        FilledButton.tonal(
+                          key: Key('import-${v['id']}'),
+                          onPressed: () {
+                            Navigator.pop(context);
+                            showDialog<void>(
+                              context: context,
+                              builder: (_) => ContentDialog(initialUrl: 'https://youtube.com/shorts/${v['id']}'),
+                            );
+                          },
+                          child: Text(l10n.dashAdd),
+                        ),
+                    ],
+                  ),
+              ]),
+            );
+          },
+        ),
+      ),
+      actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.dashClose))],
+    );
+  }
+}
+
+/// The doctor's category list (006 R5): rename, reorder, add; the server refuses removing one in use.
+class CategoriesDialog extends ConsumerStatefulWidget {
+  const CategoriesDialog({super.key, required this.initial});
+
+  final List<ContentCategory> initial;
+
+  @override
+  ConsumerState<CategoriesDialog> createState() => _CategoriesDialogState();
+}
+
+class _CategoriesDialogState extends ConsumerState<CategoriesDialog> {
+  late final _rows = [for (final x in widget.initial) (id: x.id, name: TextEditingController(text: x.name))];
+
+  @override
+  void dispose() {
+    for (final r in _rows) {
+      r.name.dispose();
+    }
+    super.dispose();
+  }
+
+  void _move(int i, int by) => setState(() => _rows.insert(i + by, _rows.removeAt(i)));
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
-      title: Text(widget.item == null ? l10n.dashNewItem : l10n.dashEdit),
+      title: Text(l10n.dashContentCategories),
       content: SizedBox(
-        width: 460,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              key: const Key('content-title'),
-              controller: _title,
-              decoration: InputDecoration(labelText: l10n.dashItemTitle),
-            ),
-            DropdownButtonFormField<String>(
-              isExpanded: true,
-              key: const Key('content-category'),
-              initialValue: _category,
-              items: [
-                for (final c in contentCategories) DropdownMenuItem(value: c, child: Text(categoryLabel(l10n, c))),
-              ],
-              onChanged: (v) => setState(() => _category = v ?? _category),
-              decoration: InputDecoration(labelText: l10n.dashCategory),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _from,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: l10n.dashAgeFrom),
+        width: 440,
+        child: SingleChildScrollView(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            for (final (i, r) in _rows.indexed)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(children: [
+                  Expanded(
+                    child: TextField(
+                      key: Key('category-${r.id}'),
+                      controller: r.name,
+                      decoration: dashInput(context, hint: l10n.dashCategoryName),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _to,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(labelText: l10n.dashAgeTo),
+                  IconButton(tooltip: l10n.dashMoveUp, onPressed: i == 0 ? null : () => _move(i, -1), icon: const Icon(Icons.arrow_upward)),
+                  IconButton(
+                    tooltip: l10n.dashMoveDown,
+                    onPressed: i == _rows.length - 1 ? null : () => _move(i, 1),
+                    icon: const Icon(Icons.arrow_downward),
                   ),
+                  IconButton(
+                    key: Key('category-remove-${r.id}'),
+                    tooltip: l10n.dashRemove,
+                    onPressed: _rows.length == 1 ? null : () => setState(() => _rows.removeAt(i)),
+                    icon: const Icon(Icons.delete_outline),
+                  ),
+                ]),
+              ),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                key: const Key('category-add'),
+                onPressed: () => setState(
+                  () => _rows.add((id: 'cat-${DateTime.now().millisecondsSinceEpoch.toRadixString(36)}', name: TextEditingController())),
                 ),
-              ],
+                icon: const Icon(Icons.add),
+                label: Text(l10n.dashCategoryAdd),
+              ),
             ),
-            TextField(
-              key: const Key('content-url'),
-              controller: _url,
-              textDirection: TextDirection.ltr,
-              decoration: InputDecoration(labelText: l10n.dashLink),
-            ),
-            TextField(
-              controller: _body,
-              maxLines: 4,
-              decoration: InputDecoration(labelText: l10n.dashBody),
-            ),
-            const SizedBox(height: 8),
-            Text(l10n.dashDraftNote, style: Theme.of(context).textTheme.bodySmall),
-          ],
+          ]),
         ),
       ),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.dashClose)),
         FilledButton(
-          key: const Key('content-save'),
+          key: const Key('categories-save'),
           onPressed: () async {
             final ok = await runAction(
               context,
-              () => ref.read(dashboardApiProvider).call('saveContent', {
-                if (widget.item != null) 'id': widget.item!['id'],
-                'title': _title.text.trim(),
-                'category': _category,
-                'url': _url.text.trim(),
-                'body': _body.text.trim(),
-                'ageFromMonths': int.tryParse(_from.text) ?? 0,
-                'ageToMonths': int.tryParse(_to.text) ?? 48,
-                'status': widget.item?['status'] == 'published' ? 'published' : 'draft',
+              () => ref.read(dashboardApiProvider).call('saveContentCategories', {
+                'categories': [
+                  for (final r in _rows)
+                    if (r.name.text.trim().isNotEmpty) {'id': r.id, 'name': r.name.text.trim()},
+                ],
               }),
               done: l10n.dashSaved,
             );

@@ -8,6 +8,9 @@ import '../../app/route_guard.dart';
 import '../../app/theme.dart';
 import '../../core/launch/external_links.dart';
 import '../clinics/data/clinics_repository.dart';
+import '../content/data/content_repository.dart';
+import '../content/domain/content_item.dart';
+import '../content/presentation/item_card.dart';
 import '../notifications/presentation/notifications_bell.dart';
 import '../clinics/domain/hours_summary.dart';
 import '../clinics/presentation/clinic_photo.dart';
@@ -15,7 +18,8 @@ import '../registration/data/guardian_repository.dart';
 import '../../core/widgets/load_error.dart';
 
 /// Home (`/`, design `figma/home.jpg`; 004 FR-013): the doctor's card and one card per active clinic
-/// with its address, hours, call and WhatsApp, and "احجزي هنا". Public: no sign-in needed (D-09).
+/// with its address, hours, call and WhatsApp, and "احجزي هنا"; then the latest content (006).
+/// Public: no sign-in needed (D-09).
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -26,6 +30,8 @@ class HomeScreen extends ConsumerWidget {
     final c = Theme.of(context).extension<AppColors>()!;
     final firstName = ref.watch(guardianProvider).value?.fullName.split(' ').first;
     final clinics = ref.watch(clinicsProvider);
+    // The latest published videos and tips (006 FR-010), up to 3.
+    final latest = latestContent(ref.watch(publishedContentProvider).value ?? const []);
 
     return Scaffold(
       appBar: AppBar(automaticallyImplyLeading: false, actions: const [NotificationsBell()]),
@@ -72,6 +78,19 @@ class HomeScreen extends ConsumerWidget {
                 for (final clinic in list) ...[_ClinicCard(clinic: clinic), const SizedBox(height: 12)],
               ],
             ),
+            if (latest.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Row(children: [
+                Expanded(child: Text(l10n.contentHomeTitle, key: const Key('home-content'), style: text.titleLarge)),
+                TextButton(
+                  key: const Key('home-content-all'),
+                  onPressed: () => context.go(Routes.content),
+                  child: Text('${l10n.contentHomeAll} ‹'),
+                ),
+              ]),
+              const SizedBox(height: 6),
+              for (final item in latest) ...[ContentCard(key: Key('home-${item.id}'), item: item), const SizedBox(height: 8)],
+            ],
           ],
         ),
       ),

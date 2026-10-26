@@ -34,7 +34,12 @@ export type AuditAction =
   | "family.registered"
   | "children.merged"
   | "children.linked_by_staff"
-  | "account.reverify_unlocked_by_staff";
+  | "account.reverify_unlocked_by_staff"
+  // Content library (006).
+  | "content.unpublished"
+  | "content.archived"
+  | "content.restored"
+  | "content.categories_updated";
 
 export interface AuditEntry {
   action: AuditAction;

@@ -4455,6 +4455,288 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'ربط أطفال العيادة'**
   String get linkClinicChildren;
+
+  /// No description provided for @contentTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'نصايح الدكتور'**
+  String get contentTitle;
+
+  /// No description provided for @contentSearch.
+  ///
+  /// In ar, this message translates to:
+  /// **'دوّري في العناوين'**
+  String get contentSearch;
+
+  /// No description provided for @contentAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get contentAll;
+
+  /// No description provided for @contentForAge.
+  ///
+  /// In ar, this message translates to:
+  /// **'مناسب لسن {name}'**
+  String contentForAge(String name);
+
+  /// No description provided for @contentAllItems.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل المحتوى'**
+  String get contentAllItems;
+
+  /// No description provided for @contentReviewed.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل المحتوى بيراجعه الدكتور قبل النشر.'**
+  String get contentReviewed;
+
+  /// No description provided for @contentEmpty.
+  ///
+  /// In ar, this message translates to:
+  /// **'لسه مفيش محتوى منشور.'**
+  String get contentEmpty;
+
+  /// No description provided for @contentNoResults.
+  ///
+  /// In ar, this message translates to:
+  /// **'مفيش نتايج. جربي كلمة تانية أو تصنيف تاني.'**
+  String get contentNoResults;
+
+  /// No description provided for @contentVideo.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيديو'**
+  String get contentVideo;
+
+  /// No description provided for @contentTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'نصيحة مكتوبة'**
+  String get contentTip;
+
+  /// No description provided for @contentAgeRange.
+  ///
+  /// In ar, this message translates to:
+  /// **'من {from} لـ {to} شهر'**
+  String contentAgeRange(String from, String to);
+
+  /// No description provided for @contentOpenYoutube.
+  ///
+  /// In ar, this message translates to:
+  /// **'شوفي الفيديو على يوتيوب'**
+  String get contentOpenYoutube;
+
+  /// No description provided for @contentVideoUnavailable.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفيديو ده مش متاح هنا.'**
+  String get contentVideoUnavailable;
+
+  /// No description provided for @contentVideoOffline.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفيديو محتاج إنترنت. اتأكدي من النت وجربي تاني.'**
+  String get contentVideoOffline;
+
+  /// No description provided for @contentNotFound.
+  ///
+  /// In ar, this message translates to:
+  /// **'المحتوى ده مبقاش متاح.'**
+  String get contentNotFound;
+
+  /// No description provided for @contentHomeTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'جديد من الدكتور'**
+  String get contentHomeTitle;
+
+  /// No description provided for @contentHomeAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'كل المحتوى'**
+  String get contentHomeAll;
+
+  /// No description provided for @dashContentImport.
+  ///
+  /// In ar, this message translates to:
+  /// **'استيراد من القناة'**
+  String get dashContentImport;
+
+  /// No description provided for @dashContentCategories.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصنيفات'**
+  String get dashContentCategories;
+
+  /// No description provided for @dashContentAll.
+  ///
+  /// In ar, this message translates to:
+  /// **'الكل'**
+  String get dashContentAll;
+
+  /// No description provided for @dashContentType.
+  ///
+  /// In ar, this message translates to:
+  /// **'النوع'**
+  String get dashContentType;
+
+  /// No description provided for @dashTypeVideo.
+  ///
+  /// In ar, this message translates to:
+  /// **'فيديو'**
+  String get dashTypeVideo;
+
+  /// No description provided for @dashTypeTip.
+  ///
+  /// In ar, this message translates to:
+  /// **'نصيحة مكتوبة'**
+  String get dashTypeTip;
+
+  /// No description provided for @dashYoutubeLink.
+  ///
+  /// In ar, this message translates to:
+  /// **'رابط الفيديو على يوتيوب'**
+  String get dashYoutubeLink;
+
+  /// No description provided for @dashYoutubeHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'الصقي رابط الفيديو من قناة الدكتور'**
+  String get dashYoutubeHint;
+
+  /// No description provided for @dashYoutubeInvalid.
+  ///
+  /// In ar, this message translates to:
+  /// **'ده مش رابط فيديو يوتيوب.'**
+  String get dashYoutubeInvalid;
+
+  /// No description provided for @dashYoutubeId.
+  ///
+  /// In ar, this message translates to:
+  /// **'رقم الفيديو: {id}'**
+  String dashYoutubeId(String id);
+
+  /// No description provided for @dashAgeLimited.
+  ///
+  /// In ar, this message translates to:
+  /// **'لسن معين'**
+  String get dashAgeLimited;
+
+  /// No description provided for @dashOrder.
+  ///
+  /// In ar, this message translates to:
+  /// **'الترتيب'**
+  String get dashOrder;
+
+  /// No description provided for @dashOrderNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرقم الأصغر يظهر الأول.'**
+  String get dashOrderNote;
+
+  /// No description provided for @dashPreview.
+  ///
+  /// In ar, this message translates to:
+  /// **'معاينة'**
+  String get dashPreview;
+
+  /// No description provided for @dashPreviewTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'زي ما الأم هتشوفه في التطبيق'**
+  String get dashPreviewTitle;
+
+  /// No description provided for @dashUnpublish.
+  ///
+  /// In ar, this message translates to:
+  /// **'إلغاء النشر'**
+  String get dashUnpublish;
+
+  /// No description provided for @dashUnpublished.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتلغى النشر ورجع مسودة.'**
+  String get dashUnpublished;
+
+  /// No description provided for @dashRestore.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجوع لمسودة'**
+  String get dashRestore;
+
+  /// No description provided for @dashRestored.
+  ///
+  /// In ar, this message translates to:
+  /// **'رجع مسودة.'**
+  String get dashRestored;
+
+  /// No description provided for @dashImportAdded.
+  ///
+  /// In ar, this message translates to:
+  /// **'متضاف'**
+  String get dashImportAdded;
+
+  /// No description provided for @dashImportError.
+  ///
+  /// In ar, this message translates to:
+  /// **'مقدرناش نقرا القناة دلوقتي. الصقي رابط الفيديو بنفسك.'**
+  String get dashImportError;
+
+  /// No description provided for @dashImportNote.
+  ///
+  /// In ar, this message translates to:
+  /// **'عناوين الشورتس في القناة تواريخ؛ اكتبي العنوان بعد الإضافة.'**
+  String get dashImportNote;
+
+  /// No description provided for @dashCategoryAdd.
+  ///
+  /// In ar, this message translates to:
+  /// **'إضافة تصنيف'**
+  String get dashCategoryAdd;
+
+  /// No description provided for @dashCategoryName.
+  ///
+  /// In ar, this message translates to:
+  /// **'اسم التصنيف'**
+  String get dashCategoryName;
+
+  /// No description provided for @dashMoveUp.
+  ///
+  /// In ar, this message translates to:
+  /// **'لفوق'**
+  String get dashMoveUp;
+
+  /// No description provided for @dashMoveDown.
+  ///
+  /// In ar, this message translates to:
+  /// **'لتحت'**
+  String get dashMoveDown;
+
+  /// No description provided for @dashErrInUse.
+  ///
+  /// In ar, this message translates to:
+  /// **'التصنيف ده عليه محتوى، مينفعش يتشال.'**
+  String get dashErrInUse;
+
+  /// No description provided for @dashErrVideoDuplicate.
+  ///
+  /// In ar, this message translates to:
+  /// **'الفيديو ده متضاف قبل كده.'**
+  String get dashErrVideoDuplicate;
+
+  /// No description provided for @dashErrInvalidTransition.
+  ///
+  /// In ar, this message translates to:
+  /// **'حالة المحتوى اتغيرت. حدّثي الصفحة.'**
+  String get dashErrInvalidTransition;
+
+  /// No description provided for @dashBodyRequired.
+  ///
+  /// In ar, this message translates to:
+  /// **'النصيحة محتاجة نص.'**
+  String get dashBodyRequired;
 }
 
 class _AppLocalizationsDelegate

@@ -48,14 +48,13 @@ describe("clinic, catalogue, content, follow-up, settings, reports (005 US5–US
     assert.ok((await adminDb().doc("settings/vaccines").get()).get("reviewedOn"));
   });
 
-  it("secretaries save drafts; only the doctor publishes (D-19)", async () => {
+  it("secretaries save drafts; only the doctor publishes (D-19; 006 moved status to setContentStatus)", async () => {
     const s = await secretary1();
     const d = await doctor();
-    const item = { title: "[الحرارة]", category: "fever", url: "https://example.com/v" };
-    assert.equal((await callFunction("saveContent", { ...item, status: "published" }, s)).error?.details?.reason, "doctor_only");
-    const draft = await callFunction<{ id: string }>("saveContent", item, s);
+    const item = { title: "[الحرارة]", category: "fever", url: "https://youtu.be/WjbDIjEH38U" };
+    const draft = await callFunction<{ id: string }>("saveContent", { ...item, status: "published" }, s);
     assert.equal((await adminDb().doc(`content/${draft.result!.id}`).get()).get("status"), "draft");
-    assert.ok((await callFunction("saveContent", { ...item, id: draft.result!.id, status: "published" }, d)).result);
+    assert.ok((await callFunction("setContentStatus", { id: draft.result!.id, status: "published" }, d)).result);
     assert.equal((await callFunction("saveContent", { ...item, id: draft.result!.id }, s)).error?.details?.reason, "doctor_only");
   });
 

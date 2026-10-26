@@ -2455,4 +2455,154 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get linkClinicChildren => 'ربط أطفال العيادة';
+
+  @override
+  String get contentTitle => 'نصايح الدكتور';
+
+  @override
+  String get contentSearch => 'دوّري في العناوين';
+
+  @override
+  String get contentAll => 'الكل';
+
+  @override
+  String contentForAge(String name) {
+    return 'مناسب لسن $name';
+  }
+
+  @override
+  String get contentAllItems => 'كل المحتوى';
+
+  @override
+  String get contentReviewed => 'كل المحتوى بيراجعه الدكتور قبل النشر.';
+
+  @override
+  String get contentEmpty => 'لسه مفيش محتوى منشور.';
+
+  @override
+  String get contentNoResults => 'مفيش نتايج. جربي كلمة تانية أو تصنيف تاني.';
+
+  @override
+  String get contentVideo => 'فيديو';
+
+  @override
+  String get contentTip => 'نصيحة مكتوبة';
+
+  @override
+  String contentAgeRange(String from, String to) {
+    return 'من $from لـ $to شهر';
+  }
+
+  @override
+  String get contentOpenYoutube => 'شوفي الفيديو على يوتيوب';
+
+  @override
+  String get contentVideoUnavailable => 'الفيديو ده مش متاح هنا.';
+
+  @override
+  String get contentVideoOffline =>
+      'الفيديو محتاج إنترنت. اتأكدي من النت وجربي تاني.';
+
+  @override
+  String get contentNotFound => 'المحتوى ده مبقاش متاح.';
+
+  @override
+  String get contentHomeTitle => 'جديد من الدكتور';
+
+  @override
+  String get contentHomeAll => 'كل المحتوى';
+
+  @override
+  String get dashContentImport => 'استيراد من القناة';
+
+  @override
+  String get dashContentCategories => 'التصنيفات';
+
+  @override
+  String get dashContentAll => 'الكل';
+
+  @override
+  String get dashContentType => 'النوع';
+
+  @override
+  String get dashTypeVideo => 'فيديو';
+
+  @override
+  String get dashTypeTip => 'نصيحة مكتوبة';
+
+  @override
+  String get dashYoutubeLink => 'رابط الفيديو على يوتيوب';
+
+  @override
+  String get dashYoutubeHint => 'الصقي رابط الفيديو من قناة الدكتور';
+
+  @override
+  String get dashYoutubeInvalid => 'ده مش رابط فيديو يوتيوب.';
+
+  @override
+  String dashYoutubeId(String id) {
+    return 'رقم الفيديو: $id';
+  }
+
+  @override
+  String get dashAgeLimited => 'لسن معين';
+
+  @override
+  String get dashOrder => 'الترتيب';
+
+  @override
+  String get dashOrderNote => 'الرقم الأصغر يظهر الأول.';
+
+  @override
+  String get dashPreview => 'معاينة';
+
+  @override
+  String get dashPreviewTitle => 'زي ما الأم هتشوفه في التطبيق';
+
+  @override
+  String get dashUnpublish => 'إلغاء النشر';
+
+  @override
+  String get dashUnpublished => 'اتلغى النشر ورجع مسودة.';
+
+  @override
+  String get dashRestore => 'رجوع لمسودة';
+
+  @override
+  String get dashRestored => 'رجع مسودة.';
+
+  @override
+  String get dashImportAdded => 'متضاف';
+
+  @override
+  String get dashImportError =>
+      'مقدرناش نقرا القناة دلوقتي. الصقي رابط الفيديو بنفسك.';
+
+  @override
+  String get dashImportNote =>
+      'عناوين الشورتس في القناة تواريخ؛ اكتبي العنوان بعد الإضافة.';
+
+  @override
+  String get dashCategoryAdd => 'إضافة تصنيف';
+
+  @override
+  String get dashCategoryName => 'اسم التصنيف';
+
+  @override
+  String get dashMoveUp => 'لفوق';
+
+  @override
+  String get dashMoveDown => 'لتحت';
+
+  @override
+  String get dashErrInUse => 'التصنيف ده عليه محتوى، مينفعش يتشال.';
+
+  @override
+  String get dashErrVideoDuplicate => 'الفيديو ده متضاف قبل كده.';
+
+  @override
+  String get dashErrInvalidTransition => 'حالة المحتوى اتغيرت. حدّثي الصفحة.';
+
+  @override
+  String get dashBodyRequired => 'النصيحة محتاجة نص.';
 }

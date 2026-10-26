@@ -64,11 +64,3 @@ class BookingPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) =>
       PlaceholderScreen(title: AppLocalizations.of(context).placeholderBooking, showAppBar: false);
 }
-
-class ContentPlaceholder extends StatelessWidget {
-  const ContentPlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context) =>
-      PlaceholderScreen(title: AppLocalizations.of(context).placeholderContent, showAppBar: false);
-}

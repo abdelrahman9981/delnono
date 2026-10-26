@@ -24,8 +24,10 @@ import '../features/registration/data/guardian_repository.dart';
 import '../features/registration/presentation/consent_screen.dart';
 import '../features/registration/presentation/guardian_details_screen.dart';
 import '../features/registration/presentation/link_children_screen.dart';
-import '../features/shell/placeholders.dart';
 import '../features/shell/shell_scaffold.dart';
+import '../features/content/presentation/library_screen.dart';
+import '../features/content/presentation/tip_screen.dart';
+import '../features/content/presentation/video_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/notifications/presentation/notifications_screen.dart';
 import '../features/packages/presentation/package_screen.dart';
@@ -110,7 +112,7 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(path: ':id/follow-up', builder: (_, state) => FollowUpScreen(childId: state.pathParameters['id']!)),
             ],
           ),
-          GoRoute(path: Routes.content, builder: (_, _) => const ContentPlaceholder()),
+          GoRoute(path: Routes.content, builder: (_, _) => const LibraryScreen()),
           GoRoute(path: Routes.me, builder: (_, _) => const MeScreen()),
         ],
       ),
@@ -148,6 +150,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.notifications, builder: (_, _) => const NotificationsScreen()),
       GoRoute(path: Routes.package, builder: (_, _) => const PackageScreen()),
       GoRoute(path: Routes.accountDelete, builder: (_, _) => const DeleteAccountScreen()),
+      // Full screen above the tabs; public like the library (006).
+      GoRoute(path: '${Routes.content}/tip/:id', builder: (_, state) => TipScreen(id: state.pathParameters['id']!)),
+      GoRoute(path: '${Routes.content}/video/:id', builder: (_, state) => VideoScreen(id: state.pathParameters['id']!)),
     ],
   );
 

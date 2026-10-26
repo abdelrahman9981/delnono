@@ -1,5 +1,5 @@
 import { assertFails, assertSucceeds, type RulesTestEnvironment } from "@firebase/rules-unit-testing";
-import { collection, doc, getDoc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { adminDb, clearEmulators, rulesEnv, seedChild, seedGuardian, seedSettings } from "../helpers/env";
 
 // contracts/firestore-access.md (005): staff reads by role and clinic; staff never write directly.
@@ -30,6 +30,8 @@ describe("rules: staff (005)", () => {
     await db.doc("days/clinic-2_2026-11-15").set({ clinicId: "clinic-2", walkInsStopped: true });
     await db.doc("content/pub").set({ status: "published", title: "[نصيحة]" });
     await db.doc("content/draft").set({ status: "draft", title: "[مسودة]" });
+    await db.doc("content/old").set({ status: "archived", title: "[قديم]" });
+    await db.doc("settings/content").set({ categories: [{ id: "fever", name: "الحرارة" }] });
     await db.doc("auditLog/a1").set({ action: "child.opened" });
     await db.doc("packages/p1").set({ guardianUid: "g1", active: true });
   });
@@ -78,6 +80,18 @@ describe("rules: staff (005)", () => {
     await assertFails(getDoc(doc(anon, "content/draft")));
     await assertFails(getDoc(doc(as("g1"), "content/draft")));
     await assertSucceeds(getDoc(doc(sec1(), "content/draft")));
+  });
+
+  it("content library (006): visitors list published items only; categories are public, never written", async () => {
+    const anon = env.unauthenticatedContext().firestore();
+    await assertSucceeds(getDocs(query(collection(anon, "content"), where("status", "==", "published"))));
+    await assertFails(getDocs(collection(anon, "content")));
+    await assertFails(getDoc(doc(anon, "content/old")));
+    await assertFails(getDoc(doc(as("g1"), "content/old")));
+    await assertSucceeds(getDocs(collection(sec1(), "content")));
+    await assertSucceeds(getDoc(doc(anon, "settings/content")));
+    await assertFails(setDoc(doc(docr(), "settings/content"), { categories: [] }));
+    await assertFails(updateDoc(doc(sec1(), "content/draft"), { status: "published" }));
   });
 
   it("staff documents: self and the doctor", async () => {

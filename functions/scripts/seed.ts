@@ -173,12 +173,13 @@ async function main() {
   }
 
   seedChildProfile(batch);
+  seedContent(batch);
   await batch.commit();
   await seedStaff();
   // The seeded family's Auth user, with the uid its guardian doc and children use.
   await getAuth(app).createUser({ uid: FAMILY_UID, phoneNumber: FAMILY_PHONE });
   console.log(
-    "Seeded settings (auth, policy, booking, vaccines, followUp), 2 placeholder clinics, 4 placeholder vaccines, the placeholder",
+    "Seeded settings (auth, policy, booking, vaccines, followUp, content), 8 channel videos (3 published) and 3 placeholder tips, 2 placeholder clinics, 4 placeholder vaccines, the placeholder",
     "schedule and follow-up lists, the registered family on", FAMILY_PHONE, `(uid ${FAMILY_UID}, 3 children with sample records)`,
     "and an unlinked clinic family on", CLINIC_PHONE,
   );
@@ -319,6 +320,57 @@ function seedChildProfile(batch: FirebaseFirestore.WriteBatch) {
       clinicId: i % 3 === 2 ? CLINIC_2 : CLINIC_1,
       recordedBy: SEED_STAFF,
       recordedAt: new Date(`${givenOn}T18:20:00+02:00`),
+    });
+  });
+}
+
+// Content library (006, D-50): real Shorts from the doctor's channel. Titles are the text written on
+// each video's frame and categories are guessed from it: "Assumption — needs owner review". Three are
+// published for the demo; tips are bracketed placeholders until the doctor writes them.
+const VIDEO_SEED: [string, string, string, string, boolean, number?, number?][] = [
+  ["skgdeAOm374", "2026-10-26", "تطعيم الحصبه والماسونيه العالميه", "vaccines", false],
+  ["eH9QRdN_Hgw", "2026-10-20", "تلت حجات في حديثي الولاده خلي بالك منهم لو هتولدي قريب", "newborn", false, 0, 1],
+  ["WjbDIjEH38U", "2026-10-20", "هل ينفع نحط ملح قبل عمر سنه", "feeding", true, 4, 12],
+  ["YC_I43gRbpc", "2026-10-19", "الخناق الحنجري منتشر بشكل مرعب بس متقلقوش", "fever", false],
+  ["dHP05TFideE", "2026-10-15", "اسرع دوا ينزل الحراره للاطفال في مصر", "fever", false],
+  ["TGzE9d9m44A", "2026-10-15", "هو الاكل في الشهر الرابع و لا السادس؟!", "feeding", true, 3, 8],
+  ["KDOV-4nbWqU", "2026-10-15", "فيتامين د بيعمل ارهاق للاطفال ومش بيناموا بسببه", "sleep", true, 0, 24],
+  ["5bM0xJ8uHFY", "2026-10-15", "رد على سؤال: ابني عنده خنفرة وحساسية أنف من عمر ٥٠ يوم", "allergy", false],
+];
+
+function seedContent(batch: FirebaseFirestore.WriteBatch) {
+  batch.set(db.doc("settings/content"), {
+    categories: [
+      { id: "fever", name: "الحرارة" },
+      { id: "feeding", name: "الرضاعة والهضم" },
+      { id: "sleep", name: "النوم" },
+      { id: "allergy", name: "الحساسية" },
+      { id: "vaccines", name: "التطعيمات" },
+      { id: "newborn", name: "حديثي الولادة" },
+    ],
+  });
+  for (const [youtubeId, date, title, category, published, from, to] of VIDEO_SEED) {
+    const at = new Date(`${date}T12:00:00+02:00`);
+    batch.set(db.doc(`content/yt-${youtubeId}`), {
+      type: "video", title, category, body: null, youtubeId, url: `https://youtube.com/shorts/${youtubeId}`,
+      ageFromMonths: from ?? null, ageToMonths: to ?? null, order: 100,
+      status: published ? "published" : "draft",
+      createdBy: "staff-doctor", createdAt: at, updatedBy: "staff-doctor", updatedAt: at,
+      ...(published ? { publishedBy: "staff-doctor", publishedAt: at } : {}),
+    });
+  }
+  const tips: [string, string, string, number?, number?][] = [
+    ["tip-fever", "[نصيحة عن الحرارة · يكتبها الدكتور]", "fever"],
+    ["tip-sleep", "[نصيحة عن نوم الرضيع · يكتبها الدكتور]", "sleep", 0, 12],
+    ["tip-allergy", "[نصيحة عن الحساسية · يكتبها الدكتور]", "allergy"],
+  ];
+  tips.forEach(([id, title, category, from, to], i) => {
+    const at = new Date(`2026-10-0${i + 1}T12:00:00+02:00`);
+    batch.set(db.doc(`content/${id}`), {
+      type: "tip", title, category, body: "[نص النصيحة · يكتبه الدكتور قبل النشر]", youtubeId: null, url: null,
+      ageFromMonths: from ?? null, ageToMonths: to ?? null, order: 100, status: "published",
+      createdBy: "staff-doctor", createdAt: at, updatedBy: "staff-doctor", updatedAt: at,
+      publishedBy: "staff-doctor", publishedAt: at,
     });
   });
 }

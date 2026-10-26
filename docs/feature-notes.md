@@ -20,6 +20,8 @@ constitution's feature order (1.3.0).
 
 ## 006 Content library
 
-- D-50: videos are hosted on YouTube as Unlisted. Staff paste the YouTube link in the dashboard;
+- D-50: videos come from the doctor's YouTube channel (UC47gpnTXG0ki52IwM85Oqdg), Public or Unlisted. Staff paste the YouTube link in the dashboard;
   Firestore stores only the video id or link and the title; the app plays it inside the app
-  (youtube_player_iframe or similar). No Cloud Storage for videos. Not built yet.
+  (youtube_player_iframe, vertical 9:16). No Cloud Storage for videos. Built in 006
+  (specs/006-content-library); «استيراد من القناة» needs deployed Functions on the real project
+  (blocked: Blaze).
