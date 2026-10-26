@@ -11,6 +11,7 @@ import 'package:delnono/features/notifications/data/local_notifier.dart';
 import 'package:delnono/features/notifications/data/notification_prefs.dart';
 import 'package:delnono/features/notifications/data/reminder_sync.dart';
 import 'package:delnono/features/notifications/domain/reminders.dart';
+import 'package:delnono/features/packages/data/packages_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -87,6 +88,7 @@ void main() {
       vaccineScheduleProvider.overrideWith((ref) => Stream.value(const [fourMonths])),
       vaccineCatalogueProvider.overrideWith((ref) => Stream.value(catalogue)),
       dosesProvider.overrideWith((ref, id) => latest(doses)),
+      familyPackageListProvider.overrideWith((ref) => Stream.value(const [])),
     ]);
     c.listen(reminderSyncProvider, (_, _) {});
   });

@@ -16,10 +16,10 @@
 - [X] T007 [US1][US2] Widget tests (test/features/packages/package_screen_test.dart, me_screen_test.dart additions) and layout sweep entries
 
 ## Phase 4: US3 — Expiry notice and renewal (P2)
-- [ ] T008 [US3] Functions tests first in functions/test/functions/staff/queue.test.ts: renew within 14 days (dates, price, clinic, renews, audit), too_early, has_package for a second renewal, no_package; coverage of a booking after the current end
-- [ ] T009 [US3] `sellPackage` renew in functions/src/callables/staff/queue.ts
-- [ ] T010 [US3] Dashboard child file "تجديد الباقة" and the renewal line (lib/dashboard/screens/child_file_screen.dart), widget test
-- [ ] T011 [US3] Reminder `package:{id}:14d` in lib/features/notifications/domain/reminders.dart and reminder_sync.dart (packages input, booking switch, route /package), tests
+- [X] T008 [US3] Functions tests first in functions/test/functions/staff/queue.test.ts: renew within 14 days (dates, price, clinic, renews, audit), too_early, has_package for a second renewal, no_package; coverage of a booking after the current end
+- [X] T009 [US3] `sellPackage` renew in functions/src/callables/staff/queue.ts
+- [X] T010 [US3] Dashboard child file "تجديد الباقة" and the renewal line (lib/dashboard/screens/child_file_screen.dart), widget test
+- [X] T011 [US3] Reminder `package:{id}:14d` in lib/features/notifications/domain/reminders.dart and reminder_sync.dart (packages input, booking switch, route /package), tests
 
 ## Phase 5: Polish
 - [ ] T012 Simulator integration test for «الباقة» and the page (integration_test/packages_test.dart); mark tasks; all checks

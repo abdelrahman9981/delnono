@@ -143,6 +143,7 @@ class _ItemCard extends ConsumerWidget {
     final (icon, bg, fg) = switch (item.kind) {
       FeedKind.bookingReminder => (Icons.calendar_today_outlined, c.blueSoft, c.blue),
       FeedKind.vaccineReminder => (Icons.vaccines_outlined, c.pinkSoft, c.pink),
+      FeedKind.packageReminder => (Icons.card_giftcard, c.yellowSoft, c.yellow),
       FeedKind.confirmed => (Icons.check, c.greenSoft, c.green),
       FeedKind.cancelled => (Icons.event_busy_outlined, c.dangerBg, c.dangerText),
     };

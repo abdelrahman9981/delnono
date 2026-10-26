@@ -4,7 +4,7 @@ import { db } from "../../lib/admin";
 import { writeAudit } from "../../lib/audit";
 import { hoursOf } from "../../lib/booking/schedule";
 import { clinicOf, readBookingSettings } from "../../lib/booking/settings";
-import { cairoDate, slotId, startsAt } from "../../lib/booking/time";
+import { addDays, cairoDate, slotId, startsAt } from "../../lib/booking/time";
 import { REGION } from "../../lib/region";
 import { requireClinic, requireStaff, str, type Staff } from "../../lib/staff";
 
@@ -208,34 +208,59 @@ function addMonths(date: string, months: number): string {
   return target.toISOString().slice(0, 10);
 }
 
+/** Renewal opens in the package's last 14 days, with the guardian's expiry notice (D-14). */
+const RENEWAL_WINDOW_DAYS = 14;
+
 /**
- * Sells the annual package to a family at this clinic's price (D-14, D-46, FR-048): valid in every
- * clinic from today for the clinic's package months; revenue counts for this clinic.
+ * Sells the family package at this clinic (FR-012, D-46), or with `renew` renews it in its last 14
+ * days: the renewal starts the day after the current one ends, so no paid day is lost (008 FR-006,
+ * night-run assumption R1). Revenue goes to the selling clinic. contracts (008) callables.md
  */
 export const sellPackage = onCall({ region: REGION }, async (request) => {
   const staff = await requireStaff(request);
   const data = (request.data ?? {}) as Record<string, unknown>;
   const clinicId = requireClinic(staff, data.clinicId);
   const guardianUid = str(data, "guardianUid");
+  const renew = data.renew === true;
 
   return db.runTransaction(async (tx) => {
     const today = cairoDate();
-    const [clinic, guardian] = await Promise.all([tx.get(db.doc(`clinics/${clinicId}`)), tx.get(db.doc(`guardians/${guardianUid}`))]);
+    const [clinic, guardian, packages] = await Promise.all([
+      tx.get(db.doc(`clinics/${clinicId}`)),
+      tx.get(db.doc(`guardians/${guardianUid}`)),
+      tx.get(db.collection("packages").where("guardianUid", "==", guardianUid).where("active", "==", true)),
+    ]);
     if (!clinic.exists) throw new HttpsError("failed-precondition", "Unknown clinic.", { reason: "clinic_inactive" });
     if (!guardian.exists) throw new HttpsError("not-found", "Family not found.");
-    if (await activePackage(guardianUid, today, tx)) {
+    const current = packages.docs.find((p) => p.get("startsOn") <= today && today <= p.get("endsOn"));
+    const later = packages.docs.some((p) => p.get("startsOn") > today);
+    if (later) throw new HttpsError("already-exists", "The family already has its next package.", { reason: "has_package" });
+
+    let startsOn = today;
+    if (renew) {
+      if (!current) throw new HttpsError("failed-precondition", "No package to renew.", { reason: "no_package" });
+      const endsOn = current.get("endsOn") as string;
+      if (addDays(endsOn, -RENEWAL_WINDOW_DAYS) > today) {
+        throw new HttpsError("failed-precondition", "Renewal opens in the last 14 days.", { reason: "too_early" });
+      }
+      startsOn = addDays(endsOn, 1);
+    } else if (current) {
       throw new HttpsError("already-exists", "The family already has an active package.", { reason: "has_package" });
     }
+
     const months = (clinic.get("packageMonths") as number | undefined) ?? 12;
     const ref = db.collection("packages").doc();
     const pkg = {
       guardianUid, soldAtClinicId: clinicId, price: (clinic.get("packagePrice") as number | undefined) ?? 0,
-      startsOn: today, endsOn: addMonths(today, months), active: true, soldBy: staff.uid, soldOn: today,
-      soldAt: FieldValue.serverTimestamp(),
+      startsOn, endsOn: addMonths(startsOn, months), active: true, soldBy: staff.uid, soldOn: today,
+      soldAt: FieldValue.serverTimestamp(), ...(renew ? { renews: current!.id } : {}),
     };
     tx.set(ref, pkg);
-    await writeAudit({ action: "package.sold", actorUid: staff.uid, subjectPhone: guardian.get("phone"), details: { packageId: ref.id, clinicId, price: pkg.price } }, tx);
-    return { packageId: ref.id, endsOn: pkg.endsOn, price: pkg.price };
+    await writeAudit({
+      action: "package.sold", actorUid: staff.uid, subjectPhone: guardian.get("phone"),
+      details: { packageId: ref.id, clinicId, price: pkg.price, renew },
+    }, tx);
+    return { packageId: ref.id, startsOn: pkg.startsOn, endsOn: pkg.endsOn, price: pkg.price };
   });
 });
 

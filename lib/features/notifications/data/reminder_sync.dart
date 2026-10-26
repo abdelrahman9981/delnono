@@ -10,6 +10,7 @@ import '../../booking/data/bookings_repository.dart';
 import '../../child_profile/data/doses_repository.dart';
 import '../../child_profile/data/vaccine_schedule_repository.dart';
 import '../../children/data/children_repository.dart';
+import '../../packages/data/packages_repository.dart';
 import '../domain/reminders.dart';
 import 'local_notifier.dart';
 import 'notification_prefs.dart';
@@ -31,8 +32,17 @@ final plannedRemindersProvider = Provider<List<Reminder>?>((ref) {
     if (d == null) return null;
     doses[c.id] = d;
   }
+  final packages = ref.watch(familyPackageListProvider).value;
+  if (packages == null) return null;
   return planReminders(
-    ReminderInputs(bookings: bookings, children: children, schedule: schedule, catalogue: catalogue, doses: doses),
+    ReminderInputs(
+      bookings: bookings,
+      children: children,
+      schedule: schedule,
+      catalogue: catalogue,
+      doses: doses,
+      packages: packages,
+    ),
     _l10n,
   );
 });
