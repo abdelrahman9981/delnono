@@ -6,7 +6,7 @@
 - **Alternatives**: `youtube_player_flutter` (Android/iOS only, no web), opening YouTube for every video (not in-app).
 
 ## R2 Fallback when embedding fails
-- **Decision**: Listen for the player's error (codes 2, 5, 100, 101, 150) and a 15 s load timeout; show «الفيديو مش متاح هنا» with «شوفي الفيديو على يوتيوب» (`url_launcher`, external app, `https://www.youtube.com/shorts/<id>`). The button is always visible under the player too.
+- **Decision**: Listen for the player's error (codes 2, 5, 100, 101, 105, 150, 152); show «الفيديو ده مش متاح هنا.» with «شوفي الفيديو على يوتيوب» (`url_launcher`, external app, `https://www.youtube.com/shorts/<id>`). The button is always visible under the player, so no load timeout is needed (a timeout would also fire when iOS simply waits for a tap to play).
 - **Rationale**: Owner asked for the fallback when a video blocks embedding; a private or deleted video gives the same errors.
 
 ## R3 Link validation
