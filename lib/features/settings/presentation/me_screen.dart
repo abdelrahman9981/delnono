@@ -6,6 +6,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import '../../../app/l10n/app_localizations.dart';
 import '../../../app/messenger.dart';
 import '../../../app/route_guard.dart';
+import '../../../app/session_flags.dart';
 import '../../../app/theme.dart';
 import '../../../core/format/age.dart';
 import '../../../core/format/arabic_digits.dart';
@@ -156,6 +157,23 @@ class MeScreen extends ConsumerWidget {
                   ),
                 ],
                 if (children.isNotEmpty) divider(),
+                // Clinic children still waiting on this number (skipped at registration): link them here.
+                if (guardian?.clinicChildrenPending ?? false) ...[
+                  ListTile(
+                    key: const Key('me-link-clinic'),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                    onTap: () {
+                      ref.read(linkSkippedProvider.notifier).set(false);
+                      // `go`, not `push`: the guard moves the guardian on from the link step once it
+                      // is done, which it cannot do for a pushed page. Back to «حسابي» afterwards.
+                      context.go(Uri(path: Routes.registerLink, queryParameters: {'from': Routes.me}).toString());
+                    },
+                    leading: chip(Icons.link, c.blueSoft, c.blue),
+                    title: Text(l10n.linkClinicChildren, style: text.titleSmall?.copyWith(color: c.blue)),
+                    subtitle: Text(l10n.meLinkClinicSub, style: text.bodySmall),
+                  ),
+                  divider(),
+                ],
                 ListTile(
                   key: const Key('me-add-child'),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),

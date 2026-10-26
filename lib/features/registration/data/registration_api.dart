@@ -17,10 +17,13 @@ class GuardianDetails {
 const consentScopes = ['privacy_policy', 'terms', 'child_data'];
 
 class LinkedChild {
-  const LinkedChild(this.childId, this.name);
+  const LinkedChild(this.childId, this.name, {this.duplicate = false});
 
   final String childId;
   final String name;
+
+  /// The guardian had already added a child with this name and birth date (FR-022).
+  final bool duplicate;
 }
 
 /// `linkClinicChildren`: the birth date matched none of the children; [remaining] tries are left.
@@ -81,7 +84,7 @@ class FirebaseRegistrationApi implements RegistrationApi {
       });
       return [
         for (final c in (result.data['linked'] as List).cast<Map<Object?, Object?>>())
-          LinkedChild(c['childId'] as String, c['name'] as String),
+          LinkedChild(c['childId'] as String, c['name'] as String, duplicate: c['duplicate'] == true),
       ];
     } on FirebaseFunctionsException catch (e) {
       switch (e.code) {

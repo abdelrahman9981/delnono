@@ -1,3 +1,4 @@
+import 'package:delnono/app/session_flags.dart';
 import 'package:delnono/core/clock.dart';
 import 'package:delnono/core/settings/settings_repository.dart';
 import 'package:delnono/features/auth/data/auth_repository.dart';
@@ -45,6 +46,7 @@ void main() {
     bool signedIn = true,
     String? whatsapp = '+201000000000',
     List<FamilyPackage> packages = const [],
+    bool clinicChildrenPending = false,
   }) async {
     final repo = _Repo();
     final h = ScreenHarness(
@@ -52,7 +54,16 @@ void main() {
       routes: [GoRoute(path: '/me', builder: (_, _) => const MeScreen())],
       overrides: [
         authStateProvider.overrideWith((ref) => Stream.value(signedIn ? _User() : null)),
-        guardianProvider.overrideWith((ref) => Stream.value(signedIn ? guardian : null)),
+        guardianProvider.overrideWith((ref) => Stream.value(!signedIn
+            ? null
+            : Guardian(
+                uid: guardian.uid,
+                phone: guardian.phone,
+                fullName: guardian.fullName,
+                relation: guardian.relation,
+                consentVersion: guardian.consentVersion,
+                clinicChildrenPending: clinicChildrenPending,
+              ))),
         childrenProvider.overrideWith((ref) => Stream.value(kids)),
         guardianRepositoryProvider.overrideWithValue(repo),
         familyPackageListProvider.overrideWith((ref) => Stream.value(packages)),
@@ -90,6 +101,21 @@ void main() {
     final (h, _) = await open(tester);
     await tapVisible(tester, find.byKey(const Key('me-add-child')));
     expect(h.location, '/children/add');
+  });
+
+  testWidgets('clinic children still waiting: «ربط أطفال العيادة» opens the link step (link later)', (tester) async {
+    final (h, _) = await open(tester, clinicChildrenPending: true);
+    h.container.read(linkSkippedProvider.notifier).set(true);
+    await tapVisible(tester, find.byKey(const Key('me-link-clinic')));
+    expect(h.location, '/register/link?from=%2Fme');
+    expect(h.container.read(linkSkippedProvider), isFalse, reason: 'skipping at registration no longer hides it');
+    expect(find.byKey(const Key('me-add-child')), findsNothing, reason: 'left the screen');
+  });
+
+  testWidgets('nothing to link: no link row, add child still there', (tester) async {
+    await open(tester);
+    expect(find.byKey(const Key('me-link-clinic')), findsNothing);
+    expect(find.byKey(const Key('me-add-child')), findsOneWidget);
   });
 
   testWidgets('«الباقة»: without a package, one line opens the package page (008 FR-001)', (tester) async {

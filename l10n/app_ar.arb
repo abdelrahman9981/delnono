@@ -881,5 +881,8 @@
   "dashErrInUse": "التصنيف ده عليه محتوى، مينفعش يتشال.",
   "dashErrVideoDuplicate": "الفيديو ده متضاف قبل كده.",
   "dashErrInvalidTransition": "حالة المحتوى اتغيرت. حدّثي الصفحة.",
-  "dashBodyRequired": "النصيحة محتاجة نص."
+  "dashBodyRequired": "النصيحة محتاجة نص.",
+  "linkDuplicate": "اتربط أطفال العيادة. {names} متسجل مرتين بنفس الاسم وتاريخ الميلاد؛ كلمي العيادة عشان يدمجوا الملفين.",
+  "@linkDuplicate": {"placeholders": {"names": {"type": "String"}}},
+  "meLinkClinicSub": "العيادة مسجلة أطفال على رقمك"
 }

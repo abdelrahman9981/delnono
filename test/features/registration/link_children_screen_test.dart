@@ -81,6 +81,13 @@ void main() {
     expect(h.container.read(registrationInProgressProvider), isFalse);
   });
 
+  testWidgets('a linked child the guardian had already added is flagged: ask the clinic to merge (FR-022)', (tester) async {
+    await open(tester, inRegistration: false);
+    api.linkResult = const [LinkedChild('a', 'يوسف', duplicate: true), LinkedChild('b', 'مريم')];
+    await pickAndConfirm(tester);
+    expect(find.textContaining('يوسف متسجل مرتين'), findsOneWidget);
+  });
+
   testWidgets('"these aren\'t my children" skips without calling the function (US4 scenario 4)', (tester) async {
     final h = await open(tester);
     await tapVisible(tester, find.text('دول مش أطفالي · ضيفي طفل جديد'));

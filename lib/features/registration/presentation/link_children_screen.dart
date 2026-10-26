@@ -52,7 +52,12 @@ class _LinkChildrenScreenState extends ConsumerState<LinkChildrenScreen> {
       final linked = await api.linkClinicChildren(isoDate(_date!));
       // Children now exist, so first-run registration is complete.
       registration.finish();
-      showAppMessage(l10n.linkSuccess(linked.map((c) => c.name).join(l10n.nameListSeparator)));
+      final duplicates = [for (final c in linked) if (c.duplicate) c.name];
+      showAppMessage(
+        duplicates.isEmpty
+            ? l10n.linkSuccess(linked.map((c) => c.name).join(l10n.nameListSeparator))
+            : l10n.linkDuplicate(duplicates.join(l10n.nameListSeparator)),
+      );
     } on LinkWrongBirthDate catch (e) {
       if (mounted) setState(() => _remaining = e.remaining);
     } on LinkLocked {

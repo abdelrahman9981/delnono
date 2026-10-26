@@ -4737,6 +4737,18 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'النصيحة محتاجة نص.'**
   String get dashBodyRequired;
+
+  /// No description provided for @linkDuplicate.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتربط أطفال العيادة. {names} متسجل مرتين بنفس الاسم وتاريخ الميلاد؛ كلمي العيادة عشان يدمجوا الملفين.'**
+  String linkDuplicate(String names);
+
+  /// No description provided for @meLinkClinicSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'العيادة مسجلة أطفال على رقمك'**
+  String get meLinkClinicSub;
 }
 
 class _AppLocalizationsDelegate

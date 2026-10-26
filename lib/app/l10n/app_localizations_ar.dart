@@ -2605,4 +2605,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get dashBodyRequired => 'النصيحة محتاجة نص.';
+
+  @override
+  String linkDuplicate(String names) {
+    return 'اتربط أطفال العيادة. $names متسجل مرتين بنفس الاسم وتاريخ الميلاد؛ كلمي العيادة عشان يدمجوا الملفين.';
+  }
+
+  @override
+  String get meLinkClinicSub => 'العيادة مسجلة أطفال على رقمك';
 }
