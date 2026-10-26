@@ -3,11 +3,11 @@
 **Input**: [spec.md](spec.md), [plan.md](plan.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/callables.md](contracts/callables.md)
 
 ## Phase 1: Setup
-- [ ] T001 Arabic strings for the package page, «الباقة», the hint, the reminder and renewal in l10n/app_ar.arb
-- [ ] T002 `Clinic.packagePrice` and `packageMonths` in lib/features/clinics/data/clinics_repository.dart
+- [X] T001 Arabic strings for the package page, «الباقة», the hint, the reminder and renewal in l10n/app_ar.arb
+- [X] T002 `Clinic.packagePrice` and `packageMonths` in lib/features/clinics/data/clinics_repository.dart
 
 ## Phase 2: Foundational
-- [ ] T003 Tests first in test/features/packages/family_package_test.dart, then `familyPackageView` in lib/features/packages/domain/family_package.dart (current, next, lastEnded, renewable window)
+- [X] T003 Tests first in test/features/packages/family_package_test.dart, then `familyPackageView` in lib/features/packages/domain/family_package.dart (current, next, lastEnded, renewable window)
 
 ## Phase 3: US1 + US2 — «الباقة» and the package page (P1)
 - [ ] T004 [US2] lib/features/packages/presentation/package_screen.dart (public route `/package`): status first when the family has one, both clinics' prices and months, coverage rules

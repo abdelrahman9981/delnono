@@ -16,6 +16,8 @@ class Clinic {
     this.active = true,
     this.order = 0,
     this.workingHours = const {},
+    this.packagePrice,
+    this.packageMonths = 12,
   });
 
   factory Clinic.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> s) {
@@ -35,6 +37,8 @@ class Clinic {
       active: d['active'] as bool? ?? false,
       order: (d['order'] as num?)?.toInt() ?? 0,
       workingHours: parseWorkingHours(d['workingHours']) ?? const {},
+      packagePrice: (d['packagePrice'] as num?)?.toInt(),
+      packageMonths: (d['packageMonths'] as num?)?.toInt() ?? 12,
     );
   }
 
@@ -51,6 +55,10 @@ class Clinic {
   final bool active;
   final int order;
   final Map<int, List<HourRange>> workingHours;
+
+  /// The annual package at this clinic (D-45): price in EGP (null until set) and months.
+  final int? packagePrice;
+  final int packageMonths;
 }
 
 /// Every clinic, active or not, in display order. Inactive clinics are kept so old bookings and
