@@ -7,6 +7,7 @@ import 'package:delnono/features/child_profile/data/vaccine_schedule_repository.
 import 'package:delnono/features/child_profile/domain/child_age.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/notifications/domain/reminders.dart';
+import 'package:delnono/features/packages/domain/family_package.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -135,6 +136,29 @@ void main() {
       final later = feedItems(all, const [], l10n, now: now.add(const Duration(days: 10)));
       expect(later.map((f) => f.key), isNot(contains('vaccine:c1:s2:3d')), reason: 'older than 60 days');
       expect(feed.every((f) => !f.at.isAfter(now)), isTrue);
+    });
+  });
+
+  group('package expiry (008 US3, D-14)', () {
+    ReminderInputs withPackages(List<FamilyPackage> p) =>
+        ReminderInputs(bookings: const [], children: const [youssef], schedule: const [], catalogue: catalogue, doses: const {}, packages: p);
+    const current = FamilyPackage(id: 'p', active: true, startsOn: '2025-12-15', endsOn: '2026-12-14', soldAtClinicId: 'clinic-1');
+
+    test('14 days before the end at 09:00 Cairo, opening the package page; under the booking switch', () {
+      final r = planReminders(withPackages(const [current]), l10n);
+      expect(keys(r), ['package:p:14d']);
+      expect(r.single.at, ClinicTime.startsAt('2026-11-30', 9));
+      expect(r.single.title, 'باقتك هتخلص بعد ١٤ يوم');
+      expect(r.single.route, '/package');
+      expect(toSchedule(r, now: now, booking: false, vaccine: true), isEmpty);
+      expect(toSchedule(r, now: now, booking: true, vaccine: false), hasLength(1));
+    });
+
+    test('none when a renewal follows, or for an ended or inactive package', () {
+      const renewal = FamilyPackage(id: 'r', active: true, startsOn: '2026-12-15', endsOn: '2027-12-14', soldAtClinicId: 'clinic-1');
+      expect(keys(planReminders(withPackages(const [current, renewal]), l10n)), ['package:r:14d']);
+      const off = FamilyPackage(id: 'x', active: false, startsOn: '2025-12-15', endsOn: '2026-12-14', soldAtClinicId: 'clinic-1');
+      expect(planReminders(withPackages(const [off]), l10n), isEmpty);
     });
   });
 }

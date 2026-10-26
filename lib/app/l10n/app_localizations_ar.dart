@@ -2347,4 +2347,97 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get meSignIn => 'سجّلي برقم موبايلك';
+
+  @override
+  String get pkgTitle => 'الباقة السنوية';
+
+  @override
+  String get pkgSubtitle => 'لكل الإخوة';
+
+  @override
+  String pkgPerClinic(String price, String months) {
+    return '$price جنيه · $months شهر';
+  }
+
+  @override
+  String get pkgRulesTitle => 'الباقة بتشمل إيه';
+
+  @override
+  String get pkgRuleSiblings =>
+      'باقة واحدة لكل الإخوة على حسابك، وأي أخ بيتضاف بعدين بيدخل فيها من غير رسوم.';
+
+  @override
+  String get pkgRuleVisits => 'كشوفات العيادة من غير حد أقصى طول مدة الباقة.';
+
+  @override
+  String get pkgRuleVaccines => 'التطعيمات بتتحسب بسعرها المعتاد.';
+
+  @override
+  String get pkgRuleClinics => 'سارية في العيادتين.';
+
+  @override
+  String get pkgRuleCash => 'الاشتراك والتجديد بالدفع كاش في العيادة.';
+
+  @override
+  String get pkgRuleStart => 'المدة بتبدأ من يوم الاشتراك.';
+
+  @override
+  String pkgActiveUntil(String date) {
+    return 'لحد $date · في العيادتين';
+  }
+
+  @override
+  String get pkgActive => 'سارية';
+
+  @override
+  String get pkgEnded => 'خلصت';
+
+  @override
+  String pkgEndedOn(String date) {
+    return 'خلصت في $date';
+  }
+
+  @override
+  String pkgRenewed(String date) {
+    return 'اتجددت لحد $date';
+  }
+
+  @override
+  String pkgChildLine(String name) {
+    return 'باقة $name';
+  }
+
+  @override
+  String get pkgNone => 'اشتركي في الباقة السنوية';
+
+  @override
+  String get pkgNoneSub => 'كشوفات من غير حد للإخوة كلهم';
+
+  @override
+  String get pkgYours => 'باقتك';
+
+  @override
+  String get pkgBookingHint => 'عندك إخوة بيكشفوا كتير؟ شوفي الباقة السنوية';
+
+  @override
+  String get remindPackageTitle => 'باقتك هتخلص بعد ١٤ يوم';
+
+  @override
+  String remindPackageBody(String date) {
+    return 'لحد $date · جدّديها كاش في العيادة';
+  }
+
+  @override
+  String get dashRenewPackage => 'تجديد الباقة';
+
+  @override
+  String get dashPackageRenewed => 'اتجددت الباقة.';
+
+  @override
+  String dashPackageNext(String from, String to) {
+    return 'التجديد من $from لحد $to';
+  }
+
+  @override
+  String get dashErrTooEarly => 'التجديد بيبقى في آخر ١٤ يوم من الباقة.';
 }

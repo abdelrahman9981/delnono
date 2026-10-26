@@ -14,18 +14,18 @@ import '../../../core/phone/egypt_phone.dart';
 import '../../../core/settings/settings_repository.dart';
 import '../../../core/widgets/segmented.dart';
 import '../../auth/data/auth_repository.dart';
+import '../../booking/presentation/booking_format.dart';
 import '../../children/data/children_repository.dart';
 import '../../clinics/data/clinics_repository.dart';
 import '../../notifications/data/notification_prefs.dart';
+import '../../packages/data/packages_repository.dart';
+import '../../packages/presentation/package_screen.dart';
 import '../../registration/data/guardian_repository.dart';
 import '../../registration/presentation/policy_sheet.dart';
 import '../data/app_settings.dart';
 
 /// The app's version for «عن التطبيق».
 final appVersionProvider = FutureProvider<String>((ref) async => (await PackageInfo.fromPlatform()).version);
-
-/// «الباقة» stays hidden until feature 008 fills it with each child's package.
-const showPackageSection = false;
 
 /// «حسابي», the fifth tab (design screen 12, docs/design/screens/Settings.dc.html): the guardian,
 /// their children, appearance (theme, text size), settings (language, notifications, preferred
@@ -48,6 +48,7 @@ class MeScreen extends ConsumerWidget {
     final policy = ref.watch(policySettingsProvider).value ?? const PolicySettings();
     final version = ref.watch(appVersionProvider).value;
     final preferred = clinics.where((x) => x.id == guardian?.preferredClinicId).firstOrNull;
+    final pkg = ref.watch(familyPackageViewProvider);
 
     Widget section(String title) => Padding(
       padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
@@ -159,7 +160,30 @@ class MeScreen extends ConsumerWidget {
                   title: Text(l10n.meAddChild, style: text.titleSmall?.copyWith(color: c.blue)),
                 ),
               ]),
-              if (showPackageSection) section(l10n.mePackage),
+              // The family package, per child (008 FR-001).
+              section(l10n.mePackage),
+              card([
+                if (pkg.current == null)
+                  row(
+                    key: const Key('me-package-none'),
+                    leading: chip(Icons.card_giftcard, c.greenSoft, c.green),
+                    title: pkg.lastEnded == null ? l10n.pkgNone : l10n.pkgEndedOn(dayLabel(pkg.lastEnded!.endsOn)),
+                    subtitle: l10n.pkgNoneSub,
+                    onTap: () => context.push(Routes.package),
+                  )
+                else
+                  for (final (i, child) in children.indexed) ...[
+                    if (i > 0) divider(),
+                    row(
+                      key: Key('me-package-${child.id}'),
+                      leading: chip(Icons.card_giftcard, c.greenSoft, c.green),
+                      title: l10n.pkgChildLine(child.name),
+                      subtitle: l10n.pkgActiveUntil(dayLabel((pkg.next ?? pkg.current!).endsOn)),
+                      trailing: const PackagePill(active: true),
+                      onTap: () => context.push(Routes.package),
+                    ),
+                  ],
+              ]),
             ],
             section(l10n.meAppearance),
             Card(

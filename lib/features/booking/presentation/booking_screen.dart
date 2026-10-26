@@ -379,6 +379,17 @@ class _BookingForm extends ConsumerWidget {
             preview: preview,
             childName: {for (final k in kids) k.id: k.name},
           ),
+          // No package covers this visit: point to the annual package (008 FR-004).
+          if (!vaccineOnly && packageId == null)
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                key: const Key('package-hint'),
+                onPressed: () => context.push(Routes.package),
+                icon: const Icon(Icons.card_giftcard, size: 18),
+                label: Text(l10n.pkgBookingHint),
+              ),
+            ),
         ],
         if (form.error != null) ...[
           const SizedBox(height: 12),

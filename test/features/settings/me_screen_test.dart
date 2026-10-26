@@ -1,7 +1,10 @@
+import 'package:delnono/core/clock.dart';
 import 'package:delnono/core/settings/settings_repository.dart';
 import 'package:delnono/features/auth/data/auth_repository.dart';
 import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/clinics/data/clinics_repository.dart';
+import 'package:delnono/features/packages/data/packages_repository.dart';
+import 'package:delnono/features/packages/domain/family_package.dart';
 import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:delnono/features/settings/presentation/me_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,7 +40,12 @@ void main() {
     PackageInfo.setMockInitialValues(appName: 'delnono', packageName: 'eg.drelnono.app', version: '1.0.0', buildNumber: '1', buildSignature: '');
   });
 
-  Future<(ScreenHarness, _Repo)> open(WidgetTester tester, {bool signedIn = true, String? whatsapp = '+201000000000'}) async {
+  Future<(ScreenHarness, _Repo)> open(
+    WidgetTester tester, {
+    bool signedIn = true,
+    String? whatsapp = '+201000000000',
+    List<FamilyPackage> packages = const [],
+  }) async {
     final repo = _Repo();
     final h = ScreenHarness(
       initial: '/me',
@@ -47,6 +55,8 @@ void main() {
         guardianProvider.overrideWith((ref) => Stream.value(signedIn ? guardian : null)),
         childrenProvider.overrideWith((ref) => Stream.value(kids)),
         guardianRepositoryProvider.overrideWithValue(repo),
+        familyPackageListProvider.overrideWith((ref) => Stream.value(packages)),
+        clockProvider.overrideWithValue(() => DateTime.utc(2026, 11, 15, 10)),
         policySettingsProvider.overrideWith((ref) => Stream.value(const PolicySettings())),
         ...clinicOverrides(clinics: [
           Clinic(
@@ -82,9 +92,24 @@ void main() {
     expect(h.location, '/children/add');
   });
 
-  testWidgets('the package section stays hidden until 008', (tester) async {
-    await open(tester);
-    expect(find.text('الباقة'), findsNothing);
+  testWidgets('«الباقة»: without a package, one line opens the package page (008 FR-001)', (tester) async {
+    final (h, _) = await open(tester);
+    await tapVisible(tester, find.byKey(const Key('me-package-none')));
+    expect(h.location, '/package');
+  });
+
+  testWidgets('«الباقة»: each child with the end date, «في العيادتين» and «سارية»', (tester) async {
+    await open(tester, packages: const [
+      FamilyPackage(id: 'p', active: true, startsOn: '2026-01-13', endsOn: '2027-01-12', soldAtClinicId: 'clinic-1'),
+    ]);
+    for (final id in ['a', 'b']) {
+      final row = find.byKey(Key('me-package-$id'));
+      await scrollTo(tester, row);
+      expect(find.descendant(of: row, matching: find.textContaining('في العيادتين')), findsOneWidget);
+      expect(find.descendant(of: row, matching: find.textContaining('٢٠٢٧')), findsOneWidget);
+      expect(find.descendant(of: row, matching: find.text('سارية')), findsOneWidget);
+    }
+    expect(find.text('باقة يوسف'), findsOneWidget);
   });
 
   testWidgets('language shows Arabic with "English قريبًا" and does nothing on tap', (tester) async {

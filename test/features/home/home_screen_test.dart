@@ -112,4 +112,10 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('the annual package card opens the package page (008 FR-002)', (tester) async {
+    final h = await open(tester);
+    await tapVisible(tester, find.byKey(const Key('home-package')));
+    expect(h.location, '/package');
+  });
 }

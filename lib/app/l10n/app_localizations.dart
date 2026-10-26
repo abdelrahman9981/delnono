@@ -4269,6 +4269,162 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'سجّلي برقم موبايلك'**
   String get meSignIn;
+
+  /// No description provided for @pkgTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الباقة السنوية'**
+  String get pkgTitle;
+
+  /// No description provided for @pkgSubtitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'لكل الإخوة'**
+  String get pkgSubtitle;
+
+  /// No description provided for @pkgPerClinic.
+  ///
+  /// In ar, this message translates to:
+  /// **'{price} جنيه · {months} شهر'**
+  String pkgPerClinic(String price, String months);
+
+  /// No description provided for @pkgRulesTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'الباقة بتشمل إيه'**
+  String get pkgRulesTitle;
+
+  /// No description provided for @pkgRuleSiblings.
+  ///
+  /// In ar, this message translates to:
+  /// **'باقة واحدة لكل الإخوة على حسابك، وأي أخ بيتضاف بعدين بيدخل فيها من غير رسوم.'**
+  String get pkgRuleSiblings;
+
+  /// No description provided for @pkgRuleVisits.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشوفات العيادة من غير حد أقصى طول مدة الباقة.'**
+  String get pkgRuleVisits;
+
+  /// No description provided for @pkgRuleVaccines.
+  ///
+  /// In ar, this message translates to:
+  /// **'التطعيمات بتتحسب بسعرها المعتاد.'**
+  String get pkgRuleVaccines;
+
+  /// No description provided for @pkgRuleClinics.
+  ///
+  /// In ar, this message translates to:
+  /// **'سارية في العيادتين.'**
+  String get pkgRuleClinics;
+
+  /// No description provided for @pkgRuleCash.
+  ///
+  /// In ar, this message translates to:
+  /// **'الاشتراك والتجديد بالدفع كاش في العيادة.'**
+  String get pkgRuleCash;
+
+  /// No description provided for @pkgRuleStart.
+  ///
+  /// In ar, this message translates to:
+  /// **'المدة بتبدأ من يوم الاشتراك.'**
+  String get pkgRuleStart;
+
+  /// No description provided for @pkgActiveUntil.
+  ///
+  /// In ar, this message translates to:
+  /// **'لحد {date} · في العيادتين'**
+  String pkgActiveUntil(String date);
+
+  /// No description provided for @pkgActive.
+  ///
+  /// In ar, this message translates to:
+  /// **'سارية'**
+  String get pkgActive;
+
+  /// No description provided for @pkgEnded.
+  ///
+  /// In ar, this message translates to:
+  /// **'خلصت'**
+  String get pkgEnded;
+
+  /// No description provided for @pkgEndedOn.
+  ///
+  /// In ar, this message translates to:
+  /// **'خلصت في {date}'**
+  String pkgEndedOn(String date);
+
+  /// No description provided for @pkgRenewed.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتجددت لحد {date}'**
+  String pkgRenewed(String date);
+
+  /// No description provided for @pkgChildLine.
+  ///
+  /// In ar, this message translates to:
+  /// **'باقة {name}'**
+  String pkgChildLine(String name);
+
+  /// No description provided for @pkgNone.
+  ///
+  /// In ar, this message translates to:
+  /// **'اشتركي في الباقة السنوية'**
+  String get pkgNone;
+
+  /// No description provided for @pkgNoneSub.
+  ///
+  /// In ar, this message translates to:
+  /// **'كشوفات من غير حد للإخوة كلهم'**
+  String get pkgNoneSub;
+
+  /// No description provided for @pkgYours.
+  ///
+  /// In ar, this message translates to:
+  /// **'باقتك'**
+  String get pkgYours;
+
+  /// No description provided for @pkgBookingHint.
+  ///
+  /// In ar, this message translates to:
+  /// **'عندك إخوة بيكشفوا كتير؟ شوفي الباقة السنوية'**
+  String get pkgBookingHint;
+
+  /// No description provided for @remindPackageTitle.
+  ///
+  /// In ar, this message translates to:
+  /// **'باقتك هتخلص بعد ١٤ يوم'**
+  String get remindPackageTitle;
+
+  /// No description provided for @remindPackageBody.
+  ///
+  /// In ar, this message translates to:
+  /// **'لحد {date} · جدّديها كاش في العيادة'**
+  String remindPackageBody(String date);
+
+  /// No description provided for @dashRenewPackage.
+  ///
+  /// In ar, this message translates to:
+  /// **'تجديد الباقة'**
+  String get dashRenewPackage;
+
+  /// No description provided for @dashPackageRenewed.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتجددت الباقة.'**
+  String get dashPackageRenewed;
+
+  /// No description provided for @dashPackageNext.
+  ///
+  /// In ar, this message translates to:
+  /// **'التجديد من {from} لحد {to}'**
+  String dashPackageNext(String from, String to);
+
+  /// No description provided for @dashErrTooEarly.
+  ///
+  /// In ar, this message translates to:
+  /// **'التجديد بيبقى في آخر ١٤ يوم من الباقة.'**
+  String get dashErrTooEarly;
 }
 
 class _AppLocalizationsDelegate

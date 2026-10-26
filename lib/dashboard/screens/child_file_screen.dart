@@ -103,6 +103,11 @@ class _File extends ConsumerWidget {
               p['active'] == true && '${p['startsOn']}'.compareTo(today) <= 0 && today.compareTo('${p['endsOn']}') <= 0,
         )
         .firstOrNull;
+    // A renewal already bought starts after today (008 FR-006).
+    final renewal = _list('packages')
+        .where((p) => p['active'] == true && '${p['startsOn']}'.compareTo(today) > 0)
+        .firstOrNull;
+    final renewable = package != null && renewal == null && today.compareTo(ClinicTime.addDays('${package['endsOn']}', -14)) >= 0;
     final visited = {
       for (final r in [...measurements, ...doses, ...visits])
         if (clinicName(r['clinicId']).isNotEmpty) clinicName(r['clinicId']),
@@ -223,6 +228,31 @@ class _File extends ConsumerWidget {
                     child: Text(l10n.dashSellPackage),
                   ),
               ],
+              if (renewal != null)
+                StatusPill(
+                  l10n.dashPackageNext('${renewal['startsOn']}', '${renewal['endsOn']}'),
+                  PillKind.ok,
+                  key: const Key('child-package-next'),
+                  dot: false,
+                ),
+              // In the package's last 14 days the desk renews it (008 FR-006, D-14).
+              if (renewable && child['guardianUid'] != null && clinicId != null)
+                OutlinedButton(
+                  key: const Key('renew-package'),
+                  onPressed: () async {
+                    final ok = await runAction(
+                      context,
+                      () => ref.read(dashboardApiProvider).call('sellPackage', {
+                        'clinicId': clinicId,
+                        'guardianUid': child['guardianUid'],
+                        'renew': true,
+                      }),
+                      done: l10n.dashPackageRenewed,
+                    );
+                    if (ok) reload();
+                  },
+                  child: Text(l10n.dashRenewPackage),
+                ),
               if (child['guardianUid'] == null)
                 StatusPill(l10n.dashNotLinked, PillKind.warn, key: const Key('child-unlinked')),
               // Staff lift a guardian's lock after checking them in person (009 FR-008, FR-008a).

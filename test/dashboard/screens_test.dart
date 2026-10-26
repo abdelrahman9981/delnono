@@ -111,6 +111,40 @@ void main() {
     });
   });
 
+  group('package renewal (008 US3)', () {
+    Future<FakeDashboardApi> openWith(WidgetTester tester, List<Map<String, Object>> packages) async {
+      final api = FakeDashboardApi()..responses['openChildFile'] = {...file, 'packages': packages};
+      await pumpDashboard(tester, const ChildFileScreen(childId: 'kid'), path: '/children/kid', overrides: dashboardOverrides(api: api));
+      return api;
+    }
+
+    testWidgets('in the last 14 days the desk renews it at this clinic', (tester) async {
+      final api = await openWith(tester, [
+        {'id': 'p', 'active': true, 'startsOn': '2025-11-21', 'endsOn': '2026-11-20'},
+      ]);
+      await tester.tap(find.byKey(const Key('renew-package')));
+      await tester.pumpAndSettle();
+      final sell = api.calls.firstWhere((c) => c.$1 == 'sellPackage');
+      expect(sell.$2, {'clinicId': 'clinic-1', 'guardianUid': 'g1', 'renew': true});
+    });
+
+    testWidgets('no renewal offered earlier, or once renewed (the renewal shows)', (tester) async {
+      await openWith(tester, [
+        {'id': 'p', 'active': true, 'startsOn': '2025-12-21', 'endsOn': '2026-12-20'},
+      ]);
+      expect(find.byKey(const Key('renew-package')), findsNothing);
+    });
+
+    testWidgets('a renewal already bought is shown and not offered again', (tester) async {
+      await openWith(tester, [
+        {'id': 'p', 'active': true, 'startsOn': '2025-11-21', 'endsOn': '2026-11-20'},
+        {'id': 'r', 'active': true, 'startsOn': '2026-11-21', 'endsOn': '2027-11-21'},
+      ]);
+      expect(find.byKey(const Key('renew-package')), findsNothing);
+      expect(find.byKey(const Key('child-package-next')), findsOneWidget);
+    });
+  });
+
   group('reports (US7)', () {
     test('CSV holds dates, clinic and the six numbers only (FR-023)', () {
       final csv = reportCsv(

@@ -7,6 +7,7 @@ import '../../child_profile/data/doses_repository.dart';
 import '../../child_profile/data/vaccine_schedule_repository.dart';
 import '../../child_profile/domain/child_age.dart';
 import '../../children/data/children_repository.dart';
+import '../../packages/domain/family_package.dart';
 
 // Reminder times from the BRD: bookings a day and an hour before (D-18); vaccines 3 days before and
 // on the day (D-17), at 09:00 Cairo time.
@@ -20,7 +21,8 @@ const maxScheduled = 50;
 /// The page shows what happened in the last 60 days (research R4).
 const feedWindow = Duration(days: 60);
 
-enum ReminderKind { booking, vaccine }
+/// Package expiry notices follow the booking switch (008 FR-005).
+enum ReminderKind { booking, vaccine, package }
 
 /// One reminder that should exist, past or future (data-model.md).
 class Reminder {
@@ -47,6 +49,7 @@ class ReminderInputs {
     required this.schedule,
     required this.catalogue,
     required this.doses,
+    this.packages = const [],
   });
 
   final List<Booking> bookings;
@@ -56,6 +59,9 @@ class ReminderInputs {
 
   /// Recorded doses by child id.
   final Map<String, List<DoseRecord>> doses;
+
+  /// The family's packages (008).
+  final List<FamilyPackage> packages;
 }
 
 /// A 31-bit FNV-1a hash of [key]: the plugin's notification id.
@@ -69,6 +75,10 @@ int reminderId(String key) {
 }
 
 const myBookingsRoute = '/booking/mine';
+const packageRoute = '/package';
+
+/// The expiry notice comes this many days before a package ends (D-14).
+const packageNoticeDays = 14;
 String childVaccinesRoute(String childId) => '/children/$childId/vaccines';
 
 /// Every reminder the data calls for, past and future, before the guardian's switches (FR-001,
@@ -121,6 +131,19 @@ List<Reminder> planReminders(ReminderInputs i, AppLocalizations l10n) {
       vaccine('$vaccineId#${last.dose + 1}', vaccineId, last.dose + 1, ClinicTime.addDays(last.givenOn, info.intervalWeeks * 7));
     }
   }
+  // 14 days before a package ends, unless a renewal follows it (008 FR-005).
+  for (final p in i.packages.where((p) => p.active)) {
+    final renewed = i.packages.any((n) => n.active && n.startsOn.compareTo(p.endsOn) > 0);
+    if (renewed) continue;
+    out.add(Reminder(
+      key: 'package:${p.id}:14d',
+      kind: ReminderKind.package,
+      at: ClinicTime.startsAt(ClinicTime.addDays(p.endsOn, -packageNoticeDays), vaccineReminderHour),
+      title: l10n.remindPackageTitle,
+      body: l10n.remindPackageBody(dayLabel(p.endsOn)),
+      route: packageRoute,
+    ));
+  }
   return out;
 }
 
@@ -128,13 +151,13 @@ List<Reminder> planReminders(ReminderInputs i, AppLocalizations l10n) {
 /// [maxScheduled].
 List<Reminder> toSchedule(List<Reminder> all, {required DateTime now, required bool booking, required bool vaccine}) {
   final on = all
-      .where((r) => r.at.isAfter(now) && (r.kind == ReminderKind.booking ? booking : vaccine))
+      .where((r) => r.at.isAfter(now) && (r.kind == ReminderKind.vaccine ? vaccine : booking))
       .toList()
     ..sort((a, b) => a.at.compareTo(b.at));
   return on.take(maxScheduled).toList();
 }
 
-enum FeedKind { bookingReminder, vaccineReminder, confirmed, cancelled }
+enum FeedKind { bookingReminder, vaccineReminder, packageReminder, confirmed, cancelled }
 
 /// One line of the notifications page.
 class FeedItem {
@@ -165,7 +188,11 @@ List<FeedItem> feedItems(List<Reminder> all, List<Booking> bookings, AppLocaliza
       if (inWindow(r.at))
         FeedItem(
           key: r.key,
-          kind: r.kind == ReminderKind.booking ? FeedKind.bookingReminder : FeedKind.vaccineReminder,
+          kind: switch (r.kind) {
+            ReminderKind.booking => FeedKind.bookingReminder,
+            ReminderKind.vaccine => FeedKind.vaccineReminder,
+            ReminderKind.package => FeedKind.packageReminder,
+          },
           at: r.at,
           title: r.title,
           body: r.body,

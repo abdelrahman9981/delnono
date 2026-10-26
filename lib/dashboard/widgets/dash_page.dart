@@ -117,6 +117,7 @@ String dashErrorText(AppLocalizations l10n, Object e) {
       'no_account' => l10n.dashErrNoAccount,
       'already_linked' => l10n.dashErrAlreadyLinked,
       'not_locked' => l10n.dashErrNotLocked,
+      'too_early' => l10n.dashErrTooEarly,
       'outside_hours' || 'started' => l10n.dashErrHourClosed,
       _ when e.code == 'permission-denied' => l10n.dashErrNotAllowed,
       _ when e.code == 'invalid-argument' => l10n.errInvalidInput,
