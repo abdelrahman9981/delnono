@@ -19,6 +19,7 @@
 - Q: Two seeded videos are about vaccines and newborns, outside the four BRD categories; where do they go? → A: **Assumption — needs owner review.** The category list is the doctor's to edit (owner's scope); the seed adds «التطعيمات» and «حديثي الولادة» after the four BRD categories.
 - Q: Which child does «مناسب لسن …» use when there are several? → A: **Assumption — needs owner review.** The child selected in «طفلي» (or the first), if under 4 years; children over 4 get no age-based section (requirement 3). Items with no age range never appear there, only in the library.
 - Q: Can the channel import run on the real project before Blaze? → A: **Assumption — needs owner review.** It runs in a Cloud Function that reads the channel's public feed; on the emulators it works now; on the real project it needs deployed Functions (Blaze, D-40) like every callable. Staff can always paste a link instead.
+- Q: Where do video titles come from in normal use? → A (owner): staff type the title themselves in the dashboard and paste the YouTube link. The title is required and is never filled in from YouTube (the channel's titles are dates). Titles read from thumbnails are only for the demo seed.
 - Q: How are items ordered, and what does "unpublish" do? → A: **Assumption — needs owner review.** Lower order number first, then newest published first; unpublish returns a published item to draft (hidden from the app, editable again by the secretary); archive hides it for good and only the doctor can bring it back to draft.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -83,7 +84,7 @@ A secretary creates and edits drafts: type (video or tip), title, category, body
 3. **Given** the doctor publishes, unpublishes or archives, **Then** the change is saved and audited with the doctor, the item and the new state.
 4. **Given** the preview, **Then** it shows the card and detail as the app does (title, category, age, thumbnail or text).
 5. **Given** the doctor edits the categories (add, rename, reorder; a category in use cannot be removed), **Then** the app's chips follow.
-6. **Given** «استيراد من القناة», **Then** the channel's latest videos are listed with thumbnail and title; picking one fills a new video draft.
+6. **Given** «استيراد من القناة», **Then** the channel's latest videos are listed with thumbnail and title; picking one opens a new video draft with only its link filled; staff type the title.
 
 ---
 
@@ -109,7 +110,7 @@ Home shows up to 3 latest published items with a link to the library.
 - **FR-003**: Content MUST store only the YouTube video id (and the original link) and the title for videos; no video or image files are stored (D-50).
 - **FR-004**: For a signed-in guardian whose selected child is under 48 months, the app MUST show «مناسب لسن <name>» with published items whose age range covers the child's age.
 - **FR-005**: Loaded content MUST open offline read-only; videos offline MUST show that they need internet.
-- **FR-006**: The dashboard MUST let staff create and edit drafts with type, title, category, body, optional age range, and order; for videos, a pasted YouTube link MUST be validated, its id extracted, and its thumbnail shown; non-YouTube links MUST be refused (client and server).
+- **FR-006**: The dashboard MUST let staff create and edit drafts with type, title, category, body, optional age range, and order; the title MUST be typed by staff (required, never filled in from YouTube, including on channel import); for videos, a pasted YouTube link MUST be validated, its id extracted, and its thumbnail shown; non-YouTube links MUST be refused (client and server).
 - **FR-007**: Only the doctor MUST be able to publish, unpublish and archive (server and rules), and edit the category list; every state change MUST be audited.
 - **FR-008**: The dashboard MUST preview an item as the app shows it.
 - **FR-009**: The dashboard SHOULD offer «استيراد من القناة», listing the channel's latest videos to pick from.

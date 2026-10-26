@@ -46,6 +46,8 @@ describe("content library (006)", () => {
 
   it("refuses non-YouTube links, duplicates, tips without text and half age ranges", async () => {
     const s = await secretary1();
+    const untitled = await callFunction("saveContent", { ...video, title: "", url: "https://youtu.be/ZHEaiIOfg2s" }, s);
+    assert.equal(untitled.error?.details?.field, "title", "staff type the title; it never comes from YouTube");
     const bad = await callFunction("saveContent", { ...video, url: "https://vimeo.com/1" }, s);
     assert.equal(bad.error?.details?.reason, "invalid_youtube");
     const first = await callFunction<{ id: string }>("saveContent", video, s);

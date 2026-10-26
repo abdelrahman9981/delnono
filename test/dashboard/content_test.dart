@@ -128,6 +128,16 @@ void main() {
     expect(find.byKey(const Key('import-WjbDIjEH38U')), findsNothing, reason: 'already added');
     await tap(tester, 'import-ZHEaiIOfg2s');
     expect(find.text('رقم الفيديو: ZHEaiIOfg2s'), findsOneWidget);
+    // Staff type the title; the channel's date title is never copied (owner, 006).
+    expect(tester.widget<TextField>(find.byKey(const Key('content-title'))).controller!.text, isEmpty);
+    expect(tester.widget<FilledButton>(find.byKey(const Key('content-save'))).onPressed, isNull);
+    await tester.enterText(find.byKey(const Key('content-title')), 'عنوان تكتبه السكرتيرة');
+    await tester.tap(find.byKey(const Key('content-category')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('النوم').last);
+    await tester.pumpAndSettle();
+    await tap(tester, 'content-save');
+    expect(api.calls.last.$2['title'], 'عنوان تكتبه السكرتيرة');
   });
 
   testWidgets('the doctor saves the category list', (tester) async {
