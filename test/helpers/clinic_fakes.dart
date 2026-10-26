@@ -1,7 +1,10 @@
 import 'package:delnono/features/booking/data/booking_settings.dart';
 import 'package:delnono/features/booking/data/vaccines_repository.dart';
 import 'package:delnono/features/clinics/data/clinics_repository.dart';
+import 'package:delnono/features/content/domain/content_item.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
+
+import '../features/content/fakes.dart';
 
 /// The two seeded clinics (004 quickstart.md), as the app reads them.
 const clinic1 = Clinic(
@@ -36,14 +39,17 @@ const clinic2Settings = BookingSettings(
 );
 
 /// Clinic providers for widget tests: [clinics] (active ones are shown), each clinic's booking
-/// [settings] (002 defaults when missing) and offered [vaccines].
+/// [settings] (002 defaults when missing), offered [vaccines] and published [content].
 List<Override> clinicOverrides({
   List<Clinic> clinics = const [clinic1],
   Map<String, BookingSettings> settings = const {},
   Map<String, List<Vaccine>> vaccines = const {},
+  List<ContentItem> content = const [],
 }) =>
     [
       allClinicsProvider.overrideWith((ref) => Stream.value(clinics)),
       bookingSettingsProvider.overrideWith((ref, id) => Stream.value(settings[id] ?? const BookingSettings())),
       vaccinesProvider.overrideWith((ref, id) => Stream.value(vaccines[id] ?? const <Vaccine>[])),
+      // Home and the Content tab read published content (006); none by default.
+      ...contentOverrides(items: content),
     ];
