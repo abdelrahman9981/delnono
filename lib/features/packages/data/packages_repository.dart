@@ -2,13 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/clock.dart';
 import '../../../core/settings/settings_repository.dart';
-import '../../auth/data/auth_repository.dart';
 import '../../booking/domain/clinic_time.dart';
 import '../domain/family_package.dart';
+import '../../registration/data/family_access.dart';
 
 /// The signed-in family's packages, with ids (renewals and the expiry reminder need them).
 final familyPackageListProvider = StreamProvider<List<FamilyPackage>>((ref) {
-  final uid = ref.watch(authStateProvider).value?.uid;
+  // Only once the rules allow it, and again whenever that changes (bug 0003).
+  final uid = ref.watch(familyAccessProvider);
   if (uid == null) return Stream.value(const []);
   return ref
       .watch(firestoreProvider)

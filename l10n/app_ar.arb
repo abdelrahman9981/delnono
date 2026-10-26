@@ -829,5 +829,7 @@
   "@dashPackageNext": {"placeholders": {"from": {"type": "String"}, "to": {"type": "String"}}},
   "errTimeout": "الرد اتأخر. اتأكدي من النت وجربي تاني.",
   "signInLoadError": "اتسجل دخولك، بس مقدرناش نحمّل بياناتك.",
-  "signInRetry": "حاولي تاني"
+  "signInRetry": "حاولي تاني",
+  "loadError": "مقدرناش نحمّل البيانات. اتأكدي من النت وجربي تاني.",
+  "linkClinicChildren": "ربط أطفال العيادة"
 }

@@ -19,6 +19,9 @@ import '../domain/package_state.dart';
 import 'growth_chart.dart';
 import 'offline_note.dart';
 import 'profile_format.dart';
+import '../../registration/data/guardian_repository.dart';
+import '../../../core/widgets/load_error.dart';
+import '../../../app/session_flags.dart';
 
 /// "طفلي" (`/children`, design `figma/child-profile.jpg`): child switcher, latest measurements and
 /// the growth chart, with entries to vaccines, visits and follow-up (contracts/routes.md). Values and
@@ -42,7 +45,8 @@ class MyChildScreen extends ConsumerWidget {
       body: SafeArea(
         child: children.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => const SizedBox.shrink(),
+          // Never blank: a failed read says so and offers a retry (bug 0003).
+          error: (_, _) => LoadErrorView(onRetry: () => ref.invalidate(childrenProvider)),
           data: (list) => ListView(
             padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
             children: [
@@ -60,6 +64,19 @@ class MyChildScreen extends ConsumerWidget {
                         textAlign: TextAlign.center,
                         style: text.bodyLarge?.copyWith(color: c.muted),
                       ),
+                      // The clinic registered children on this number: link them here (001 FR-021).
+                      if (ref.watch(guardianProvider).value?.clinicChildrenPending ?? false) ...[
+                        const SizedBox(height: 16),
+                        FilledButton.icon(
+                          key: const Key('link-clinic-children'),
+                          onPressed: () {
+                            ref.read(linkSkippedProvider.notifier).set(false);
+                            context.go(Routes.registerLink);
+                          },
+                          icon: const Icon(Icons.link),
+                          label: Text(l10n.linkClinicChildren),
+                        ),
+                      ],
                     ],
                   ),
                 )

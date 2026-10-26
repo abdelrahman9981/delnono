@@ -12,6 +12,7 @@ import '../notifications/presentation/notifications_bell.dart';
 import '../clinics/domain/hours_summary.dart';
 import '../clinics/presentation/clinic_photo.dart';
 import '../registration/data/guardian_repository.dart';
+import '../../core/widgets/load_error.dart';
 
 /// Home (`/`, design `figma/home.jpg`; 004 FR-013): the doctor's card and one card per active clinic
 /// with its address, hours, call and WhatsApp, and "احجزي هنا". Public: no sign-in needed (D-09).
@@ -65,7 +66,7 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 10),
             ...clinics.when(
               loading: () => [const Center(child: CircularProgressIndicator())],
-              error: (_, _) => [Text(l10n.errGeneric)],
+              error: (_, _) => [LoadErrorView(onRetry: () => ref.invalidate(clinicsProvider))],
               data: (list) => [
                 if (list.isEmpty) Text(l10n.noClinics, style: text.bodyMedium?.copyWith(color: c.muted)),
                 for (final clinic in list) ...[_ClinicCard(clinic: clinic), const SizedBox(height: 12)],

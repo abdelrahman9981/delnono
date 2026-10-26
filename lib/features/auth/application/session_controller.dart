@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/session_flags.dart';
+import '../../booking/data/bookings_repository.dart';
+import '../../child_profile/data/family_packages_repository.dart';
 import '../../children/data/children_repository.dart';
+import '../../packages/data/packages_repository.dart';
 import '../data/session_api.dart';
 
 /// Runs `touchSession` once per app start for the signed-in guardian and raises the re-check flag
@@ -25,10 +28,13 @@ class SessionController extends Notifier<String?> {
     }
   }
 
-  /// The birth-date re-check passed: lift the flag and reload child data the rules had refused.
+  /// The birth-date re-check passed: lift the flag and reload the family data the rules had refused.
   void reverified() {
     ref.read(reverifyRequiredProvider.notifier).set(false);
     ref.invalidate(childrenProvider);
+    ref.invalidate(myBookingsProvider);
+    ref.invalidate(familyPackagesProvider);
+    ref.invalidate(familyPackageListProvider);
   }
 
   /// Signed out: the next guardian on this device is checked again.

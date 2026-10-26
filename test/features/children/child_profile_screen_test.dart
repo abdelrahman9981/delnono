@@ -5,6 +5,7 @@ import 'package:delnono/features/children/data/children_repository.dart';
 import 'package:delnono/features/children/presentation/add_child_screen.dart';
 import 'package:delnono/features/children/presentation/child_profile_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:delnono/features/registration/data/guardian_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -38,6 +39,7 @@ void main() {
         childrenRepositoryProvider.overrideWithValue(repo),
         childrenProvider.overrideWith((ref) => Stream.value(children)),
         authStateProvider.overrideWith((ref) => Stream.value(_User())),
+        guardianProvider.overrideWith((ref) => Stream.value(null)),
         birthDatePickerProvider.overrideWithValue((context, {initial}) async => DateTime(2019, 1, 1)),
         ...profileDataOverrides(),
       ],

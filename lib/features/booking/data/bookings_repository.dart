@@ -1,12 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/settings/settings_repository.dart';
-import '../../auth/data/auth_repository.dart';
 import '../domain/booking.dart';
+import '../../registration/data/family_access.dart';
 
 /// The signed-in guardian's bookings, soonest first.
 final myBookingsProvider = StreamProvider<List<Booking>>((ref) {
-  final uid = ref.watch(authStateProvider).value?.uid;
+  // Only once the rules allow it, and again whenever that changes (bug 0003).
+  final uid = ref.watch(familyAccessProvider);
   if (uid == null) return Stream.value(const []);
   return ref
       .watch(firestoreProvider)
