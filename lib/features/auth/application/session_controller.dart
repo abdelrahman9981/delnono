@@ -17,9 +17,11 @@ class SessionController extends Notifier<String?> {
     state = uid;
     try {
       final required = await ref.read(sessionApiProvider).touchSession();
+      // The app may have been torn down while the call was out (tests, hot restart).
+      if (!ref.mounted) return;
       ref.read(reverifyRequiredProvider.notifier).set(required);
     } catch (_) {
-      state = null;
+      if (ref.mounted) state = null;
     }
   }
 

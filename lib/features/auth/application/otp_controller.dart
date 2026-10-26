@@ -189,6 +189,7 @@ class OtpController extends Notifier<OtpState> {
       } else {
         await _service.signInWithCode(verificationId, code).timeout(verifyTimeout);
       }
+      if (!ref.mounted) return;
       // The code is used up: drop it and the resend timer, so a later sign-in with the same number
       // (after signing out or deleting the account) sends a fresh code.
       state = OtpState(phase: OtpPhase.signedIn, phone: state.phone);
