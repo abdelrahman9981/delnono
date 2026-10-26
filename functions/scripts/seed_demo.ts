@@ -159,6 +159,8 @@ export async function seedDemoFamilies(db: Firestore, auth: Auth): Promise<void>
 
 /** The [offset]th day from today that the clinic is open (moving away from today when closed). */
 function openDay(settings: Awaited<ReturnType<typeof readBookingSettings>>, today: string, offset: number): string | null {
+  // Today's activity is today or nothing (a clinic closed today has no queue).
+  if (offset === 0) return hoursOf(settings, today).length > 0 ? today : null;
   for (let k = 0; k < 7; k++) {
     const date = addDays(today, offset + (offset < 0 ? -k : k));
     if (hoursOf(settings, date).length > 0) return date;

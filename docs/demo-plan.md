@@ -24,6 +24,15 @@ Remaining (deploys only with the owner's approval):
 - [ ] Apple: APNs key and TestFlight, later (steps 3 and 6).
 - [ ] Launch checklist: no proposed medical content in production (docs/launch-checklist.md).
 
+## Demo data (emulators)
+
+The emulator seed (`functions/scripts/seed.ts`, sources in [demo-data-sources.md](demo-data-sources.md))
+fills every screen: two clinics, prices, the MOHP schedule and optional vaccines, follow-up lists,
+danger signs, tips and ten fictional families with bookings, visits, doses and packages. Its dates are
+relative to the day it runs, so regenerate `emulator-seed/` the day before the demo (command at the
+top of `seed.ts`) to have a full «اليوم» and the next 7 days. The medical items are proposed: they
+never go to the real project ([launch-checklist.md](launch-checklist.md)).
+
 ## 1. Blaze and budget alert (2–3 days before the demo, D-40)
 
 - [ ] Upgrade `dr-elnono-clinic` to the Blaze plan (billing account owned by the clinic).
