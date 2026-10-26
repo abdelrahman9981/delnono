@@ -55,4 +55,4 @@
 
 - [X] T026 Layout tests (large text, dark) for library, tip and video screens in test/features/content/layout_test.dart
 - [X] T027 Simulator e2e integration_test/content_test.dart: signed out, open «محتوى», filter, search, open a tip, open a video (player screen and YouTube button present)
-- [ ] T028 docs: feature-notes 006 built, quickstart check, dashboard e2e still green, report table (id, date, title, category)
+- [X] T028 docs: feature-notes 006 built, quickstart check, dashboard e2e still green, report table (id, date, title, category)
