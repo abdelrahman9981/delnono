@@ -38,6 +38,9 @@ import 'session_flags.dart';
 /// loading-with-error meanwhile; an error counts as a result, or a denied read would block the guard.
 bool _waiting(AsyncValue<Object?> v) => !v.hasValue && !v.hasError;
 
+/// Failed with no value to fall back on.
+bool _failed(AsyncValue<Object?> v) => !v.hasValue && v.hasError;
+
 /// Combines auth, guardian, policy, children and session flags into the guard's input.
 final guardStateProvider = Provider<GuardState>((ref) {
   final auth = ref.watch(authStateProvider);
@@ -47,6 +50,8 @@ final guardStateProvider = Provider<GuardState>((ref) {
   final guardian = ref.watch(guardianProvider);
   final policy = ref.watch(policySettingsProvider);
   if (_waiting(guardian) || _waiting(policy)) return GuardState.loadingState;
+  // A read that failed is not "no guardian": show the error with a retry instead.
+  if (_failed(guardian) || _failed(policy)) return GuardState.loadErrorState;
 
   final g = guardian.value;
   final currentVersion = policy.value?.currentVersion ?? const PolicySettings().currentVersion;

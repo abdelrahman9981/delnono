@@ -13,10 +13,15 @@ class GuardState {
     this.linkSkipped = false,
     this.registrationInProgress = false,
     this.hasChildren = false,
+    this.loadError = false,
   });
 
   /// Auth or guardian data has not arrived yet; the guard makes no decision.
   static const loadingState = GuardState(loading: true);
+
+  /// Signed in, but the guardian or policy could not be read: the guard keeps the guardian where
+  /// they are (the code screen shows the error with a retry), never treats it as "no guardian".
+  static const loadErrorState = GuardState(signedIn: true, loadError: true);
 
   final bool loading;
   final bool signedIn;
@@ -27,6 +32,7 @@ class GuardState {
   final bool linkSkipped;
   final bool registrationInProgress;
   final bool hasChildren;
+  final bool loadError;
 
   @override
   bool operator ==(Object other) =>
@@ -39,11 +45,12 @@ class GuardState {
       other.clinicChildrenPending == clinicChildrenPending &&
       other.linkSkipped == linkSkipped &&
       other.registrationInProgress == registrationInProgress &&
-      other.hasChildren == hasChildren;
+      other.hasChildren == hasChildren &&
+      other.loadError == loadError;
 
   @override
   int get hashCode => Object.hash(loading, signedIn, hasGuardian, consentCurrent, reverifyRequired,
-      clinicChildrenPending, linkSkipped, registrationInProgress, hasChildren);
+      clinicChildrenPending, linkSkipped, registrationInProgress, hasChildren, loadError);
 }
 
 abstract final class Routes {
@@ -108,7 +115,7 @@ String safeFrom(String? from) {
 
 /// go_router `redirect` for [location] (the full requested URI).
 String? guardRedirect(Uri location, GuardState s) {
-  if (s.loading) return null;
+  if (s.loading || s.loadError) return null;
   final path = location.path;
   // Welcome is the signed-out start (US3); a signed-in guardian starts at home.
   if (path == Routes.welcome) return s.signedIn ? Routes.home : null;

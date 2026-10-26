@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -32,5 +34,6 @@ String arabicErrorMessage(Object error, AppLocalizations l10n) {
       _ => l10n.errGeneric,
     };
   }
+  if (error is TimeoutException) return l10n.errTimeout;
   return l10n.errGeneric;
 }

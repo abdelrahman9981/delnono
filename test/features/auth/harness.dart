@@ -1,4 +1,6 @@
 import 'package:delnono/app/l10n/app_localizations.dart';
+import 'package:delnono/app/route_guard.dart';
+import 'package:delnono/app/router.dart';
 import 'package:delnono/app/theme.dart';
 import 'package:delnono/core/settings/settings_repository.dart';
 import 'package:delnono/features/auth/application/otp_controller.dart';
@@ -15,10 +17,12 @@ import 'fakes.dart';
 
 /// Sign-in screens on their own router, with a fake phone service, clock and settings.
 class SignInHarness {
-  factory SignInHarness({AuthSettings settings = const AuthSettings()}) {
+  /// [guard] is what the router guard sees (signed out by default).
+  factory SignInHarness({AuthSettings settings = const AuthSettings(), GuardState guard = const GuardState()}) {
     final clock = FakeClock();
     final service = FakePhoneAuthService();
     final container = ProviderContainer(overrides: [
+      guardStateProvider.overrideWithValue(guard),
       clockProvider.overrideWithValue(clock.call),
       phoneAuthServiceProvider.overrideWithValue(service),
       authSettingsProvider.overrideWith((ref) => Stream.value(settings)),

@@ -20,9 +20,10 @@ functions/node_modules/.bin/firebase emulators:start --only auth,firestore,funct
 Use the project's own Firebase CLI (`functions/node_modules/.bin/firebase`): it runs on Node 22,
 like the deployed functions. The standalone CLI bundles Node 20.
 
-`emulator-seed` contains `settings/auth`, `settings/policy` (version 1, placeholder text) and one
-clinic-registered guardian with two children on `+201000000001` (birth date of the first:
-`2024-03-15`).
+`emulator-seed` contains `settings/auth`, `settings/policy` (version 1, placeholder text), the
+registered family on `+201000000001` (Auth uid `seed-guardian-1`, three linked children) and one
+clinic-registered guardian with two unlinked children on `+201000000003` (birth date of the first:
+`2023-05-10`). With `USE_EMULATOR=true` the code `123456` signs in any number (D-51).
 
 Run the app against the emulators:
 
@@ -55,7 +56,7 @@ All three must pass before 001 is done (constitution: rules tests gate completio
 | 5 | Right after sending a code | Resend disabled with countdown from 60 (FR-008) |
 | 6 | Register: details → decline consent → close app → reopen | Starts again at guardian details; emulator shows no `guardians` doc (FR-015) |
 | 7 | Register fully with one child; restart app | Still signed in, child listed (FR-010, SC-006) |
-| 8 | Sign in with `+201000000001`, consent, enter `2024-03-15` | Both clinic children linked; guardian details are the ones you typed (FR-021) |
+| 8 | Sign in with `+201000000003`, consent, enter `2023-05-10` | Both clinic children linked; guardian details are the ones you typed (FR-021) |
 | 9 | Same number, wrong birth date 3 times | Locked, "contact the clinic"; three `children.link_*` audit entries (FR-021a) |
 | 10 | Add a child with the same name and birth date as an existing one | Warning, no new child doc (FR-022) |
 | 11 | Edit child name and allergies | Saved; `history` entry with your uid. Birth date and sex not editable (FR-023, FR-024) |
@@ -65,7 +66,7 @@ All three must pass before 001 is done (constitution: rules tests gate completio
 | 15 | Bump `settings/policy.currentVersion` to 2, reopen app | Consent screen before any child data (FR-017) |
 | 16 | Switch device to dark mode | All screens readable in Arabic RTL with Readex Pro (FR-031) |
 | 17 | Account screen: tap "talk to the clinic on WhatsApp" | Opens a chat with `settings/clinic.whatsappNumber`; Notifications entry shows a placeholder (FR-034, FR-035) |
-| 18 | Sign in with `+201000000001`, consent, tap "these aren't my children, add a child" | Nothing linked, no attempt counted, add-child screen; birth-date check offered again at next sign-in (US4 scenario 4) |
+| 18 | Sign in with `+201000000003`, consent, tap "these aren't my children, add a child" | Nothing linked, no attempt counted, add-child screen; birth-date check offered again at next sign-in (US4 scenario 4) |
 | 19 | In the emulator, set your `guardians/{uid}.lastActiveAt` to 91 days ago; reopen the app | Birth-date re-check before any child data; correct date restores access; 3 wrong dates lock (FR-010a, FR-010b) |
 
 ## Scenario coverage (T088)

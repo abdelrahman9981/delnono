@@ -17,3 +17,9 @@ constitution's feature order (1.3.0).
 
 - D-14, D-46: package valid in every clinic, revenue to the selling clinic, covered visits recorded
   where they happen; 14-day expiry notice; renewal by cash.
+
+## 006 Content library
+
+- D-50: videos are hosted on YouTube as Unlisted. Staff paste the YouTube link in the dashboard;
+  Firestore stores only the video id or link and the title; the app plays it inside the app
+  (youtube_player_iframe or similar). No Cloud Storage for videos. Not built yet.

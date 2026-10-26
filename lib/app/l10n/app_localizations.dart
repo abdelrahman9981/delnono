@@ -4425,6 +4425,24 @@ abstract class AppLocalizations {
   /// In ar, this message translates to:
   /// **'التجديد بيبقى في آخر ١٤ يوم من الباقة.'**
   String get dashErrTooEarly;
+
+  /// No description provided for @errTimeout.
+  ///
+  /// In ar, this message translates to:
+  /// **'الرد اتأخر. اتأكدي من النت وجربي تاني.'**
+  String get errTimeout;
+
+  /// No description provided for @signInLoadError.
+  ///
+  /// In ar, this message translates to:
+  /// **'اتسجل دخولك، بس مقدرناش نحمّل بياناتك.'**
+  String get signInLoadError;
+
+  /// No description provided for @signInRetry.
+  ///
+  /// In ar, this message translates to:
+  /// **'حاولي تاني'**
+  String get signInRetry;
 }
 
 class _AppLocalizationsDelegate

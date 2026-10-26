@@ -1,4 +1,6 @@
+import 'package:delnono/app/route_guard.dart';
 import 'package:delnono/features/auth/application/otp_controller.dart';
+import 'package:delnono/features/auth/presentation/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -85,5 +87,35 @@ void main() {
     await tester.tap(find.text('غيّري الرقم'));
     await tester.pumpAndSettle();
     expect(h.location, '/sign-in?from=%2Fbooking');
+  });
+
+  group('after a correct code (never hang)', () {
+    Future<SignInHarness> signedInWith(WidgetTester tester, GuardState guard) async {
+      final h = SignInHarness(guard: guard);
+      await tester.runAsync(() => h.otp.sendCode('+201000000099'));
+      await h.pump(tester, at: '/sign-in/code');
+      // pump, not pumpAndSettle: the loading spinner keeps animating.
+      await tester.enterText(find.byKey(const Key('otp-field')), '123456');
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(h.container.read(otpControllerProvider).phase, OtpPhase.signedIn);
+      return h;
+    }
+
+    testWidgets('a guardian read that failed shows an error with a retry', (tester) async {
+      await signedInWith(tester, GuardState.loadErrorState);
+      expect(find.byKey(const Key('sign-in-load-error')), findsOneWidget);
+      expect(find.byKey(const Key('sign-in-retry')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('sign-in-retry')));
+      await tester.pump();
+    });
+
+    testWidgets('still loading after 10 s: the error and retry appear; before that a spinner', (tester) async {
+      final h = await signedInWith(tester, GuardState.loadingState);
+      expect(find.byKey(const Key('sign-in-loading')), findsOneWidget);
+      expect(find.byKey(const Key('sign-in-load-error')), findsNothing);
+      h.clock.advance(postSignInTimeout);
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.byKey(const Key('sign-in-load-error')), findsOneWidget);
+    });
   });
 }

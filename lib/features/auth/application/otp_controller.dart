@@ -7,6 +7,7 @@ import '../../../core/settings/settings_repository.dart';
 
 export '../../../core/clock.dart';
 import '../data/phone_auth_service.dart';
+import '../data/dev_otp.dart';
 
 
 enum OtpPhase { idle, sending, codeSent, verifying, signedIn }
@@ -175,10 +176,18 @@ class OtpController extends Notifier<OtpState> {
 
     state = state.copyWith(phase: OtpPhase.verifying, clearError: true);
     try {
+      // Emulator builds: 123456 stands for the code the emulator issued (D-51). No resolver exists in
+      // other builds, so the typed code goes through unchanged.
+      final resolver = ref.read(devCodeResolverProvider);
+      final phone = state.phone;
+      final code = smsCode == devFixedCode && resolver != null && phone != null
+          ? await resolver.realCodeFor(phone) ?? smsCode
+          : smsCode;
+      // A sign-in that never answers must not leave the screen spinning (never hang after the code).
       if (changePhone) {
-        await _service.updatePhoneNumber(verificationId, smsCode);
+        await _service.updatePhoneNumber(verificationId, code).timeout(verifyTimeout);
       } else {
-        await _service.signInWithCode(verificationId, smsCode);
+        await _service.signInWithCode(verificationId, code).timeout(verifyTimeout);
       }
       // The code is used up: drop it and the resend timer, so a later sign-in with the same number
       // (after signing out or deleting the account) sends a fresh code.
@@ -203,6 +212,9 @@ class OtpController extends Notifier<OtpState> {
   /// Starts over with a different number.
   void reset() => state = const OtpState();
 }
+
+/// The longest a code check may take before the screen shows an error with a retry.
+const verifyTimeout = Duration(seconds: 20);
 
 final otpControllerProvider = NotifierProvider<OtpController, OtpState>(OtpController.new);
 
