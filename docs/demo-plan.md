@@ -14,6 +14,9 @@ Done by the owner in the Firebase console:
       **me-central1 (Doha)**, production-mode rules for now. The location is permanent.
 - [x] Phone sign-in enabled (Spark plan; real SMS limited to 10 a day).
 - [x] Test numbers +201000000001, +201000000003, +201000000099 with code 123456.
+- [x] Test number +201000000201 (the demo family هالة مصطفى) with code 123456 (D-54).
+- [x] Email/Password sign-in enabled for dashboard staff; no accounts created yet (D-54).
+- Second clinic confirmed: Nasr City (D-54).
 
 Remaining (deploys only with the owner's approval):
 
