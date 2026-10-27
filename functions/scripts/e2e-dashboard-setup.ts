@@ -1,7 +1,8 @@
 /**
  * Test data for the dashboard browser test (integration_test/dashboard), emulator only: a family
- * with today's booking at each clinic, the seeded child Youssef linked to it, and clinic 1 open all
- * day so the test runs at any hour. Run by scripts/dashboard_e2e.sh before the browser starts.
+ * with today's 6 pm booking at each clinic and the seeded child Youssef linked to it. Clinic 1 keeps
+ * its seeded hours; only when today is a closed day or a holiday (Friday, an Eid) is today opened
+ * with the seeded Moqattam ranges, so the test runs on any day. Run by scripts/dashboard_e2e.sh.
  */
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
@@ -10,12 +11,18 @@ if (!process.env.FIRESTORE_EMULATOR_HOST) throw new Error("Emulator only.");
 const db = getFirestore(initializeApp({ projectId: "demo-delnono" }));
 
 const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Cairo", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-const allDay = [{ from: 0, to: 24 }];
+/** The seeded Moqattam ranges (functions/scripts/seed.ts); 6 pm is inside them. */
+const moqattam = [{ from: 13, to: 15 }, { from: 18, to: 22 }];
 
 async function main() {
-  await db.doc("clinics/clinic-1").update({
-    workingHours: { "1": allDay, "2": allDay, "3": allDay, "4": allDay, "5": allDay, "6": allDay, "7": allDay },
-  });
+  const clinic = db.doc("clinics/clinic-1");
+  const snap = await clinic.get();
+  const weekday = String(((new Date(`${today}T12:00:00Z`).getUTCDay() + 6) % 7) + 1); // ISO: 1 = Monday
+  const hours = (snap.get("workingHours") ?? {}) as Record<string, unknown[]>;
+  const holidays = (snap.get("holidays") ?? []) as string[];
+  if (!hours[weekday]?.length || holidays.includes(today)) {
+    await clinic.update({ [`workingHours.${weekday}`]: moqattam, holidays: holidays.filter((d) => d !== today) });
+  }
   await db.doc("guardians/e2e-guardian").set({
     phone: "+201000000001", fullName: "[سارة محمود]", relation: "mother", consentVersion: 1, clinicChildrenPending: false, lastActiveAt: new Date(),
   });

@@ -57,9 +57,10 @@ List<Override> dashboardOverrides({
   bool stopped = false,
   BookingSettings? clinic1Settings,
   Map<String, VaccineInfo>? catalogue,
+  DateTime? clock,
 }) =>
     [
-      clockProvider.overrideWithValue(() => now),
+      clockProvider.overrideWithValue(() => clock ?? now),
       staffSessionProvider.overrideWith((ref) => Stream.value(session)),
       dashboardApiProvider.overrideWithValue(api),
       ...clinicOverrides(clinics: const [clinic1, clinic2], settings: {'clinic-2': clinic2Settings, 'clinic-1': ?clinic1Settings}),

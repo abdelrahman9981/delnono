@@ -351,7 +351,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get welcomeDoctorName => 'د. أحمد العبد';
 
   @override
-  String get welcomeDoctorTitle => 'استشاري طب الأطفال وحديثي الولادة · المقطم';
+  String get welcomeDoctorTitle => 'أخصائي طب الأطفال وحديثي الولادة · المقطم';
 
   @override
   String get welcomeHeading => 'أهلًا بيكي';
@@ -1204,7 +1204,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get doctorName => 'د. أحمد العبد';
 
   @override
-  String get doctorTitle => 'استشاري طب الأطفال وحديثي الولادة';
+  String get doctorTitle => 'أخصائي طب الأطفال وحديثي الولادة';
 
   @override
   String get doctorTagline => 'موجودين عشان نطمنك';

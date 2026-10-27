@@ -42,7 +42,10 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     final now = ref.watch(clockProvider)();
     final date = ClinicTime.dateOf(now);
     final day = (clinicId: clinicId, date: date);
-    final settings = ref.watch(bookingSettingsProvider(clinicId)).value ?? const BookingSettings();
+    // Only the clinic's own hours: never the built-in defaults while its settings load.
+    final loaded = ref.watch(bookingSettingsProvider(clinicId));
+    if (!loaded.hasValue) return const Center(child: CircularProgressIndicator());
+    final settings = loaded.value!;
     final bookings = ref.watch(dayBookingsProvider(day)).value ?? const <QueueBooking>[];
     final walkIns = ref.watch(dayWalkInsProvider(day)).value ?? const <WalkIn>[];
     final stopped = ref.watch(walkInsStoppedProvider(day)).value ?? false;
@@ -90,6 +93,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               children: [
                 for (final h in hours)
                   _HourCard(
+                    key: Key('hour-card-$h'),
                     hour: h,
                     taken: taken(h),
                     capacity: settings.capacityPerHour,
@@ -170,7 +174,11 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       title: l10n.dashNavToday,
       subtitle: [
         dayLabel(date),
-        if (hours.isNotEmpty) l10n.hourRange(hourLabel(l10n, hours.first), hourLabel(l10n, hours.last + 1)),
+        // Each working range of the day, so a break shows (e.g. «١ م لـ ٣ م، ٦ م لـ ١٠ م»).
+        if (hours.isNotEmpty)
+          [
+            for (final (from, to) in hourRuns(hours)) l10n.hourRange(hourLabel(l10n, from), hourLabel(l10n, to)),
+          ].join(l10n.listSeparator),
       ].join(' · '),
       actions: [
         FilterChip(
@@ -314,6 +322,19 @@ Widget _paymentCell(AppLocalizations l10n, Map<String, dynamic>? p) {
   return Text(l10n.dashPayCash(arabicDigits((p['cash'] as num?) ?? 0)));
 }
 
+/// Consecutive hours as (start, end) runs: [13, 14, 18, 19] → (13, 15), (18, 20).
+List<(int, int)> hourRuns(List<int> hours) {
+  final runs = <(int, int)>[];
+  for (final h in hours) {
+    if (runs.isNotEmpty && runs.last.$2 == h) {
+      runs[runs.length - 1] = (runs.last.$1, h + 1);
+    } else {
+      runs.add((h, h + 1));
+    }
+  }
+  return runs;
+}
+
 /// Hours of today a walk-in can still join: working hours that have not ended.
 List<int> openHoursNow(BookingSettings s, String date, DateTime now) =>
     hoursOf(s, date).where((h) => ClinicTime.startsAt(date, h + 1).isAfter(now)).toList();
@@ -360,6 +381,7 @@ class _QueueEntry {
 /// One hour in the strip (`.hour`): its range, places left, a bar, "over" or "now".
 class _HourCard extends StatelessWidget {
   const _HourCard({
+    super.key,
     required this.hour,
     required this.taken,
     required this.capacity,
@@ -612,7 +634,9 @@ class _MoveBookingDialogState extends ConsumerState<MoveBookingDialog> {
     final l10n = AppLocalizations.of(context);
     final b = widget.booking;
     final clinicId = b.clinicId ?? ref.watch(currentClinicIdProvider) ?? '';
-    final settings = ref.watch(bookingSettingsProvider(clinicId)).value ?? const BookingSettings();
+    final loaded = ref.watch(bookingSettingsProvider(clinicId));
+    if (!loaded.hasValue) return const AlertDialog(content: SizedBox(height: 80, child: Center(child: CircularProgressIndicator())));
+    final settings = loaded.value!;
     final now = ref.watch(clockProvider)();
     final needsVaccineDay = b.children.any((c) => c.vaccines.isNotEmpty);
     final days = bookableDays(settings, now, vaccines: needsVaccineDay);

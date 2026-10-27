@@ -120,7 +120,7 @@
 
   "welcomeClinic": "دكتور النونو",
   "welcomeDoctorName": "د. أحمد العبد",
-  "welcomeDoctorTitle": "استشاري طب الأطفال وحديثي الولادة · المقطم",
+  "welcomeDoctorTitle": "أخصائي طب الأطفال وحديثي الولادة · المقطم",
   "welcomeHeading": "أهلًا بيكي",
   "welcomeIntro": "احجزي ميعادك وتابعي نمو وتطعيمات طفلك من مكان واحد.",
   "welcomeBookTitle": "احجزي من التطبيق",
@@ -411,7 +411,7 @@
   "@homeGreeting": {"placeholders": {"name": {"type": "String"}}},
   "homeClinics": "عياداتنا",
   "doctorName": "د. أحمد العبد",
-  "doctorTitle": "استشاري طب الأطفال وحديثي الولادة",
+  "doctorTitle": "أخصائي طب الأطفال وحديثي الولادة",
   "doctorTagline": "موجودين عشان نطمنك",
   "bookHere": "احجزي هنا",
   "callClinicShort": "اتصلي",
