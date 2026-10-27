@@ -42,7 +42,10 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
     final now = ref.watch(clockProvider)();
     final date = ClinicTime.dateOf(now);
     final day = (clinicId: clinicId, date: date);
-    final settings = ref.watch(bookingSettingsProvider(clinicId)).value ?? const BookingSettings();
+    // Only the clinic's own hours: never the built-in defaults while its settings load.
+    final loaded = ref.watch(bookingSettingsProvider(clinicId));
+    if (!loaded.hasValue) return const Center(child: CircularProgressIndicator());
+    final settings = loaded.value!;
     final bookings = ref.watch(dayBookingsProvider(day)).value ?? const <QueueBooking>[];
     final walkIns = ref.watch(dayWalkInsProvider(day)).value ?? const <WalkIn>[];
     final stopped = ref.watch(walkInsStoppedProvider(day)).value ?? false;
@@ -90,6 +93,7 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
               children: [
                 for (final h in hours)
                   _HourCard(
+                    key: Key('hour-card-$h'),
                     hour: h,
                     taken: taken(h),
                     capacity: settings.capacityPerHour,
@@ -360,6 +364,7 @@ class _QueueEntry {
 /// One hour in the strip (`.hour`): its range, places left, a bar, "over" or "now".
 class _HourCard extends StatelessWidget {
   const _HourCard({
+    super.key,
     required this.hour,
     required this.taken,
     required this.capacity,
@@ -612,7 +617,9 @@ class _MoveBookingDialogState extends ConsumerState<MoveBookingDialog> {
     final l10n = AppLocalizations.of(context);
     final b = widget.booking;
     final clinicId = b.clinicId ?? ref.watch(currentClinicIdProvider) ?? '';
-    final settings = ref.watch(bookingSettingsProvider(clinicId)).value ?? const BookingSettings();
+    final loaded = ref.watch(bookingSettingsProvider(clinicId));
+    if (!loaded.hasValue) return const AlertDialog(content: SizedBox(height: 80, child: Center(child: CircularProgressIndicator())));
+    final settings = loaded.value!;
     final now = ref.watch(clockProvider)();
     final needsVaccineDay = b.children.any((c) => c.vaccines.isNotEmpty);
     final days = bookableDays(settings, now, vaccines: needsVaccineDay);

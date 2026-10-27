@@ -685,7 +685,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeDoctorTitle.
   ///
   /// In ar, this message translates to:
-  /// **'استشاري طب الأطفال وحديثي الولادة · المقطم'**
+  /// **'أخصائي طب الأطفال وحديثي الولادة · المقطم'**
   String get welcomeDoctorTitle;
 
   /// No description provided for @welcomeHeading.
@@ -2107,7 +2107,7 @@ abstract class AppLocalizations {
   /// No description provided for @doctorTitle.
   ///
   /// In ar, this message translates to:
-  /// **'استشاري طب الأطفال وحديثي الولادة'**
+  /// **'أخصائي طب الأطفال وحديثي الولادة'**
   String get doctorTitle;
 
   /// No description provided for @doctorTagline.
