@@ -22,25 +22,17 @@ class ProdFirebaseOptions {
     }
   }
 
-  // The web demo (D-43): the Web app registered in the console (docs/demo-runbook.md). Its app id and
-  // API key are passed at build time by scripts/build_web_demo.sh until they are known; like the
-  // others they are public identifiers, not secrets.
-  static const _webAppId = String.fromEnvironment('FIREBASE_WEB_APP_ID');
-  static const _webApiKey = String.fromEnvironment('FIREBASE_WEB_API_KEY');
-
-  static FirebaseOptions get web {
-    if (_webAppId.isEmpty || _webApiKey.isEmpty) {
-      throw UnsupportedError('Build the web demo with scripts/build_web_demo.sh (needs the Web app config).');
-    }
-    return const FirebaseOptions(
-      apiKey: _webApiKey,
-      appId: _webAppId,
-      messagingSenderId: '689130598694',
-      projectId: 'dr-elnono-clinic',
-      authDomain: 'dr-elnono-clinic.firebaseapp.com',
-      storageBucket: 'dr-elnono-clinic.firebasestorage.app',
-    );
-  }
+  // The web demo (D-43): the Web app `drelnono-web` registered on 2026-10-27
+  // (1:689130598694:web:0560f179bd7ca71c7d11e7). Like the others, public identifiers, not secrets.
+  static const web = FirebaseOptions(
+    apiKey: 'AIzaSyCUVdtq50KWGTK9JVuA5vR5XHL3aXyO4vo',
+    appId: '1:689130598694:web:0560f179bd7ca71c7d11e7',
+    messagingSenderId: '689130598694',
+    projectId: 'dr-elnono-clinic',
+    authDomain: 'dr-elnono-clinic.firebaseapp.com',
+    storageBucket: 'dr-elnono-clinic.firebasestorage.app',
+    measurementId: 'G-N7E200YG0Y',
+  );
 
   static const android = FirebaseOptions(
     apiKey: 'AIzaSyCS7FyIdNwC35snyYjXF_yfohNMkdykbMI',
