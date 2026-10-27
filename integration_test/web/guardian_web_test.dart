@@ -45,8 +45,18 @@ Future<void> tapInList(WidgetTester tester, Finder f) async {
 Finder keysStarting(String prefix) =>
     find.byWidgetPredicate((w) => w.key is ValueKey<String> && (w.key! as ValueKey<String>).value.startsWith(prefix));
 
+/// `--dart-define=SCREENSHOTS=true` with test_driver/screenshot_driver.dart saves build/screenshots/.
+const screenshots = bool.fromEnvironment('SCREENSHOTS');
+
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  Future<void> shot(WidgetTester tester, String name) async {
+    if (!screenshots) return;
+    await tester.pump(const Duration(milliseconds: 1500));
+    final size = tester.view.physicalSize.width / tester.view.devicePixelRatio >= 600 ? 'desktop' : 'phone';
+    await binding.takeScreenshot('app-$size-$name');
+  }
 
   setUpAll(() async {
     expect(useEmulator, isTrue, reason: 'Run with --dart-define=USE_EMULATOR=true');
@@ -71,12 +81,15 @@ void main() {
     // Phone frame on a wide window only (D-43).
     final wide = tester.view.physicalSize.width / tester.view.devicePixelRatio >= 600;
     expect(shows(find.byKey(const Key('web-phone-frame'))), wide);
+    await settle(tester, () => shows(find.text('اتفرجي على المحتوى الأول')));
+    await shot(tester, '1-welcome');
 
     // Signed out: content first.
     await settle(tester, () => shows(find.text('اتفرجي على المحتوى الأول')));
     await tap(tester, find.text('اتفرجي على المحتوى الأول'));
     await settle(tester, () => shows(keysStarting('content-item-')));
     expect(keysStarting('content-item-'), findsWidgets);
+    await shot(tester, '2-content');
 
     // Sign in from Booking with the demo family's test number and 123456.
     await tap(tester, find.text('حجز').last);
@@ -101,11 +114,16 @@ void main() {
     await tapInList(tester, find.byKey(const Key('confirm-booking')));
     await settle(tester, () => shows(find.byKey(const Key('booking-number'))));
     expect(location(tester), startsWith('/booking/done/'));
+    await shot(tester, '3-booked');
+    await tap(tester, find.text('الرئيسية').last);
+    await settle(tester, () => shows(find.byKey(const Key('clinic-card-clinic-1'))));
+    await shot(tester, '4-home');
 
     // «طفلي»: the family's children.
     await tap(tester, find.text('طفلي').last);
     await settle(tester, () => shows(find.textContaining('آدم')));
     expect(find.textContaining('آدم'), findsWidgets);
+    await shot(tester, '5-my-child');
 
     // A Short in the web player.
     await tap(tester, find.text('محتوى').last);
@@ -114,6 +132,7 @@ void main() {
     await settle(tester, () => shows(find.byType(ShortPlayer)));
     expect(find.byType(ShortPlayer), findsOneWidget);
     await tester.pump(const Duration(seconds: 3));
+    await shot(tester, '6-short');
     await tap(tester, find.byType(BackButton));
     await settle(tester, () => location(tester) == '/content');
 
@@ -123,6 +142,7 @@ void main() {
     expect(find.byKey(const Key('me-guardian')), findsOneWidget);
     expect(find.byKey(const Key('me-notifications')), findsNothing);
     expect(find.byKey(const Key('notifications-bell')), findsNothing);
+    await shot(tester, '7-me');
     expect(errors, isEmpty);
   });
 }

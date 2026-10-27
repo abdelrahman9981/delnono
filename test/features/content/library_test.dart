@@ -8,6 +8,7 @@ import 'package:delnono/features/content/presentation/tip_screen.dart';
 import 'package:delnono/features/content/presentation/video_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -152,5 +153,15 @@ void main() {
   testWidgets('no age section when signed in without children', (tester) async {
     await open(tester, children: const []);
     expect(find.byKey(const Key('content-for-age')), findsNothing);
+  });
+
+  testWidgets('the video screen is readable on black: white titles, a transparent YouTube button', (tester) async {
+    await open(tester, initial: '/content/video/salt');
+    for (final e in find.text('هل ينفع نحط ملح قبل عمر سنه').evaluate()) {
+      final paragraph = e.renderObject! as RenderParagraph;
+      expect(paragraph.text.style?.color, Colors.white);
+    }
+    final button = tester.widget<OutlinedButton>(find.byKey(const Key('open-youtube')));
+    expect(button.style?.backgroundColor?.resolve({}), Colors.transparent);
   });
 }
