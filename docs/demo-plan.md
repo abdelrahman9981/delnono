@@ -21,9 +21,9 @@ Done by the owner in the Firebase console:
 Remaining (deploys only with the owner's approval):
 
 - [ ] Blaze + 1 USD budget alert (step 1).
-- [ ] Switch the Functions region to `me-central1` in `functions/src/lib/region.ts` and
-      `lib/core/firebase/functions_region.dart` (both still `us-central1` for the emulators), then
-      deploy rules, indexes, functions and hosting (steps 4 and 8).
+- [x] Functions region switched to `me-central1` in `functions/src/lib/region.ts` and
+      `lib/core/firebase/functions_region.dart` (D-43 prep; the emulators use it too).
+- [ ] Deploy rules, indexes, functions and hosting (steps 4 and 8; docs/demo-runbook.md).
 - [ ] Apple: APNs key and TestFlight, later (steps 3 and 6).
 - [ ] Launch checklist: no proposed medical content in production (docs/launch-checklist.md).
 
@@ -46,8 +46,8 @@ never go to the real project ([launch-checklist.md](launch-checklist.md)).
 
 - [x] Create the Firestore database: me-central1 (Doha), done by the owner (D-53). The region
       cannot be changed later.
-- [ ] Set the Functions region (me-central1) in `functions/src/lib/region.ts` and `lib/core/firebase/functions_region.dart`
-      to match (research R8 of 001).
+- [x] Functions region me-central1 in `functions/src/lib/region.ts` and `lib/core/firebase/functions_region.dart`
+      (checked equal by test/core/functions_region_test.dart).
 
 ## 3. Test phone numbers (D-41)
 

@@ -52,6 +52,7 @@ dependencies:
   package_info_plus: ^10.2.2
   youtube_player_iframe: ^6.0.2
   connectivity_plus: ^7.0.0
+  web: ^1.1.1
 
 dev_dependencies:
   flutter_test:

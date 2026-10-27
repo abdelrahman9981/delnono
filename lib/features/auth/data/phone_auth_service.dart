@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'auth_repository.dart';
@@ -45,7 +46,14 @@ class FirebasePhoneAuthService implements PhoneAuthService {
   final FirebaseAuth _auth;
 
   @override
-  Future<SendCodeResult> sendCode(String phoneE164, {int? resendToken}) {
+  Future<SendCodeResult> sendCode(String phoneE164, {int? resendToken}) async {
+    // The web has no verifyPhoneNumber: signInWithPhoneNumber sends the code behind an invisible
+    // reCAPTCHA (D-43 web demo). Its verification id signs in or moves the number like on phones.
+    if (kIsWeb) return CodeSent((await _auth.signInWithPhoneNumber(phoneE164)).verificationId, null);
+    return _sendOnPhone(phoneE164, resendToken);
+  }
+
+  Future<SendCodeResult> _sendOnPhone(String phoneE164, int? resendToken) {
     final result = Completer<SendCodeResult>();
 
     void fail(Object error) {

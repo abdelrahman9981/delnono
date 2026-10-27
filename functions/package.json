@@ -11,6 +11,7 @@
     "pretest": "npm run build",
     "test": "firebase emulators:exec --only auth,firestore,functions \"mocha\"",
     "seed": "tsx scripts/seed.ts",
+    "seed:demo-prod": "GCLOUD_PROJECT=dr-elnono-clinic GOOGLE_CLOUD_PROJECT=dr-elnono-clinic tsx scripts/seed.ts --demo-prod",
     "test:rules": "firebase emulators:exec --only firestore,auth \"mocha --no-config --node-option import=tsx --timeout 20000 'test/rules/**/*.test.ts'\""
   },
   "dependencies": {

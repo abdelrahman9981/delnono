@@ -113,5 +113,14 @@ void main() {
     expect(find.text('١٣٫٤ كجم'), findsNothing);
     final corrected = find.ancestor(of: find.text('١٣٫٦ كجم'), matching: find.byWidgetPredicate((w) => '${w.key}'.contains("'measurement-")));
     expect(find.descendant(of: corrected.first, matching: find.text('اتصحح')), findsOneWidget);
+
+    // The doctor publishes a seeded draft video (006); it can then be unpublished.
+    await settle(tester, () => !shows(find.byType(SnackBar)));
+    await tapAndSettle(tester, find.text('المحتوى').first);
+    await settle(tester, () => shows(find.byKey(const Key('publish-yt-skgdeAOm374'))));
+    expect(find.byKey(const Key('proposed-tip-fever')), findsOneWidget, reason: 'researched tips are marked proposed');
+    await tapAndSettle(tester, find.byKey(const Key('publish-yt-skgdeAOm374')));
+    await settle(tester, () => shows(find.byKey(const Key('unpublish-yt-skgdeAOm374'))));
+    expect(find.byKey(const Key('unpublish-yt-skgdeAOm374')), findsOneWidget);
   });
 }

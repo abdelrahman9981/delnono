@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/storage/private_files.dart';
 import '../../children/data/children_repository.dart';
@@ -37,7 +39,32 @@ class FileSelectedChildStore implements SelectedChildStore {
   }
 }
 
-final selectedChildStoreProvider = Provider<SelectedChildStore>((ref) => const FileSelectedChildStore());
+/// The web demo keeps it in browser storage, cleared on sign-out like the files (PrivateFiles).
+class PrefsSelectedChildStore implements SelectedChildStore {
+  const PrefsSelectedChildStore();
+
+  static const _key = '${PrivateFiles.webPrefix}selected_child';
+
+  @override
+  Future<String?> read() async {
+    try {
+      return await SharedPreferencesAsync().getString(_key);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> write(String childId) async {
+    try {
+      await SharedPreferencesAsync().setString(_key, childId);
+    } catch (_) {}
+  }
+}
+
+final selectedChildStoreProvider = Provider<SelectedChildStore>(
+  (ref) => kIsWeb ? const PrefsSelectedChildStore() : const FileSelectedChildStore(),
+);
 
 /// The child id the guardian picked last, or null until one is picked or loaded.
 class SelectedChildController extends Notifier<String?> {

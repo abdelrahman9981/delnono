@@ -13,6 +13,7 @@ import 'messenger.dart';
 import 'router.dart';
 import 'splash_intro.dart';
 import 'theme.dart';
+import 'web_phone_frame.dart';
 
 class App extends ConsumerStatefulWidget {
   const App({super.key});
@@ -61,7 +62,8 @@ class _AppState extends ConsumerState<App> {
         final media = MediaQuery.of(context);
         return MediaQuery(
           data: media.copyWith(textScaler: TextScaler.linear(media.textScaler.scale(1) * settings.textSize.factor)),
-          child: SplashIntro(child: child!),
+          // The web demo shows the app in a phone frame on wide screens (D-43).
+          child: WebPhoneFrame(child: SplashIntro(child: child!)),
         );
       },
     );

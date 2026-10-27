@@ -14,7 +14,7 @@ import { setLogLevel } from "firebase/firestore";
 export const PROJECT_ID = "demo-delnono";
 export const FUNCTIONS_HOST = "127.0.0.1:5001";
 /** Until research R8 fixes the region, the emulator serves callables in the default region. */
-export const DEFAULT_REGION = "us-central1";
+export const DEFAULT_REGION = "me-central1";
 
 function emulatorHost(variable: string): string {
   const host = process.env[variable];

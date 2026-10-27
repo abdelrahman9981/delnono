@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -266,14 +267,17 @@ class MeScreen extends ConsumerWidget {
                 ),
               ),
               if (signedIn) ...[
-                divider(),
-                row(
-                  key: const Key('me-notifications'),
-                  leading: chip(Icons.notifications_none, c.pinkSoft, c.pink),
-                  title: l10n.meNotifications,
-                  subtitle: notificationsSubtitle,
-                  onTap: () => context.push(Routes.notifications),
-                ),
+                // The web demo has no phone notifications (local reminders are phone-only, D-42).
+                if (!kIsWeb) ...[
+                  divider(),
+                  row(
+                    key: const Key('me-notifications'),
+                    leading: chip(Icons.notifications_none, c.pinkSoft, c.pink),
+                    title: l10n.meNotifications,
+                    subtitle: notificationsSubtitle,
+                    onTap: () => context.push(Routes.notifications),
+                  ),
+                ],
                 divider(),
                 row(
                   key: const Key('me-preferred-clinic'),

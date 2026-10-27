@@ -4,19 +4,27 @@
  *
  *   functions/node_modules/.bin/firebase emulators:exec --only auth,firestore \
  *     --export-on-exit emulator-seed "cd functions && npm run seed"
+ *
+ * The D-43 client demo on dr-elnono-clinic (only after the owner's approval, docs/demo-runbook.md):
+ *
+ *   cd functions && npm run seed:demo-prod            # asks for the project name; prints staff passwords once
+ *   cd functions && npm run seed:demo-prod -- --wipe  # deletes all demo data and accounts
  */
+import { randomBytes } from "node:crypto";
+import { createInterface } from "node:readline/promises";
 import { getApps, initializeApp } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { nameKey } from "../src/lib/nameKey";
 import { BANDS, DANGER_SIGNS, DANGER_SIGNS_SOURCES, HOLIDAYS, PROPOSED, SCHEDULE, SRC, TIPS, VACCINES } from "./demo_data";
 import { seedDemoFamilies } from "./seed_demo";
-import { assertEmulatorOnly } from "./seed_guard";
+import { confirmTyped, seedTarget } from "./seed_guard";
 
-// Emulators of a demo-* project only: the seed holds proposed (unapproved) medical content.
-assertEmulatorOnly("demo-delnono", process.env);
+// The emulators of a demo-* project, or dr-elnono-clinic only with --demo-prod (seed_guard.ts): the
+// seed holds proposed (unapproved) medical content and fictional families.
+const target = seedTarget(process.argv, process.env);
 
-const app = getApps()[0] ?? initializeApp({ projectId: "demo-delnono" });
+const app = getApps()[0] ?? initializeApp({ projectId: target.projectId });
 const db = getFirestore(app);
 
 const PLACEHOLDER = "[نص مؤقت · يراجعه المحامي قبل الإطلاق]";
@@ -29,6 +37,19 @@ const CLINIC_1 = "clinic-1";
 const CLINIC_2 = "clinic-2";
 
 async function main() {
+  if (target.prod) {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    try {
+      await confirmTyped(target.projectId, (q) => rl.question(q), target.wipe ? "DELETE ALL demo data and accounts" : "write the demo data");
+    } finally {
+      rl.close();
+    }
+    if (target.wipe) return wipeDemo();
+    // Reseeding writes fixed ids and accounts: wipe first (docs/demo-runbook.md).
+    if ((await db.doc("clinics/clinic-1").get()).exists) {
+      throw new Error("Demo data is already there. Run `npm run seed:demo-prod -- --wipe` first.");
+    }
+  }
   const batch = db.batch();
 
   batch.set(db.doc("settings/auth"), {
@@ -165,11 +186,19 @@ async function main() {
   seedChildProfile(batch);
   seedContent(batch);
   await batch.commit();
-  await seedStaff();
+  const passwords = await seedStaff();
   // The seeded family's Auth user, with the uid its guardian doc and children use.
   await getAuth(app).createUser({ uid: FAMILY_UID, phoneNumber: FAMILY_PHONE });
   // Ten fictional families with bookings, visits, doses, packages and audit entries (seed_demo.ts).
-  await seedDemoFamilies(db, getAuth(app));
+  // On the real project only the console's test numbers get sign-in accounts: the other demo numbers
+  // could belong to real people.
+  await seedDemoFamilies(db, getAuth(app), target.prod ? { authPhones: PROD_TEST_PHONES } : {});
+  if (passwords) {
+    // Printed once, to this terminal only: never written to a file or to git.
+    console.log("\nStaff accounts on dr-elnono-clinic (save these now; they are not stored anywhere):");
+    for (const p of passwords) console.log(`  ${p.email}  ${p.password}  (${p.name})`);
+    console.log("");
+  }
   console.log(
     "Seeded settings (auth, policy, booking, vaccines, followUp, content), 8 channel videos (3 published),",
     `${TIPS.length} proposed tips, 2 clinics, ${VACCINES.length} proposed vaccines, the proposed MOHP schedule and follow-up lists,`,
@@ -339,25 +368,49 @@ function seedContent(batch: FirebaseFirestore.WriteBatch) {
   });
 }
 
-// Staff accounts (005), emulator only. The real project's doctor account is created during setup
-// (docs/demo-plan.md); never with this password.
+// Staff accounts (005). On the emulators they share this password; on the real project (the client
+// demo) each gets a strong random one, printed once and never stored.
 export const STAFF_PASSWORD = "Delnono-2026";
 
-async function seedStaff() {
-  if (!process.env.FIREBASE_AUTH_EMULATOR_HOST) throw new Error("FIREBASE_AUTH_EMULATOR_HOST is not set.");
+/** Console test numbers on dr-elnono-clinic (D-53, D-54) that get sign-in accounts in the demo. */
+const PROD_TEST_PHONES = ["+201000000201"];
+
+async function seedStaff(): Promise<{ email: string; password: string; name: string }[] | null> {
+  if (!target.prod && !process.env.FIREBASE_AUTH_EMULATOR_HOST) throw new Error("FIREBASE_AUTH_EMULATOR_HOST is not set.");
   const auth = getAuth(app);
   const staff = [
     { uid: "staff-doctor", email: "doctor@demo.delnono", name: "[د. أحمد العبد]", role: "doctor", clinicId: null },
     { uid: "staff-sec1", email: "sec1@demo.delnono", name: "[سكرتيرة المقطم]", role: "secretary", clinicId: CLINIC_1 },
     { uid: "staff-sec2", email: "sec2@demo.delnono", name: "[سكرتيرة مدينة نصر]", role: "secretary", clinicId: CLINIC_2 },
   ];
+  const printed: { email: string; password: string; name: string }[] = [];
   for (const s of staff) {
-    await auth.createUser({ uid: s.uid, email: s.email, password: STAFF_PASSWORD, displayName: s.name });
+    const password = target.prod ? randomBytes(18).toString("base64url") : STAFF_PASSWORD;
+    await auth.createUser({ uid: s.uid, email: s.email, password, displayName: s.name });
     await auth.setCustomUserClaims(s.uid, { role: s.role, clinicId: s.clinicId });
     await db.doc(`staff/${s.uid}`).set({
       name: s.name, email: s.email, role: s.role, clinicId: s.clinicId, active: true, mustChangePassword: false, createdAt: new Date(),
     });
+    printed.push({ email: s.email, password, name: s.name });
   }
+  return target.prod ? printed : null;
+}
+
+/**
+ * Takes the client demo down on dr-elnono-clinic: every Firestore document and every Auth account
+ * (the project holds only demo data until launch). Rules, indexes, functions and hosting stay.
+ */
+async function wipeDemo() {
+  for (const col of await db.listCollections()) await db.recursiveDelete(col);
+  const auth = getAuth(app);
+  let page = await auth.listUsers(1000);
+  let removed = 0;
+  for (;;) {
+    if (page.users.length) removed += (await auth.deleteUsers(page.users.map((u) => u.uid))).successCount;
+    if (!page.pageToken) break;
+    page = await auth.listUsers(1000, page.pageToken);
+  }
+  console.log(`Wiped all Firestore data and ${removed} Auth accounts on ${target.projectId}.`);
 }
 
 main().catch((e) => {
