@@ -60,6 +60,8 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
       appBar: AppBar(
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
+        // The theme's title style has its own (dark) colour; on this black screen it must be white.
+        titleTextStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.white),
         title: Text(item?.title ?? '', maxLines: 1, overflow: TextOverflow.ellipsis),
       ),
       body: SafeArea(
@@ -73,8 +75,10 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
                 const SizedBox(height: 10),
                 OutlinedButton.icon(
                   key: const Key('open-youtube'),
+                  // The theme fills outlined buttons with the light surface; here it stays transparent.
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Colors.white,
+                    backgroundColor: Colors.transparent,
                     side: const BorderSide(color: Colors.white54),
                   ),
                   onPressed: () => ref.read(openYoutubeProvider)(item.youtubeId!),

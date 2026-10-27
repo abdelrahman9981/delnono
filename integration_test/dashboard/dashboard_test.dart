@@ -45,8 +45,17 @@ Future<void> openYoussef(WidgetTester tester) async {
   await settle(tester, () => shows(find.byKey(const Key('add-measurement'))));
 }
 
+/// `--dart-define=SCREENSHOTS=true` with test_driver/screenshot_driver.dart saves build/screenshots/.
+const screenshots = bool.fromEnvironment('SCREENSHOTS');
+
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  Future<void> shot(WidgetTester tester, String name) async {
+    if (!screenshots) return;
+    await tester.pump(const Duration(milliseconds: 1500));
+    await binding.takeScreenshot('dashboard-$name');
+  }
 
   setUpAll(() async {
     expect(useEmulator, isTrue, reason: 'Run with --dart-define=USE_EMULATOR=true');
@@ -77,6 +86,7 @@ void main() {
     expect(find.byKey(const Key('booking-row-e2e-clinic1')), findsOneWidget);
     expect(find.byKey(const Key('booking-row-e2e-clinic2')), findsNothing, reason: "clinic 2's booking");
     expect(find.text('الموظفين'), findsNothing, reason: 'doctor-only screens');
+    await shot(tester, '1-today-secretary');
 
     // Arrived, then done (D-06, FR-010).
     await tapAndSettle(tester, find.byKey(const Key('arrive-e2e-clinic1')));
@@ -93,6 +103,7 @@ void main() {
     await settle(tester, () => shows(find.text('١٣٫٤ كجم')));
     expect(find.text('١٣٫٤ كجم'), findsOneWidget);
     expect(find.byIcon(Icons.edit_note), findsNothing, reason: 'only the doctor corrects');
+    await shot(tester, '2-child-file');
 
     // The doctor signs in and corrects it (FR-015); the row is tagged corrected.
     // The "saved" message sits over the side bar's foot, where sign-out is; let it go first.
@@ -113,5 +124,15 @@ void main() {
     expect(find.text('١٣٫٤ كجم'), findsNothing);
     final corrected = find.ancestor(of: find.text('١٣٫٦ كجم'), matching: find.byWidgetPredicate((w) => '${w.key}'.contains("'measurement-")));
     expect(find.descendant(of: corrected.first, matching: find.text('اتصحح')), findsOneWidget);
+
+    // The doctor publishes a seeded draft video (006); it can then be unpublished.
+    await settle(tester, () => !shows(find.byType(SnackBar)));
+    await tapAndSettle(tester, find.text('المحتوى').first);
+    await settle(tester, () => shows(find.byKey(const Key('publish-yt-skgdeAOm374'))));
+    expect(find.byKey(const Key('proposed-tip-fever')), findsOneWidget, reason: 'researched tips are marked proposed');
+    await shot(tester, '3-content');
+    await tapAndSettle(tester, find.byKey(const Key('publish-yt-skgdeAOm374')));
+    await settle(tester, () => shows(find.byKey(const Key('unpublish-yt-skgdeAOm374'))));
+    expect(find.byKey(const Key('unpublish-yt-skgdeAOm374')), findsOneWidget);
   });
 }

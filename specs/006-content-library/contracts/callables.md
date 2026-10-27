@@ -1,4 +1,4 @@
-# Callables: Content Library (us-central1)
+# Callables: Content Library (me-central1 since D-53)
 
 | Callable | Who | Input | Output | Errors (`details.reason` / `field`) |
 |---|---|---|---|---|

@@ -39,7 +39,7 @@ Future<void> initFirebase({bool persistence = true}) async {
     await FirebaseAuth.instance.useAuthEmulator(host, 9099);
     // The emulator issues codes itself; skip APNs/reCAPTCHA app checks, which a demo project cannot
     // pass. Never set outside the emulator.
-    if (!kIsWeb) await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    await FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
     FirebaseFunctions.instanceFor(region: functionsRegion).useFunctionsEmulator(host, 5001);
   }

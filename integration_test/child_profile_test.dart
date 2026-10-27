@@ -31,6 +31,8 @@ void main() {
   }
 
   Future<void> openMyChild(WidgetTester tester, String childId) async {
+    // The location can change a frame before the tabs are drawn.
+    await settle(tester, () => shows(find.text('طفلي')));
     await tester.tap(find.text('طفلي'));
     // The list may be scrolled down from an earlier step; the switcher is at its top.
     await settle(tester, () => shows(find.byType(ListView)));

@@ -10,6 +10,28 @@
       "ignore": ["node_modules", ".git", "test", "scripts", "*.log"]
     }
   ],
+  "hosting": [
+    {
+      "target": "app",
+      "public": "build/web_app",
+      "ignore": ["firebase.json", "**/.*"],
+      "rewrites": [{ "source": "**", "destination": "/index.html" }],
+      "headers": [
+        { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+        { "source": "**/*.@(js|mjs|wasm|json|otf|ttf|png|jpg|webp)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }] }
+      ]
+    },
+    {
+      "target": "dashboard",
+      "public": "build/web_dashboard",
+      "ignore": ["firebase.json", "**/.*"],
+      "rewrites": [{ "source": "**", "destination": "/index.html" }],
+      "headers": [
+        { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "no-cache" }] },
+        { "source": "**/*.@(js|mjs|wasm|json|otf|ttf|png|jpg|webp)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }] }
+      ]
+    }
+  ],
   "emulators": {
     "auth": { "port": 9099 },
     "firestore": { "port": 8080 },

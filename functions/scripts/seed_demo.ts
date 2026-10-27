@@ -40,7 +40,8 @@ function addMonths(date: string, months: number): string {
   return new Date(Date.UTC(y, m - 1 + months, Math.min(d, last))).toISOString().slice(0, 10);
 }
 
-export async function seedDemoFamilies(db: Firestore, auth: Auth): Promise<void> {
+/** [authPhones]: only these numbers get Auth accounts (the real project's console test numbers). */
+export async function seedDemoFamilies(db: Firestore, auth: Auth, opts: { authPhones?: string[] } = {}): Promise<void> {
   const today = cairoDate();
   const random = rng(20261027);
   const audit = db.batch();
@@ -53,7 +54,7 @@ export async function seedDemoFamilies(db: Firestore, auth: Auth): Promise<void>
   const base = db.batch();
   for (const [fi, f] of FAMILIES.entries()) {
     const joined = new Date(Date.parse(`${today}T10:00:00Z`) - (120 - fi * 9) * DAY_MS);
-    await auth.createUser({ uid: f.uid, phoneNumber: f.phone });
+    if (!opts.authPhones || opts.authPhones.includes(f.phone)) await auth.createUser({ uid: f.uid, phoneNumber: f.phone });
     base.set(db.doc(`guardians/${f.uid}`), {
       phone: f.phone, fullName: f.name, relation: f.relation, consentVersion: 1, clinicChildrenPending: false,
       preferredClinicId: f.clinicId, lastActiveAt: new Date(), createdAt: joined, updatedAt: joined,

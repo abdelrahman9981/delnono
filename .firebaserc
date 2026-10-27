@@ -2,5 +2,13 @@
   "projects": {
     "default": "demo-delnono",
     "prod": "dr-elnono-clinic"
+  },
+  "targets": {
+    "dr-elnono-clinic": {
+      "hosting": {
+        "app": ["dr-elnono-clinic"],
+        "dashboard": ["dr-elnono-dashboard"]
+      }
+    }
   }
 }

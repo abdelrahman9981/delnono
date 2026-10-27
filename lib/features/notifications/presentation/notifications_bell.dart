@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +15,8 @@ class NotificationsBell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (ref.watch(authStateProvider).value == null) return const SizedBox.shrink();
+    // No phone notifications on the web demo (local reminders are phone-only, D-42).
+    if (kIsWeb || ref.watch(authStateProvider).value == null) return const SizedBox.shrink();
     final l10n = AppLocalizations.of(context);
     final count = ref.watch(unreadCountProvider);
     return IconButton(
