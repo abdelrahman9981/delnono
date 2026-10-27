@@ -174,7 +174,11 @@ class _TodayScreenState extends ConsumerState<TodayScreen> {
       title: l10n.dashNavToday,
       subtitle: [
         dayLabel(date),
-        if (hours.isNotEmpty) l10n.hourRange(hourLabel(l10n, hours.first), hourLabel(l10n, hours.last + 1)),
+        // Each working range of the day, so a break shows (e.g. «١ م لـ ٣ م، ٦ م لـ ١٠ م»).
+        if (hours.isNotEmpty)
+          [
+            for (final (from, to) in hourRuns(hours)) l10n.hourRange(hourLabel(l10n, from), hourLabel(l10n, to)),
+          ].join(l10n.listSeparator),
       ].join(' · '),
       actions: [
         FilterChip(
@@ -316,6 +320,19 @@ Widget _paymentCell(AppLocalizations l10n, Map<String, dynamic>? p) {
   if (p == null) return const Text('—');
   if (p['covered'] == true) return StatusPill(l10n.dashPayPackage, PillKind.ok, dot: false);
   return Text(l10n.dashPayCash(arabicDigits((p['cash'] as num?) ?? 0)));
+}
+
+/// Consecutive hours as (start, end) runs: [13, 14, 18, 19] → (13, 15), (18, 20).
+List<(int, int)> hourRuns(List<int> hours) {
+  final runs = <(int, int)>[];
+  for (final h in hours) {
+    if (runs.isNotEmpty && runs.last.$2 == h) {
+      runs[runs.length - 1] = (runs.last.$1, h + 1);
+    } else {
+      runs.add((h, h + 1));
+    }
+  }
+  return runs;
 }
 
 /// Hours of today a walk-in can still join: working hours that have not ended.

@@ -28,6 +28,13 @@ void main() {
       expect(card(h), findsNothing, reason: '$h');
     }
     expect(find.text('من ٣٦ مكان'), findsOneWidget);
+    expect(find.textContaining('١ م لـ ٣ م، ٦ م لـ ١٠ م'), findsOneWidget, reason: 'the header shows the break');
+  });
+
+  test('hour runs', () {
+    expect(hourRuns([13, 14, 18, 19, 20, 21]), [(13, 15), (18, 22)]);
+    expect(hourRuns([17]), [(17, 18)]);
+    expect(hourRuns([]), isEmpty);
   });
 
   testWidgets('Friday: «العيادة مقفولة النهارده» and no blocks', (tester) async {
