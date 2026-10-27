@@ -2613,4 +2613,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get meLinkClinicSub => 'العيادة مسجلة أطفال على رقمك';
+
+  @override
+  String get dashProposed => 'مقترح · يراجعه الدكتور';
+
+  @override
+  String get dashBandDangerSigns => 'علامات خطر للسن ده (سطر لكل علامة)';
+
+  @override
+  String get followUpBandSigns => 'خاصة بالسن ده';
 }

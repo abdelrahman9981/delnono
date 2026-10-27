@@ -126,6 +126,7 @@ class _ContentScreenState extends ConsumerState<ContentScreen> {
                       '${l10n.dashOrder} ${content.order}',
                     ].join(' · '),
                     actions: [
+                      if (content.proposed) ProposedBadge(key: Key('proposed-${item['id']}')),
                       StatusPill(statusLabel(l10n, status), switch (status) {
                         'published' => PillKind.ok,
                         'archived' => PillKind.noShow,

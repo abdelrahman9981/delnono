@@ -56,6 +56,7 @@ List<Override> dashboardOverrides({
   List<WalkIn> walkIns = const [],
   bool stopped = false,
   BookingSettings? clinic1Settings,
+  Map<String, VaccineInfo>? catalogue,
 }) =>
     [
       clockProvider.overrideWithValue(() => now),
@@ -65,7 +66,7 @@ List<Override> dashboardOverrides({
       dayBookingsProvider.overrideWith((ref, day) => Stream.value(day.clinicId == 'clinic-1' ? bookings : const [])),
       dayWalkInsProvider.overrideWith((ref, day) => Stream.value(day.clinicId == 'clinic-1' ? walkIns : const [])),
       walkInsStoppedProvider.overrideWith((ref, day) => Stream.value(stopped)),
-      vaccineCatalogueProvider.overrideWith((ref) => Stream.value(const {
+      vaccineCatalogueProvider.overrideWith((ref) => Stream.value(catalogue ?? const {
             'v1': VaccineInfo(id: 'v1', name: '[تطعيم ١]', kind: VaccineKind.basic),
           })),
     ];

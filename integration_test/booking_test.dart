@@ -37,11 +37,23 @@ void main() {
     await tapInList(tester, keysStarting('day-').first);
     await settle(tester, () => shows(keysStarting('hour-')));
     final hourKey = (tester.widget(keysStarting('hour-').first).key! as ValueKey<String>).value;
+    // The seeded demo bookings may already use this hour: count relative to them.
+    final day = (tester.widget(keysStarting('day-').first).key! as ValueKey<String>).value.substring(4);
+    Future<int> takenNow() async {
+      final q = await FirebaseFirestore.instance
+          .collection('slots')
+          .where('clinicId', isEqualTo: 'clinic-2')
+          .where('date', isEqualTo: day)
+          .where('hour', isEqualTo: int.parse(hourKey.substring(5)))
+          .get();
+      return q.docs.isEmpty ? 0 : q.docs.single.get('taken') as int;
+    }
+    final takenBefore = await takenNow();
     await tapInList(tester, keysStarting('hour-').first);
     await tapInList(tester, keysStarting('child-').first);
     await tapInList(tester, keysStarting('child-').last);
     await settle(tester, () => shows(find.byKey(const Key('summary-total'))));
-    expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, '٣٥٠ جنيه', reason: "clinic 2's visit price");
+    expect(tester.widget<Text>(find.byKey(const Key('summary-total'))).data, '٤٥٠ جنيه', reason: "clinic 2's visit price");
 
     await tapInList(tester, find.byKey(const Key('confirm-booking')));
     await settle(tester, () => shows(find.byKey(const Key('booking-number'))));
@@ -54,7 +66,7 @@ void main() {
     final bookings = await FirebaseFirestore.instance.collection('bookings').where('guardianUid', isEqualTo: uid).get();
     final b = bookings.docs.single;
     expect((b.get('children') as List).length, 2);
-    expect(b.get('price')['total'], 350);
+    expect(b.get('price')['total'], 450);
     expect(b.get('clinicId'), 'clinic-2');
     final slot = await FirebaseFirestore.instance
         .collection('slots')
@@ -62,6 +74,6 @@ void main() {
         .where('date', isEqualTo: b.get('date'))
         .where('hour', isEqualTo: int.parse(hourKey.substring(5)))
         .get();
-    expect(slot.docs.single.get('taken'), 1, reason: 'siblings take one place');
+    expect(slot.docs.single.get('taken'), takenBefore + 1, reason: 'siblings take one place');
   });
 }

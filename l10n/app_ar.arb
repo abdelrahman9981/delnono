@@ -884,5 +884,8 @@
   "dashBodyRequired": "النصيحة محتاجة نص.",
   "linkDuplicate": "اتربط أطفال العيادة. {names} متسجل مرتين بنفس الاسم وتاريخ الميلاد؛ كلمي العيادة عشان يدمجوا الملفين.",
   "@linkDuplicate": {"placeholders": {"names": {"type": "String"}}},
-  "meLinkClinicSub": "العيادة مسجلة أطفال على رقمك"
+  "meLinkClinicSub": "العيادة مسجلة أطفال على رقمك",
+  "dashProposed": "مقترح · يراجعه الدكتور",
+  "dashBandDangerSigns": "علامات خطر للسن ده (سطر لكل علامة)",
+  "followUpBandSigns": "خاصة بالسن ده"
 }

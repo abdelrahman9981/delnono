@@ -14,6 +14,7 @@ class ScheduleEntry {
     required this.ageLabel,
     required this.order,
     this.lastAge,
+    this.proposed = false,
   });
 
   factory ScheduleEntry.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> s) {
@@ -26,8 +27,12 @@ class ScheduleEntry {
       lastAge: d['lastAge'] == null ? null : AgeSpan.fromMap(d['lastAge']),
       ageLabel: d['ageLabel'] as String? ?? '',
       order: (d['order'] as num?)?.toInt() ?? 0,
+      proposed: d['reviewStatus'] == 'proposed',
     );
   }
+
+  /// Researched for the demo and not yet approved by the doctor (`reviewStatus: proposed`).
+  final bool proposed;
 
   final String id;
   final String vaccineId;
@@ -53,6 +58,7 @@ class VaccineInfo {
     this.suggestedAge,
     this.doses = 1,
     this.intervalWeeks = 0,
+    this.proposed = false,
   });
 
   factory VaccineInfo.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> s) {
@@ -66,8 +72,12 @@ class VaccineInfo {
       suggestedAge: d['suggestedAge'] == null ? null : AgeSpan.fromMap(d['suggestedAge']),
       doses: (d['doses'] as num?)?.toInt() ?? 1,
       intervalWeeks: (d['intervalWeeks'] as num?)?.toInt() ?? 0,
+      proposed: d['reviewStatus'] == 'proposed',
     );
   }
+
+  /// Researched for the demo and not yet approved by the doctor (`reviewStatus: proposed`).
+  final bool proposed;
 
   final String id;
   final String name;

@@ -638,3 +638,12 @@ class DateField extends StatelessWidget {
     );
   }
 }
+
+/// «مقترح · يراجعه الدكتور»: researched medical content the doctor has not approved yet.
+class ProposedBadge extends StatelessWidget {
+  const ProposedBadge({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      StatusPill(AppLocalizations.of(context).dashProposed, PillKind.warn, dot: false);
+}

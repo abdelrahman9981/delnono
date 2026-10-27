@@ -1,4 +1,5 @@
 import 'package:delnono/core/launch/external_links.dart';
+import 'package:delnono/features/child_profile/data/follow_up_repository.dart';
 import 'package:delnono/features/clinics/data/clinics_repository.dart';
 import 'package:delnono/features/child_profile/presentation/follow_up_screen.dart';
 import 'package:flutter/material.dart';
@@ -75,5 +76,22 @@ void main() {
     expect(find.text('المتابعة حسب العمر بتغطي لحد ٤ سنين.'), findsOneWidget);
     expect(find.byKey(const Key('when-to-call')), findsOneWidget);
     expect(find.byKey(const Key('call-ambulance')), findsOneWidget);
+  });
+
+  testWidgets("a band's own danger signs come first, then the general ones (demo data, per age group)", (tester) async {
+    final h = ScreenHarness(
+      initial: '/children/c2/follow-up',
+      routes: [GoRoute(path: '/children/:id/follow-up', builder: (_, s) => FollowUpScreen(childId: s.pathParameters['id']!))],
+      overrides: [
+        ...profileOverrides(children: const [salma], followUpBands: const [
+          FollowUpBand(fromMonths: 9, toMonths: 12, title: 'متابعة الشهر التاسع', items: ['بيعمل باي باي'], dangerSigns: ['علامة للسن ده']),
+        ]),
+        externalLinksProvider.overrideWithValue(_Links()),
+      ],
+    );
+    await h.pump(tester);
+    final band = tester.getTopLeft(find.text('• علامة للسن ده')).dy;
+    final general = tester.getTopLeft(find.textContaining('[علامة خطر ١')).dy;
+    expect(band, lessThan(general));
   });
 }

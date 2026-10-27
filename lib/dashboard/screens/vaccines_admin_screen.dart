@@ -85,16 +85,19 @@ class _VaccinesAdminScreenState extends ConsumerState<VaccinesAdminScreen> {
           padding: EdgeInsets.zero,
           child: DashTable(
             headers: [l10n.dashColVaccine, l10n.dashCategory],
-            flex: const [3, 1],
+            flex: const [3, 2],
             rows: [
               for (final v in catalogue.values)
                 DashRow(key: Key('vaccine-${v.id}'), cells: [
                   TextField(controller: _names[v.id], decoration: dashInput(context)),
-                  StatusPill(
-                    v.kind == VaccineKind.additional ? l10n.additionalBadge : l10n.vaccinesBasic,
-                    v.kind == VaccineKind.additional ? PillKind.walkIn : PillKind.info,
-                    dot: false,
-                  ),
+                  Wrap(spacing: 6, runSpacing: 4, children: [
+                    StatusPill(
+                      v.kind == VaccineKind.additional ? l10n.additionalBadge : l10n.vaccinesBasic,
+                      v.kind == VaccineKind.additional ? PillKind.walkIn : PillKind.info,
+                      dot: false,
+                    ),
+                    if (v.proposed) ProposedBadge(key: Key('proposed-vaccine-${v.id}')),
+                  ]),
                 ]),
             ],
           ),
@@ -113,7 +116,10 @@ class _VaccinesAdminScreenState extends ConsumerState<VaccinesAdminScreen> {
                 DashRow(key: Key('schedule-${e.id}'), cells: [
                   Text(catalogue[e.vaccineId]?.name ?? e.vaccineId, style: const TextStyle(fontWeight: FontWeight.w600)),
                   Text(arabicDigits(e.dose)),
-                  Text('${e.ageLabel} · ${l10n.dashDueMonths(arabicDigits(e.dueAge.months))}'),
+                  Wrap(spacing: 6, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                    Text('${e.ageLabel} · ${l10n.dashDueMonths(arabicDigits(e.dueAge.months))}'),
+                    if (e.proposed) ProposedBadge(key: Key('proposed-schedule-${e.id}')),
+                  ]),
                 ]),
             ],
           ),

@@ -201,7 +201,7 @@ void main() {
       final (name, data) = api.calls.single;
       expect(name, 'saveFollowUpDraft');
       expect(data['dangerSigns'], ['[خطر]']);
-      expect((data['bands'] as List).single, {'title': '[أول شهرين]', 'fromMonths': 0, 'toMonths': 2, 'items': ['[بند]']});
+      expect((data['bands'] as List).single, {'title': '[أول شهرين]', 'fromMonths': 0, 'toMonths': 2, 'items': ['[بند]'], 'dangerSigns': <String>[]});
     });
   });
 
