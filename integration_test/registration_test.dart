@@ -30,6 +30,8 @@ void main() {
     await startApp(tester);
     await signInFromBooking(tester, phone);
     expect(location(tester), '/register/guardian?from=%2Fbooking');
+    // The location can change a frame before the screen is drawn.
+    await settle(tester, () => shows(find.byKey(const Key('guardian-name'))));
 
     await tester.enterText(find.byKey(const Key('guardian-name')), 'سارة محمود');
     await tapInList(tester, find.text('أم'));
