@@ -40,6 +40,8 @@ class EmulatorCodeResolver implements DevCodeResolver {
 DevCodeResolver? devCodeResolverFor({required bool emulator, required bool prod}) =>
     emulator && !prod ? const EmulatorCodeResolver() : null;
 
+/// Decided by compile-time constants, so release builds drop the resolver's code entirely
+/// (scripts/build_ios_release.sh and scripts/build_web_demo.sh check the binaries).
 final devCodeResolverProvider = Provider<DevCodeResolver?>(
-  (ref) => devCodeResolverFor(emulator: useEmulator, prod: useProdFirebase),
+  (ref) => useEmulator && !useProdFirebase ? const EmulatorCodeResolver() : null,
 );

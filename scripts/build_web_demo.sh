@@ -2,8 +2,7 @@
 # Builds the D-43 web demo: the guardian app (build/web_app) and the clinic dashboard
 # (build/web_dashboard), as hosted on Firebase Hosting (firebase.json "hosting" targets).
 #
-#   scripts/build_web_demo.sh prod       # for dr-elnono-clinic; needs FIREBASE_WEB_APP_ID and
-#                                        # FIREBASE_WEB_API_KEY (the Web app's config, docs/demo-runbook.md)
+#   scripts/build_web_demo.sh prod       # for dr-elnono-clinic (Web app drelnono-web)
 #   scripts/build_web_demo.sh emulator   # the same apps against the local emulators (smoke test)
 #
 # Builds only; deploying is a separate, approved step (docs/demo-runbook.md).
@@ -13,10 +12,8 @@ MODE="${1:-}"
 
 case "$MODE" in
   prod)
-    : "${FIREBASE_WEB_APP_ID:?Set FIREBASE_WEB_APP_ID (Firebase console → Project settings → Your apps → Web app)}"
-    : "${FIREBASE_WEB_API_KEY:?Set FIREBASE_WEB_API_KEY (same place, apiKey)}"
-    DEFINES=(--dart-define=FIREBASE_ENV=prod "--dart-define=FIREBASE_WEB_APP_ID=$FIREBASE_WEB_APP_ID"
-      "--dart-define=FIREBASE_WEB_API_KEY=$FIREBASE_WEB_API_KEY")
+    # The Web app's config is in lib/core/firebase/firebase_options_prod.dart (public identifiers).
+    DEFINES=(--dart-define=FIREBASE_ENV=prod)
     ;;
   emulator)
     DEFINES=(--dart-define=USE_EMULATOR=true)
